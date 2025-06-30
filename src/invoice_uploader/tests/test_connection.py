@@ -1,9 +1,9 @@
-import logging
-from snelstart_automation import SnelstartAutomation
+from ..snelstart_automation import SnelstartAutomation
+from ...utils.logging_setup import setup_logging, get_logger
 
-# Logging setup
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+# Setup logging
+setup_logging()
+logger = get_logger(__name__)
 
 def main():
     try:

@@ -1,13 +1,13 @@
-import logging
-from snelstart_automation import SnelstartAutomation
-from dotenv import load_dotenv
 import time
+from src.invoice_uploader.snelstart_automation import SnelstartAutomation
+from src.utils.logging_setup import setup_logging, get_logger
+from dotenv import load_dotenv
 
 load_dotenv()
 
-# Logging setup
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+# Setup logging
+setup_logging()
+logger = get_logger(__name__)
 
 def main():
     try:
@@ -67,8 +67,8 @@ def open_administratie(snelstart: SnelstartAutomation):
 
 def upload_afschriften(snelstart: SnelstartAutomation):
     logger.info("Uploading Afschriften...")
-    if snelstart.open_administratie():
-        logger.info("Succesfully uploaden afschriften")
+    if snelstart.load_in_afschriften():
+        logger.info("Successfully uploaded afschriften")
         snelstart.print_control_tree(snelstart.admin_window)
         return True
     logger.error("Failed to upload afschriften")
