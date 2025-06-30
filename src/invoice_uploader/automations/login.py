@@ -114,12 +114,14 @@ class LoginAutomation:
         self.logger.info("Entering username...")
         login_dialog.type_keys(username, with_spaces=True)
 
-    def _navigate_to_password(self, login_dialog: UIAWrapper):
+    def _submit_username(self, login_dialog: UIAWrapper)
         """Pure action: Navigate to password field and select password login option."""
         self.logger.info("Navigating to password field...")
         login_dialog.type_keys("{TAB}")
         login_dialog.type_keys("{ENTER}")
-        
+
+    def _navigate_to_password(self, login_dialog: UIAWrapper):
+        """Pure action: Navigate to password field and select password login option."""
         self.logger.info("Selecting password login option...")
         login_dialog.type_keys("{TAB}{TAB}{ENTER}")
 
@@ -128,7 +130,7 @@ class LoginAutomation:
         self.logger.info("Entering password...")
         login_dialog.type_keys(password, with_spaces=True)
 
-    def _submit_login(self, login_dialog: UIAWrapper):
+    def _submit_password(self, login_dialog: UIAWrapper):
         """Submit the login form."""
         self.logger.info("Submitting login...")
         login_dialog.type_keys("{ENTER}")
@@ -182,6 +184,9 @@ class LoginAutomation:
             # Perform login steps with timing
             self._enter_username(login_dialog, username)
             self._wait_between_steps("username entry")
+
+            self._submit_username(login_dialog)
+            self._wait_between_steps("username submition")
             
             self._navigate_to_password(login_dialog)
             self._wait_between_steps("password navigation")
@@ -189,7 +194,7 @@ class LoginAutomation:
             self._enter_password(login_dialog, password)
             self._wait_between_steps("password entry")
             
-            self._submit_login(login_dialog)
+            self._submit_password(login_dialog)
             
             self.logger.info("Login attempt complete")
             
