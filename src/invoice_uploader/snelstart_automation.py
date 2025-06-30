@@ -34,29 +34,41 @@ class SnelstartAutomation:
     
     def start(self):
         """
-        Start the Snelstart application if it's not running.
+        Start the Snelstart application if it's not running, or connect to existing instance.
         
         Returns:
-            True if started successfully, False otherwise
+            True if started/connected successfully, False otherwise
         """
         try:
-            # Start the application
-            self.app = self.launch_automation.start_snelstart_application()
-            if not self.app:
-                return False
-            
-            # Wait for the main window to appear (get_main_window has built-in timeout/interval)
-            self.main_window = self.launch_automation.get_main_window()
-            
-            self.logger.info(f"Activated Snelstart application")
-            self.logger.info(f"Window title: {self.main_window.window_text()}")
-            
-            # Generate window report for main window
-            self.ui_utils.generate_window_report(self.main_window, "SnelStart_Main_Window_Before_Login")            
-            return True
+            # Quick check if SnelStart is already running (1 second check)
+            try:
+                self.main_window = self.launch_automation.get_main_window(timeout=1, interval=1)
+                self.logger.info("SnelStart already running - connected to existing instance")
+                self.logger.info(f"Window title: {self.main_window.window_text()}")
+                
+                # Generate window report for existing instance
+                self.ui_utils.generate_window_report(self.main_window, "SnelStart_Main_Window_Existing")
+                return True
+                
+            except RuntimeError:
+                # SnelStart not running, launch new instance
+                self.logger.info("SnelStart not running - launching new instance")
+                self.app = self.launch_automation.start_snelstart_application()
+                if not self.app:
+                    return False
+                
+                # Wait for the main window to appear (full timeout for startup)
+                self.main_window = self.launch_automation.get_main_window()
+                
+                self.logger.info(f"Started new SnelStart instance")
+                self.logger.info(f"Window title: {self.main_window.window_text()}")
+                
+                # Generate window report for new instance
+                self.ui_utils.generate_window_report(self.main_window, "SnelStart_Main_Window_Before_Login")
+                return True
             
         except Exception as e:
-            self.logger.error(f"Error activating Snelstart: {str(e)}")
+            self.logger.error(f"Error starting/connecting to SnelStart: {str(e)}")
             return False
     
     

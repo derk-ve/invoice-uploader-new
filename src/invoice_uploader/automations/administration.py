@@ -3,7 +3,6 @@ from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
 from ...utils.wait_utils import wait_with_timeout, WaitTimeoutError
-from ...utils.ui_utils import UIUtils
 
 class AdministrationAutomation:
     """Handles SnelStart administration window automation."""
@@ -12,7 +11,6 @@ class AdministrationAutomation:
         """Initialize the administration automation."""
         self.logger = LoggingSetup.get_logger(self.__class__.__name__)
         self.ui_elements = Config.get_ui_elements()
-        self.ui_utils = UIUtils()
     
     def get_administratie_window(self, window: UIAWrapper):
         """
@@ -45,11 +43,9 @@ class AdministrationAutomation:
                             wait_with_timeout(check_ready, timeout=3, interval=1, 
                                             description="administration window stabilization", 
                                             provide_feedback=False)
+                            
                         except WaitTimeoutError:
                             self.logger.warning("Timeout waiting for administration to stabilize")
-                        
-                        # Generate window report after opening
-                        self.ui_utils.generate_window_report(window, "SnelStart_Administration_Opened")
                         
                         return
                         
