@@ -3,7 +3,7 @@ from pywinauto import Desktop
 import time
 from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import get_logger
-from ...utils.config import get_timing_config, get_ui_elements, get_wait_timeouts
+from ...utils.config import get_timing_config, get_ui_elements, get_timeouts
 from ...utils.wait_utils import wait_for_element, wait_for_clickable, safe_click
 
 class AdministrationAutomation:
@@ -14,7 +14,7 @@ class AdministrationAutomation:
         self.logger = get_logger(self.__class__.__name__)
         self.timing = get_timing_config()
         self.ui_elements = get_ui_elements()
-        self.wait_timeouts = get_wait_timeouts()
+        self.timeouts = get_timeouts()
     
     def get_administratie_window(self, window: UIAWrapper):
         """
@@ -42,13 +42,13 @@ class AdministrationAutomation:
             
             # Wait for the admin row to be available and clickable
             admin_row = wait_for_element(window, find_admin_row, 
-                                       self.wait_timeouts['element_timeout'], 
-                                       self.wait_timeouts['wait_interval'],
+                                       self.timeouts['element_timeout'], 
+                                       self.timeouts['retry_interval'],
                                        f"admin row '{self.ui_elements['admin_row_text']}'")
             
             # Ensure it's clickable before double-clicking
             clickable_row = wait_for_clickable(admin_row, 
-                                             self.wait_timeouts['clickable_timeout'],
+                                             self.timeouts['clickable_timeout'],
                                              f"admin row '{self.ui_elements['admin_row_text']}'")
             
             # Perform the double-click

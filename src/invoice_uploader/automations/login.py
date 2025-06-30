@@ -3,7 +3,7 @@ import time
 from dotenv import load_dotenv
 from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import get_logger
-from ...utils.config import get_credentials, get_timing_config, get_ui_elements, get_wait_timeouts
+from ...utils.config import get_credentials, get_timing_config, get_ui_elements, get_timeouts
 from ...utils.wait_utils import wait_for_dialog_ready, wait_for_text_input_ready, safe_type, safe_click
 
 load_dotenv()
@@ -17,7 +17,7 @@ class LoginAutomation:
         self.username, self.password = get_credentials()
         self.timing = get_timing_config()
         self.ui_elements = get_ui_elements()
-        self.wait_timeouts = get_wait_timeouts()
+        self.timeouts = get_timeouts()
     
     def get_login_dialog(self, window: UIAWrapper):
         """Search for and return the login dialog inside the main window."""
@@ -37,11 +37,11 @@ class LoginAutomation:
         
         try:
             # Ensure dialog is ready for interaction
-            ready_dialog = wait_for_text_input_ready(login_dialog, self.wait_timeouts['text_input_timeout'])
+            ready_dialog = wait_for_text_input_ready(login_dialog, self.timeouts['clickable_timeout'])
             
             # Enter username
             self.logger.info("Entering username...")
-            safe_type(ready_dialog, username, self.wait_timeouts['text_input_timeout'], "username field")
+            safe_type(ready_dialog, username, self.timeouts['clickable_timeout'], "username field")
             
             # Navigate to password field
             self.logger.info("Navigating to password field...")
@@ -57,7 +57,7 @@ class LoginAutomation:
             
             # Enter password
             self.logger.info("Entering password...")
-            safe_type(ready_dialog, password, self.wait_timeouts['text_input_timeout'], "password field")
+            safe_type(ready_dialog, password, self.timeouts['clickable_timeout'], "password field")
             
             # Submit login
             self.logger.info("Submitting login...")
@@ -74,7 +74,7 @@ class LoginAutomation:
         try:
             try:
                 login_dialog = wait_for_dialog_ready(window, self.ui_elements['login_dialog_text'], 
-                                                    self.wait_timeouts['dialog_timeout'])
+                                                    self.timeouts['element_timeout'])
                 self.logger.info(f"Found and verified login dialog is ready")
             except Exception:
                 self.logger.info("Login dialog not found — assuming already logged in.")

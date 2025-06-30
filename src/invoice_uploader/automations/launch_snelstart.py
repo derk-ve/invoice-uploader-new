@@ -3,7 +3,7 @@ import time
 from pywinauto.application import Application
 from pywinauto import Desktop
 from ...utils.logging_setup import get_logger
-from ...utils.config import get_snelstart_path as get_snelstart_path_config, get_timing_config, get_wait_timeouts
+from ...utils.config import get_snelstart_path as get_snelstart_path_config, get_timing_config, get_timeouts
 from ...utils.wait_utils import wait_for_window_by_title, wait_for_window_ready
 
 class LaunchAutomation:
@@ -14,7 +14,7 @@ class LaunchAutomation:
         self.logger = get_logger(self.__class__.__name__)
         self.app_path = self.get_snelstart_path()
         self.timing = get_timing_config()
-        self.wait_timeouts = get_wait_timeouts()
+        self.timeouts = get_timeouts()
     
     def get_snelstart_path(self):
         """Get the path to the SnelStart application from environment variables."""
@@ -41,7 +41,7 @@ class LaunchAutomation:
             # Wait for the application window to appear instead of fixed sleep
             self.logger.info("Waiting for SnelStart window to appear...")
             main_window = wait_for_window_by_title("SnelStart", 
-                                                   self.wait_timeouts['window_ready_timeout'])
+                                                   self.timeouts['window_timeout'])
             
             self.logger.info(f"SnelStart application started successfully with window: '{main_window.window_text()}'")
             return app
@@ -62,9 +62,9 @@ class LaunchAutomation:
             Main window if found, raises RuntimeError otherwise
         """
         if timeout is None:
-            timeout = self.wait_timeouts['window_ready_timeout']
+            timeout = self.timeouts['window_timeout']
         if interval is None:
-            interval = self.wait_timeouts['wait_interval']
+            interval = self.timeouts['retry_interval']
         
         try:
             self.logger.info(f"Waiting for SnelStart window (timeout: {timeout}s)...")

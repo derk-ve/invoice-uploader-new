@@ -3,23 +3,27 @@ from typing import Callable, Optional, Any
 from pywinauto.controls.uiawrapper import UIAWrapper
 from pywinauto import Desktop
 from .logging_setup import get_logger
+from .config import get_timeouts
 
 logger = get_logger(__name__)
+
+# Get timeout configuration
+_timeouts = get_timeouts()
 
 class WaitTimeoutError(Exception):
     """Exception raised when wait operations timeout."""
     pass
 
 def wait_for_element(parent: UIAWrapper, selector_func: Callable[[UIAWrapper], UIAWrapper], 
-                    timeout: float = 30, interval: float = 0.5, element_name: str = "element") -> UIAWrapper:
+                    timeout: float = None, interval: float = None, element_name: str = "element") -> UIAWrapper:
     """
     Wait for an element to exist and be accessible within a parent.
     
     Args:
         parent: The parent element to search within
         selector_func: Function that takes parent and returns the desired element
-        timeout: Maximum time to wait in seconds
-        interval: Time between attempts in seconds
+        timeout: Maximum time to wait in seconds (uses config default if None)
+        interval: Time between attempts in seconds (uses config default if None)
         element_name: Description of element for error messages
         
     Returns:
@@ -28,6 +32,11 @@ def wait_for_element(parent: UIAWrapper, selector_func: Callable[[UIAWrapper], U
     Raises:
         WaitTimeoutError: If element not found within timeout
     """
+    if timeout is None:
+        timeout = _timeouts['element_timeout']
+    if interval is None:
+        interval = _timeouts['retry_interval']
+    
     start_time = time.time()
     attempt = 0
     
@@ -47,13 +56,13 @@ def wait_for_element(parent: UIAWrapper, selector_func: Callable[[UIAWrapper], U
     
     raise WaitTimeoutError(f"Timeout waiting for {element_name} after {timeout}s (parent: {parent.window_text() if parent else 'None'})")
 
-def wait_for_clickable(element: UIAWrapper, timeout: float = 10, element_name: str = "element") -> UIAWrapper:
+def wait_for_clickable(element: UIAWrapper, timeout: float = None, element_name: str = "element") -> UIAWrapper:
     """
     Wait for an element to be clickable (visible, enabled, and interactive).
     
     Args:
         element: The element to check
-        timeout: Maximum time to wait in seconds
+        timeout: Maximum time to wait in seconds (uses config default if None)
         element_name: Description of element for error messages
         
     Returns:
@@ -62,6 +71,9 @@ def wait_for_clickable(element: UIAWrapper, timeout: float = 10, element_name: s
     Raises:
         WaitTimeoutError: If element not clickable within timeout
     """
+    if timeout is None:
+        timeout = _timeouts['clickable_timeout']
+    
     start_time = time.time()
     
     while time.time() - start_time < timeout:
@@ -79,13 +91,13 @@ def wait_for_clickable(element: UIAWrapper, timeout: float = 10, element_name: s
     
     raise WaitTimeoutError(f"Timeout waiting for {element_name} to be clickable after {timeout}s")
 
-def wait_for_window_ready(window: UIAWrapper, timeout: float = 20, window_name: str = "window") -> UIAWrapper:
+def wait_for_window_ready(window: UIAWrapper, timeout: float = None, window_name: str = "window") -> UIAWrapper:
     """
     Wait for a window to be fully loaded and responsive.
     
     Args:
         window: The window to check
-        timeout: Maximum time to wait in seconds
+        timeout: Maximum time to wait in seconds (uses config default if None)
         window_name: Description of window for error messages
         
     Returns:
@@ -94,6 +106,9 @@ def wait_for_window_ready(window: UIAWrapper, timeout: float = 20, window_name: 
     Raises:
         WaitTimeoutError: If window not ready within timeout
     """
+    if timeout is None:
+        timeout = _timeouts['window_timeout']
+    
     start_time = time.time()
     
     while time.time() - start_time < timeout:
@@ -118,14 +133,14 @@ def wait_for_window_ready(window: UIAWrapper, timeout: float = 20, window_name: 
     
     raise WaitTimeoutError(f"Timeout waiting for {window_name} to be ready after {timeout}s")
 
-def wait_for_dialog_ready(parent: UIAWrapper, dialog_text: str, timeout: float = 15) -> UIAWrapper:
+def wait_for_dialog_ready(parent: UIAWrapper, dialog_text: str, timeout: float = None) -> UIAWrapper:
     """
     Wait for a dialog to appear and be ready for interaction.
     
     Args:
         parent: The parent window to search within
         dialog_text: Text that should appear in the dialog
-        timeout: Maximum time to wait in seconds
+        timeout: Maximum time to wait in seconds (uses config default if None)
         
     Returns:
         The dialog element
@@ -133,6 +148,9 @@ def wait_for_dialog_ready(parent: UIAWrapper, dialog_text: str, timeout: float =
     Raises:
         WaitTimeoutError: If dialog not found within timeout
     """
+    if timeout is None:
+        timeout = _timeouts['element_timeout']
+    
     def find_dialog(parent_elem):
         for child in parent_elem.descendants():
             try:
@@ -143,16 +161,16 @@ def wait_for_dialog_ready(parent: UIAWrapper, dialog_text: str, timeout: float =
                 continue
         return None
     
-    dialog = wait_for_element(parent, find_dialog, timeout, 0.5, f"dialog containing '{dialog_text}'")
-    return wait_for_window_ready(dialog, timeout=5, window_name=f"dialog '{dialog_text}'")
+    dialog = wait_for_element(parent, find_dialog, timeout, _timeouts['retry_interval'], f"dialog containing '{dialog_text}'")
+    return wait_for_window_ready(dialog, timeout=_timeouts['window_timeout'], window_name=f"dialog '{dialog_text}'")
 
-def wait_for_window_by_title(title_substring: str, timeout: float = 30, exact_match: bool = False) -> UIAWrapper:
+def wait_for_window_by_title(title_substring: str, timeout: float = None, exact_match: bool = False) -> UIAWrapper:
     """
     Wait for a window with specific title to appear on desktop.
     
     Args:
         title_substring: Text that should appear in window title
-        timeout: Maximum time to wait in seconds
+        timeout: Maximum time to wait in seconds (uses config default if None)
         exact_match: If True, title must match exactly
         
     Returns:
@@ -161,6 +179,9 @@ def wait_for_window_by_title(title_substring: str, timeout: float = 30, exact_ma
     Raises:
         WaitTimeoutError: If window not found within timeout
     """
+    if timeout is None:
+        timeout = _timeouts['window_timeout']
+    
     start_time = time.time()
     
     while time.time() - start_time < timeout:
@@ -169,10 +190,10 @@ def wait_for_window_by_title(title_substring: str, timeout: float = 30, exact_ma
                 window_text = window.window_text()
                 if exact_match:
                     if window_text == title_substring:
-                        return wait_for_window_ready(window, 5, f"window '{title_substring}'")
+                        return wait_for_window_ready(window, _timeouts['window_timeout'], f"window '{title_substring}'")
                 else:
                     if title_substring in window_text:
-                        return wait_for_window_ready(window, 5, f"window containing '{title_substring}'")
+                        return wait_for_window_ready(window, _timeouts['window_timeout'], f"window containing '{title_substring}'")
         except Exception as e:
             logger.debug(f"Window search failed: {e}")
         
@@ -180,13 +201,13 @@ def wait_for_window_by_title(title_substring: str, timeout: float = 30, exact_ma
     
     raise WaitTimeoutError(f"Timeout waiting for window with title '{title_substring}' after {timeout}s")
 
-def wait_for_text_input_ready(element: UIAWrapper, timeout: float = 5) -> UIAWrapper:
+def wait_for_text_input_ready(element: UIAWrapper, timeout: float = None) -> UIAWrapper:
     """
     Wait for a text input field to be ready for typing.
     
     Args:
         element: The input element
-        timeout: Maximum time to wait in seconds
+        timeout: Maximum time to wait in seconds (uses config default if None)
         
     Returns:
         The element if ready for input
@@ -194,6 +215,9 @@ def wait_for_text_input_ready(element: UIAWrapper, timeout: float = 5) -> UIAWra
     Raises:
         WaitTimeoutError: If element not ready within timeout
     """
+    if timeout is None:
+        timeout = _timeouts['clickable_timeout']
+    
     start_time = time.time()
     
     while time.time() - start_time < timeout:
@@ -218,18 +242,21 @@ def wait_for_text_input_ready(element: UIAWrapper, timeout: float = 5) -> UIAWra
     
     raise WaitTimeoutError(f"Timeout waiting for text input to be ready after {timeout}s")
 
-def safe_click(element: UIAWrapper, timeout: float = 10, element_name: str = "element") -> None:
+def safe_click(element: UIAWrapper, timeout: float = None, element_name: str = "element") -> None:
     """
     Safely click an element after ensuring it's clickable.
     
     Args:
         element: The element to click
-        timeout: Maximum time to wait for element to be clickable
+        timeout: Maximum time to wait for element to be clickable (uses config default if None)
         element_name: Description for error messages
         
     Raises:
         WaitTimeoutError: If element not clickable within timeout
     """
+    if timeout is None:
+        timeout = _timeouts['clickable_timeout']
+    
     clickable_element = wait_for_clickable(element, timeout, element_name)
     try:
         clickable_element.click_input()
@@ -238,19 +265,22 @@ def safe_click(element: UIAWrapper, timeout: float = 10, element_name: str = "el
         logger.error(f"Failed to click {element_name}: {e}")
         raise
 
-def safe_type(element: UIAWrapper, text: str, timeout: float = 5, element_name: str = "input field") -> None:
+def safe_type(element: UIAWrapper, text: str, timeout: float = None, element_name: str = "input field") -> None:
     """
     Safely type text into an element after ensuring it's ready.
     
     Args:
         element: The element to type into
         text: Text to type
-        timeout: Maximum time to wait for element to be ready
+        timeout: Maximum time to wait for element to be ready (uses config default if None)
         element_name: Description for error messages
         
     Raises:
         WaitTimeoutError: If element not ready within timeout
     """
+    if timeout is None:
+        timeout = _timeouts['clickable_timeout']
+    
     ready_element = wait_for_text_input_ready(element, timeout)
     try:
         ready_element.type_keys(text, with_spaces=True)

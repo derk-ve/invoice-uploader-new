@@ -42,35 +42,13 @@ def get_timing_config():
     }
 
 
-def get_smart_wait_config():
-    """Get smart wait timing configuration."""
-    # Check for performance profile in environment
-    profile = os.getenv('SNELSTART_TIMING_PROFILE', 'normal').lower()
-    
-    if profile in TIMING_PROFILES:
-        return TIMING_PROFILES[profile]
-    
-    # Return default values if profile not found
+def get_timeouts():
+    """Get simple timeout configuration with optional environment overrides."""
     return {
-        'element_timeout': DEFAULT_ELEMENT_TIMEOUT,
-        'clickable_timeout': DEFAULT_CLICKABLE_TIMEOUT,
-        'window_ready_timeout': DEFAULT_WINDOW_READY_TIMEOUT,
-        'dialog_timeout': DEFAULT_DIALOG_TIMEOUT,
-        'wait_interval': DEFAULT_WAIT_INTERVAL
-    }
-
-
-def get_wait_timeouts():
-    """Get individual wait timeout values with environment variable overrides."""
-    config = get_smart_wait_config()
-    
-    return {
-        'element_timeout': float(os.getenv('SNELSTART_ELEMENT_TIMEOUT', config['element_timeout'])),
-        'clickable_timeout': float(os.getenv('SNELSTART_CLICKABLE_TIMEOUT', config['clickable_timeout'])),
-        'window_ready_timeout': float(os.getenv('SNELSTART_WINDOW_READY_TIMEOUT', config['window_ready_timeout'])),
-        'dialog_timeout': float(os.getenv('SNELSTART_DIALOG_TIMEOUT', config['dialog_timeout'])),
-        'text_input_timeout': float(os.getenv('SNELSTART_TEXT_INPUT_TIMEOUT', DEFAULT_TEXT_INPUT_TIMEOUT)),
-        'wait_interval': float(os.getenv('SNELSTART_WAIT_INTERVAL', config['wait_interval']))
+        'window_timeout': float(os.getenv('SNELSTART_WINDOW_TIMEOUT', WINDOW_TIMEOUT)),
+        'element_timeout': float(os.getenv('SNELSTART_ELEMENT_TIMEOUT', ELEMENT_TIMEOUT)),
+        'clickable_timeout': float(os.getenv('SNELSTART_CLICKABLE_TIMEOUT', CLICKABLE_TIMEOUT)),
+        'retry_interval': float(os.getenv('SNELSTART_RETRY_INTERVAL', RETRY_INTERVAL))
     }
 
 
