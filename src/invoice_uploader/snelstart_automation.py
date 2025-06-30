@@ -1,6 +1,6 @@
 import time
 from pywinauto.controls.uiawrapper import UIAWrapper
-from ..utils.ui_utils import print_control_tree, find_control_by_text, find_control_by_class
+from ..utils.ui_utils import print_control_tree, find_control_by_text, find_control_by_class, generate_window_report
 from ..utils.logging_setup import get_logger
 from .automations.launch_snelstart import LaunchAutomation
 from .automations.login import LoginAutomation
@@ -48,6 +48,9 @@ class SnelstartAutomation:
             self.logger.info(f"Activated Snelstart application")
             self.logger.info(f"Window title: {self.main_window.window_text()}")
             
+            # Generate window report for main window
+            generate_window_report(self.main_window, "SnelStart_Main_Window")
+            
             return True
             
         except Exception as e:
@@ -67,7 +70,13 @@ class SnelstartAutomation:
                 self.logger.error("No main window available for login")
                 return False
                 
-            return self.login_automation.login_to_snelstart(self.main_window)
+            login_success = self.login_automation.login_to_snelstart(self.main_window)
+            
+            # Generate window report after login
+            if login_success:
+                generate_window_report(self.main_window, "SnelStart_After_Login")
+            
+            return login_success
             
         except Exception as e:
             self.logger.error(f"Login failed: {e}")
@@ -80,6 +89,9 @@ class SnelstartAutomation:
             admin_window = self.main_window  # The function doesn't return the window, it opens it
             self.admin_window = admin_window
             self.logger.info("Successfully opened Administratie section")
+            
+            # Generate window report for administration window
+            generate_window_report(self.admin_window, "SnelStart_Administration_Window")
 
             return True
         
@@ -102,6 +114,10 @@ class SnelstartAutomation:
             
             # Click on the "Afschriften Inlezen" button
             self.invoice_reader_automation.click_afschriften_inlezen(self.admin_window)
+            
+            # Generate window report after clicking afschriften button
+            time.sleep(1)  # Brief wait for any new dialogs to appear
+            generate_window_report(self.admin_window, "SnelStart_After_Afschriften_Click")
             
             self.logger.info("Successfully loaded afschriften")
             return True

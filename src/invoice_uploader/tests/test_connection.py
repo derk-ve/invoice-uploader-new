@@ -24,6 +24,14 @@ def main():
         logger.info("Attempting login...")
         if snelstart.login():
             logger.info("Successfully connected and logged in to Snelstart")
+            
+            # Test opening administration window
+            logger.info("Opening administration window...")
+            if snelstart.open_administratie():
+                logger.info("Successfully opened administration window")
+            else:
+                logger.error("Failed to open administration window")
+
         else:
             logger.error("Failed to log in to Snelstart")
 

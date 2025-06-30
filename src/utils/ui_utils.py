@@ -1,4 +1,7 @@
 import logging
+import json
+import os
+from datetime import datetime
 from pywinauto.controls.uiawrapper import UIAWrapper
 
 # Configure logging
@@ -72,4 +75,102 @@ def find_control_by_class(control: UIAWrapper, class_name: str):
     except Exception as e:
         logger.error(f"Error finding control by class: {e}")
     
-    return None 
+    return None
+
+
+def generate_window_report(control: UIAWrapper, window_name: str = None, reports_dir: str = "reports"):
+    """
+    Generate a structured report of all UI elements in a window.
+    
+    Args:
+        control: The window control to analyze
+        window_name: Optional custom name for the window
+        reports_dir: Directory to save reports (default: "reports")
+        
+    Returns:
+        dict: Structured element data
+    """
+    try:
+        # Create reports directory if it doesn't exist
+        os.makedirs(reports_dir, exist_ok=True)
+        
+        # Get window information
+        if not window_name:
+            window_name = control.window_text() or "Unknown_Window"
+        
+        # Clean window name for filename
+        clean_name = "".join(c for c in window_name if c.isalnum() or c in ('-', '_', ' ')).strip()
+        clean_name = clean_name.replace(' ', '_')
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Collect all elements
+        elements = []
+        
+        def collect_element_info(elem, level=0):
+            """Recursively collect element information"""
+            try:
+                element_info = {
+                    "level": level,
+                    "class_name": elem.friendly_class_name(),
+                    "text": elem.window_text(),
+                    "control_id": getattr(elem, 'control_id', lambda: None)(),
+                    "enabled": getattr(elem, 'is_enabled', lambda: None)(),
+                    "visible": getattr(elem, 'is_visible', lambda: None)(),
+                    "rect": str(getattr(elem, 'rectangle', lambda: None)())
+                }
+                elements.append(element_info)
+                
+                # Process children
+                for child in elem.children():
+                    collect_element_info(child, level + 1)
+                    
+            except Exception as e:
+                logger.debug(f"Error collecting element info: {e}")
+        
+        # Start collecting from the main control
+        collect_element_info(control)
+        
+        # Create report structure
+        report_data = {
+            "window_name": window_name,
+            "timestamp": timestamp,
+            "total_elements": len(elements),
+            "elements": elements
+        }
+        
+        # Save JSON report
+        json_filename = f"{clean_name}_{timestamp}.json"
+        json_path = os.path.join(reports_dir, json_filename)
+        
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(report_data, f, indent=2, ensure_ascii=False)
+        
+        # Save human-readable text report
+        txt_filename = f"{clean_name}_{timestamp}.txt"
+        txt_path = os.path.join(reports_dir, txt_filename)
+        
+        with open(txt_path, 'w', encoding='utf-8') as f:
+            f.write(f"Window Report: {window_name}\n")
+            f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"Total Elements: {len(elements)}\n")
+            f.write("=" * 60 + "\n\n")
+            
+            for elem in elements:
+                indent = "  " * elem["level"]
+                f.write(f"{indent}├── {elem['class_name']}")
+                if elem['text']:
+                    f.write(f": '{elem['text']}'")
+                if elem['control_id']:
+                    f.write(f" (ID: {elem['control_id']})")
+                f.write(f" [Enabled: {elem['enabled']}, Visible: {elem['visible']}]")
+                f.write("\n")
+        
+        logger.info(f"Window report generated: {json_path}")
+        logger.info(f"Human-readable report: {txt_path}")
+        
+        return report_data
+        
+    except Exception as e:
+        logger.error(f"Error generating window report: {e}")
+        return None 
