@@ -1,15 +1,15 @@
-Window Report: SnelStart_Main_Window
-Generated: 2025-06-30 12:00:22
-Total Elements: 68
+Window Report: SnelStart_After_Login
+Generated: 2025-06-30 13:48:01
+Total Elements: 75
 ============================================================
 
 ├── Dialog: 'SnelStart 12' [Enabled: False, Visible: True]
   ├── Dialog: 'Inloggen SnelStart 12' [Enabled: True, Visible: True]
-    ├── Pane (ID: 3146818) [Enabled: True, Visible: True]
+    ├── Pane (ID: 460814) [Enabled: True, Visible: True]
       ├── Pane [Enabled: True, Visible: True]
-        ├── Pane: 'about:blank' [Enabled: True, Visible: True]
+        ├── Pane: 'SnelStart' [Enabled: True, Visible: True]
           ├── Pane [Enabled: False, Visible: True]
-          ├── Pane: 'about:blank - Web content' [Enabled: True, Visible: True]
+          ├── Pane: 'SnelStart - Web content' [Enabled: True, Visible: True]
             ├── Pane [Enabled: True, Visible: True]
               ├── Pane [Enabled: True, Visible: True]
               ├── Pane [Enabled: True, Visible: True]
@@ -22,6 +22,13 @@ Total Elements: 68
                   ├── Pane [Enabled: True, Visible: True]
                     ├── Pane [Enabled: True, Visible: True]
                       ├── Pane [Enabled: True, Visible: True]
+                        ├── Document: 'SnelStart' [Enabled: True, Visible: True]
+                          ├── GroupBox [Enabled: True, Visible: True]
+                            ├── GroupBox [Enabled: True, Visible: True]
+                              ├── Image: 'SnelStart' [Enabled: True, Visible: True]
+                              ├── Static: 'Log in bij SnelStart' [Enabled: True, Visible: True]
+                            ├── Edit: 'E-mailadres' [Enabled: True, Visible: True]
+                            ├── Button: 'Doorgaan' [Enabled: True, Visible: True]
                   ├── Pane [Enabled: True, Visible: True]
                   ├── Pane [Enabled: True, Visible: True]
                   ├── Pane [Enabled: True, Visible: True]
@@ -33,7 +40,7 @@ Total Elements: 68
       ├── Button: 'Maximise' [Enabled: True, Visible: True]
       ├── Button: 'Close' [Enabled: True, Visible: True]
   ├── Pane [Enabled: False, Visible: True]
-  ├── Pane: 'Status Bar' (ID: 198586) [Enabled: True, Visible: False]
+  ├── Pane: 'Status Bar' (ID: 1312310) [Enabled: True, Visible: False]
     ├── Static: 'Static' [Enabled: True, Visible: False]
     ├── Static: 'Static' [Enabled: True, Visible: True]
     ├── Button: 'Item' [Enabled: True, Visible: False]
@@ -42,8 +49,8 @@ Total Elements: 68
     ├── Static: 'Static' [Enabled: True, Visible: True]
     ├── Static: 'Static' [Enabled: True, Visible: True]
     ├── Static: 'Static' [Enabled: True, Visible: False]
-  ├── Pane (ID: 591772) [Enabled: True, Visible: False]
-  ├── Pane: 'The Ribbon' (ID: 591760) [Enabled: True, Visible: True]
+  ├── Pane (ID: 2295148) [Enabled: True, Visible: False]
+  ├── Pane: 'The Ribbon' (ID: 1639998) [Enabled: True, Visible: True]
     ├── Button [Enabled: True, Visible: True]
     ├── TabControl: 'Ribbon Tabs' [Enabled: True, Visible: True]
       ├── TabItem: 'ADMINISTRATIE' [Enabled: True, Visible: True]

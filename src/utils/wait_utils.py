@@ -34,7 +34,7 @@ def simple_retry(operation, operation_name="operation"):
     last_exception = None
     
     for attempt in range(max_retries):
-        logger.debug(f"Attempt {attempt + 1}/{max_retries} for {operation_name}")
+        logger.info(f"Attempt {attempt + 1}/{max_retries} for {operation_name}")
         
         start_time = time.time()
         while time.time() - start_time < max_waiting_time:

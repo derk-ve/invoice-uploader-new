@@ -1,11 +1,11 @@
-Window Report: SnelStart_After_Login
-Generated: 2025-06-30 12:00:26
+Window Report: SnelStart_Main_Window
+Generated: 2025-06-30 13:46:26
 Total Elements: 40
 ============================================================
 
-├── Dialog: 'SnelStart 12' [Enabled: True, Visible: True]
-  ├── Pane [Enabled: True, Visible: True]
-  ├── Pane: 'Status Bar' (ID: 198586) [Enabled: True, Visible: False]
+├── Dialog: 'SnelStart 12' [Enabled: False, Visible: True]
+  ├── Pane [Enabled: False, Visible: True]
+  ├── Pane: 'Status Bar' (ID: 1312310) [Enabled: True, Visible: False]
     ├── Static: 'Static' [Enabled: True, Visible: False]
     ├── Static: 'Static' [Enabled: True, Visible: True]
     ├── Button: 'Item' [Enabled: True, Visible: False]
@@ -14,8 +14,8 @@ Total Elements: 40
     ├── Static: 'Static' [Enabled: True, Visible: True]
     ├── Static: 'Static' [Enabled: True, Visible: True]
     ├── Static: 'Static' [Enabled: True, Visible: False]
-  ├── Pane (ID: 591772) [Enabled: False, Visible: False]
-  ├── Pane: 'The Ribbon' (ID: 591760) [Enabled: True, Visible: True]
+  ├── Pane (ID: 2295148) [Enabled: False, Visible: False]
+  ├── Pane: 'The Ribbon' (ID: 1639998) [Enabled: True, Visible: True]
     ├── Button [Enabled: True, Visible: True]
     ├── TabControl: 'Ribbon Tabs' [Enabled: True, Visible: True]
       ├── TabItem: 'ADMINISTRATIE' [Enabled: True, Visible: True]

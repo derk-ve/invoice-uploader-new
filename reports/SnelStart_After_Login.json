@@ -1,7 +1,7 @@
 {
-  "window_name": "SnelStart_Main_Window",
-  "timestamp": "20250630_120021",
-  "total_elements": 68,
+  "window_name": "SnelStart_After_Login",
+  "timestamp": "20250630_134800",
+  "total_elements": 75,
   "elements": [
     {
       "level": 0,
@@ -10,7 +10,7 @@
       "control_id": 0,
       "enabled": false,
       "visible": true,
-      "rect": "(L0, T185, R1591, B981)"
+      "rect": "(L229, T208, R1820, B1004)"
     },
     {
       "level": 1,
@@ -19,16 +19,16 @@
       "control_id": 0,
       "enabled": true,
       "visible": true,
-      "rect": "(L420, T239, R1170, B927)"
+      "rect": "(L649, T261, R1399, B949)"
     },
     {
       "level": 2,
       "class_name": "Pane",
       "text": "",
-      "control_id": 3146818,
+      "control_id": 460814,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 3,
@@ -37,16 +37,16 @@
       "control_id": 0,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 4,
       "class_name": "Pane",
-      "text": "about:blank",
+      "text": "SnelStart",
       "control_id": 0,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 5,
@@ -55,16 +55,16 @@
       "control_id": 0,
       "enabled": false,
       "visible": true,
-      "rect": "(L430, T278, R1710, B1238)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 5,
       "class_name": "Pane",
-      "text": "about:blank - Web content",
+      "text": "SnelStart - Web content",
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 6,
@@ -73,7 +73,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 7,
@@ -91,7 +91,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 8,
@@ -100,7 +100,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 9,
@@ -154,7 +154,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 10,
@@ -163,7 +163,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 11,
@@ -172,7 +172,70 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
+    },
+    {
+      "level": 12,
+      "class_name": "Document",
+      "text": "SnelStart",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L659, T300, R1389, B939)"
+    },
+    {
+      "level": 13,
+      "class_name": "GroupBox",
+      "text": "",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L659, T300, R1370, B975)"
+    },
+    {
+      "level": 14,
+      "class_name": "GroupBox",
+      "text": "",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L764, T396, R1265, B604)"
+    },
+    {
+      "level": 15,
+      "class_name": "Image",
+      "text": "SnelStart",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L908, T446, R1122, B482)"
+    },
+    {
+      "level": 15,
+      "class_name": "Static",
+      "text": "Log in bij SnelStart",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L814, T511, R1215, B554)"
+    },
+    {
+      "level": 14,
+      "class_name": "Edit",
+      "text": "E-mailadres",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L814, T603, R1215, B669)"
+    },
+    {
+      "level": 14,
+      "class_name": "Button",
+      "text": "Doorgaan",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L814, T698, R1215, B764)"
     },
     {
       "level": 9,
@@ -208,7 +271,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T278, R1160, B917)"
+      "rect": "(L659, T300, R1389, B939)"
     },
     {
       "level": 2,
@@ -217,7 +280,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L450, T243, R1160, B278)"
+      "rect": "(L679, T265, R1389, B300)"
     },
     {
       "level": 3,
@@ -226,7 +289,7 @@
       "control_id": null,
       "enabled": true,
       "visible": false,
-      "rect": "(L344, T199, R366, B221)"
+      "rect": "(L527, T217, R549, B239)"
     },
     {
       "level": 4,
@@ -235,7 +298,7 @@
       "control_id": null,
       "enabled": true,
       "visible": false,
-      "rect": "(L344, T199, R366, B221)"
+      "rect": "(L527, T217, R549, B239)"
     },
     {
       "level": 3,
@@ -244,7 +307,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L983, T240, R1043, B278)"
+      "rect": "(L1211, T263, R1271, B301)"
     },
     {
       "level": 3,
@@ -253,7 +316,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1043, T240, R1102, B278)"
+      "rect": "(L1271, T263, R1330, B301)"
     },
     {
       "level": 3,
@@ -262,7 +325,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1101, T240, R1161, B278)"
+      "rect": "(L1330, T263, R1390, B301)"
     },
     {
       "level": 1,
@@ -271,16 +334,16 @@
       "control_id": 0,
       "enabled": false,
       "visible": true,
-      "rect": "(L-50, T135, R1641, B1031)"
+      "rect": "(L179, T158, R1870, B1054)"
     },
     {
       "level": 1,
       "class_name": "Pane",
       "text": "Status Bar",
-      "control_id": 198586,
+      "control_id": 1312310,
       "enabled": true,
       "visible": false,
-      "rect": "(L1, T946, R1590, B981)"
+      "rect": "(L230, T969, R1819, B1004)"
     },
     {
       "level": 2,
@@ -298,7 +361,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1416, T949, R1566, B977)"
+      "rect": "(L1645, T971, R1795, B999)"
     },
     {
       "level": 2,
@@ -316,7 +379,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L3, T949, R18, B977)"
+      "rect": "(L231, T971, R246, B999)"
     },
     {
       "level": 2,
@@ -325,7 +388,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L4, T949, R122, B977)"
+      "rect": "(L233, T971, R343, B999)"
     },
     {
       "level": 2,
@@ -334,7 +397,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L121, T949, R136, B977)"
+      "rect": "(L343, T971, R358, B999)"
     },
     {
       "level": 2,
@@ -343,7 +406,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L136, T949, R151, B977)"
+      "rect": "(L358, T971, R373, B999)"
     },
     {
       "level": 2,
@@ -358,19 +421,19 @@
       "level": 1,
       "class_name": "Pane",
       "text": "",
-      "control_id": 591772,
+      "control_id": 2295148,
       "enabled": true,
       "visible": false,
-      "rect": "(L8, T403, R1584, B941)"
+      "rect": "(L236, T425, R1812, B963)"
     },
     {
       "level": 1,
       "class_name": "Pane",
       "text": "The Ribbon",
-      "control_id": 591760,
+      "control_id": 1639998,
       "enabled": true,
       "visible": true,
-      "rect": "(L1, T185, R1590, B396)"
+      "rect": "(L230, T208, R1819, B419)"
     },
     {
       "level": 2,
@@ -379,7 +442,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1, T235, R97, B271)"
+      "rect": "(L230, T258, R326, B294)"
     },
     {
       "level": 2,
@@ -388,7 +451,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1, T235, R1590, B271)"
+      "rect": "(L230, T258, R1819, B294)"
     },
     {
       "level": 3,
@@ -397,7 +460,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L99, T235, R244, B271)"
+      "rect": "(L328, T258, R473, B294)"
     },
     {
       "level": 2,
@@ -406,7 +469,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1, T270, R1590, B396)"
+      "rect": "(L230, T293, R1819, B419)"
     },
     {
       "level": 3,
@@ -415,7 +478,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1, T270, R1590, B396)"
+      "rect": "(L230, T293, R1819, B419)"
     },
     {
       "level": 4,
@@ -424,7 +487,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1, T270, R336, B401)"
+      "rect": "(L230, T293, R565, B424)"
     },
     {
       "level": 5,
@@ -433,7 +496,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L4, T274, R114, B369)"
+      "rect": "(L233, T296, R343, B391)"
     },
     {
       "level": 5,
@@ -442,7 +505,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L115, T274, R188, B369)"
+      "rect": "(L344, T296, R417, B391)"
     },
     {
       "level": 5,
@@ -451,7 +514,7 @@
       "control_id": null,
       "enabled": false,
       "visible": true,
-      "rect": "(L189, T274, R274, B369)"
+      "rect": "(L418, T296, R503, B391)"
     },
     {
       "level": 5,
@@ -460,7 +523,7 @@
       "control_id": null,
       "enabled": false,
       "visible": true,
-      "rect": "(L275, T274, R344, B369)"
+      "rect": "(L504, T296, R573, B391)"
     },
     {
       "level": 5,
@@ -469,7 +532,7 @@
       "control_id": null,
       "enabled": false,
       "visible": true,
-      "rect": "(L345, T274, R444, B369)"
+      "rect": "(L574, T296, R673, B391)"
     },
     {
       "level": 5,
@@ -478,7 +541,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L275, T274, R333, B369)"
+      "rect": "(L504, T296, R562, B391)"
     },
     {
       "level": 6,
@@ -514,7 +577,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L336, T270, R474, B401)"
+      "rect": "(L565, T293, R703, B424)"
     },
     {
       "level": 5,
@@ -523,7 +586,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L365, T274, R443, B369)"
+      "rect": "(L594, T296, R672, B391)"
     },
     {
       "level": 5,
@@ -541,7 +604,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L474, T270, R683, B401)"
+      "rect": "(L703, T293, R912, B424)"
     },
     {
       "level": 5,
@@ -550,7 +613,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L476, T274, R679, B302)"
+      "rect": "(L705, T296, R908, B324)"
     },
     {
       "level": 5,
@@ -559,7 +622,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L476, T301, R679, B329)"
+      "rect": "(L705, T324, R908, B352)"
     },
     {
       "level": 5,
@@ -568,7 +631,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L476, T329, R679, B357)"
+      "rect": "(L705, T351, R908, B379)"
     },
     {
       "level": 2,
@@ -586,7 +649,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L10, T195, R1581, B224)"
+      "rect": "(L239, T218, R1810, B247)"
     },
     {
       "level": 2,
@@ -595,7 +658,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1498, T194, R1528, B224)"
+      "rect": "(L1726, T216, R1756, B246)"
     },
     {
       "level": 2,
@@ -604,7 +667,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1525, T194, R1555, B224)"
+      "rect": "(L1754, T216, R1784, B246)"
     },
     {
       "level": 2,
@@ -613,7 +676,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1553, T194, R1583, B224)"
+      "rect": "(L1781, T216, R1811, B246)"
     }
   ]
 }
