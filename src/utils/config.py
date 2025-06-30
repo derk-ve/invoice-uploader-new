@@ -48,7 +48,9 @@ class Config:
         return {
             'login_dialog_text': LOGIN_DIALOG_TEXT,
             'admin_row_text': ADMIN_ROW_TEXT,
-            'invoice_button_text': INVOICE_BUTTON_TEXT
+            'invoice_button_text': INVOICE_BUTTON_TEXT,
+            'login_verification_tab': LOGIN_VERIFICATION_TAB,
+            'login_verification_button': LOGIN_VERIFICATION_BUTTON
         }
 
     @staticmethod

@@ -15,6 +15,10 @@ LOGIN_DIALOG_TEXT = "Inloggen"
 ADMIN_ROW_TEXT = "Row 1"
 INVOICE_BUTTON_TEXT = "Afschriften Inlezen"
 
+# Login verification elements (only visible when logged in)
+LOGIN_VERIFICATION_TAB = "ADMINISTRATIE"
+LOGIN_VERIFICATION_BUTTON = "Administraties"
+
 # Global logging format - easy to adjust
 LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s - [%(name)s.%(funcName)s]'
 

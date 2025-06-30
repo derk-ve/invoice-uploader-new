@@ -64,9 +64,59 @@ class LoginAutomation:
             self.logger.error(f"Error during login sequence: {e}")
             raise
 
+    def is_logged_in(self, window: UIAWrapper):
+        """Check if user is already logged in by verifying presence of main UI elements."""
+        self.logger.info("Checking if user is already logged in...")
+        
+        try:
+            # Look for the ADMINISTRATIE tab which is only visible when logged in
+            verification_tab = self.ui_elements['login_verification_tab']
+            verification_button = self.ui_elements['login_verification_button']
+            
+            # Search for the tab in the ribbon
+            tab_found = False
+            button_found = False
+            
+            for element in window.descendants():
+                try:
+                    # Check for ADMINISTRATIE tab
+                    if (element.friendly_class_name() == "TabItem" and 
+                        verification_tab in element.window_text()):
+                        tab_found = True
+                        self.logger.debug(f"Found verification tab: {element.window_text()}")
+                    
+                    # Check for Administraties button
+                    if (element.friendly_class_name() == "Button" and 
+                        verification_button in element.window_text() and
+                        element.is_enabled()):
+                        button_found = True
+                        self.logger.debug(f"Found verification button: {element.window_text()}")
+                    
+                    # If we found both, we're logged in
+                    if tab_found and button_found:
+                        self.logger.info("User is already logged in - found both verification elements")
+                        return True
+                        
+                except Exception as e:
+                    self.logger.debug(f"Skipping element during login verification: {e}")
+                    continue
+            
+            self.logger.info("Login verification elements not found - user is not logged in")
+            return False
+            
+        except Exception as e:
+            self.logger.warning(f"Error checking login status: {e}")
+            return False
+
     def login_to_snelstart(self, window: UIAWrapper):
         """Main login function that handles the complete login process."""
         try:
+            # First, check if we're already logged in
+            if self.is_logged_in(window):
+                self.logger.info("User is already logged in.")
+                return True
+            
+            # Not logged in, so look for login dialog
             try:
                 # Use wait_utils retry logic with the proven get_login_dialog method
                 def find_login_dialog():
@@ -75,23 +125,35 @@ class LoginAutomation:
                 login_dialog = simple_retry(find_login_dialog, "find login dialog")
                 self.logger.info(f"Found and verified login dialog is ready")
             except Exception:
-                self.logger.info("Login dialog not found — assuming already logged in.")
-                return True
+                self.logger.warning("Login dialog not found and user not logged in — this is unexpected.")
+                return False
 
             # Wait briefly to see if the dialog disappears automatically (auto-login)
             self.logger.info("Login dialog found — checking for auto-login...")
             try:
                 time.sleep(2)
                 if not login_dialog.exists() or not login_dialog.is_visible():
-                    self.logger.info("Login dialog disappeared — auto-login succeeded.")
-                    return True
+                    self.logger.info("Login dialog disappeared — checking if auto-login succeeded.")
+                    # Verify that we're actually logged in now
+                    return self.is_logged_in(window)
             except Exception:
-                self.logger.info("Login dialog no longer accessible — auto-login succeeded.")
-                return True
+                self.logger.info("Login dialog no longer accessible — checking if auto-login succeeded.")
+                # Verify that we're actually logged in now
+                return self.is_logged_in(window)
 
-            # Still exists? Then perform manual login
+            # Still exists and not logged in? Then perform manual login
             self.perform_login(login_dialog, self.username, self.password)
-            return True
+            
+            # Wait a moment for login to complete, then verify
+            time.sleep(3)
+            login_success = self.is_logged_in(window)
+            
+            if login_success:
+                self.logger.info("Manual login completed successfully")
+            else:
+                self.logger.error("Manual login failed - user not logged in after login attempt")
+            
+            return login_success
 
         except Exception as e:
             self.logger.error(f"Login failed: {e}")
