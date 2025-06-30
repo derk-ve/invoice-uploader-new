@@ -18,23 +18,24 @@ INVOICE_BUTTON_TEXT = "Afschriften Inlezen"
 # Global logging format - easy to adjust
 LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s - [%(name)s.%(funcName)s]'
 
+# Global logging configuration
+DEFAULT_LOG_LEVEL = 'INFO'  # Default level for loggers not explicitly defined
+GLOBAL_ROOT_LEVEL = 'DEBUG'  # Root logger level - set to DEBUG to allow all configured levels through
+
 # Per-class log levels (can be overridden by environment variables)
 LOG_LEVELS = {
-    # Class-based loggers (for use with get_logger(class_name))
+    # Class-based loggers (for automation classes using self.__class__.__name__)
     'LoginAutomation': 'INFO',
-    'LaunchAutomation': 'INFO',
+    'LaunchAutomation': 'INFO', 
     'AdministrationAutomation': 'INFO',
     'InvoiceReaderAutomation': 'INFO',
     'SnelstartAutomation': 'INFO',
+    'UIUtils': 'INFO',
+    'WaitUtils': 'DEBUG',
+    'Config': 'INFO',
+    'LoggingSetup': 'INFO',
 
-    # Module-level loggers (for use with logging.getLogger(__name__) or get_logger(__name__))
-    'main': 'INFO',
-    'utils.ui_utils': 'INFO',
-    'utils.wait_utils': 'DEBUG',
-    'invoice_uploader.automations.administration': 'INFO',
-    'invoice_uploader.automations.launch_snelstart': 'INFO',
-    'invoice_uploader.automations.login': 'INFO',
-    'invoice_uploader.automations.read_invoices': 'INFO',
-    'invoice_uploader.snelstart_automation': 'INFO',
-    'invoice_uploader.tests.test_connection': 'INFO'
+    # Module-level loggers (for files using __name__)
+    '__main__': 'INFO',  # main.py
+    'src.invoice_uploader.tests.test_connection': 'INFO',  # test_connection.py
 }

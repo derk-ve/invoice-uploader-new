@@ -1,9 +1,9 @@
 from ..snelstart_automation import SnelstartAutomation
-from ...utils.logging_setup import setup_logging, get_logger
+from ...utils.logging_setup import LoggingSetup
 
 # Setup logging
-setup_logging()
-logger = get_logger(__name__)
+LoggingSetup.setup_logging()
+logger = LoggingSetup.get_logger(__name__)
 
 def main():
     try:

@@ -1,13 +1,13 @@
 import time
 from src.invoice_uploader.snelstart_automation import SnelstartAutomation
-from src.utils.logging_setup import setup_logging, get_logger
+from src.utils.logging_setup import LoggingSetup
 from dotenv import load_dotenv
 
 load_dotenv()
 
 # Setup logging
-setup_logging()
-logger = get_logger(__name__)
+LoggingSetup.setup_logging()
+logger = LoggingSetup.get_logger(__name__)
 
 def main():
     try:

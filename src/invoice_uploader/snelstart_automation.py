@@ -1,7 +1,7 @@
 import time
 from pywinauto.controls.uiawrapper import UIAWrapper
-from ..utils.ui_utils import print_control_tree, find_control_by_text, find_control_by_class, generate_window_report
-from ..utils.logging_setup import get_logger
+from ..utils.ui_utils import UIUtils
+from ..utils.logging_setup import LoggingSetup
 from .automations.launch_snelstart import LaunchAutomation
 from .automations.login import LoginAutomation
 from .automations.administration import AdministrationAutomation
@@ -13,7 +13,10 @@ class SnelstartAutomation:
         Initialize the Snelstart automation.
         """
         # Initialize logging
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = LoggingSetup.get_logger(self.__class__.__name__)
+        
+        # Initialize UI utilities
+        self.ui_utils = UIUtils()
         
         # Initialize automation components
         self.launch_automation = LaunchAutomation()
@@ -49,7 +52,7 @@ class SnelstartAutomation:
             self.logger.info(f"Window title: {self.main_window.window_text()}")
             
             # Generate window report for main window
-            generate_window_report(self.main_window, "SnelStart_Main_Window")
+            self.ui_utils.generate_window_report(self.main_window, "SnelStart_Main_Window")
             
             return True
             
@@ -74,7 +77,7 @@ class SnelstartAutomation:
             
             # Generate window report after login
             if login_success:
-                generate_window_report(self.main_window, "SnelStart_After_Login")
+                self.ui_utils.generate_window_report(self.main_window, "SnelStart_After_Login")
             
             return login_success
             
@@ -91,7 +94,7 @@ class SnelstartAutomation:
             self.logger.info("Successfully opened Administratie section")
             
             # Generate window report for administration window
-            generate_window_report(self.admin_window, "SnelStart_Administration_Window")
+            self.ui_utils.generate_window_report(self.admin_window, "SnelStart_Administration_Window")
 
             return True
         
@@ -117,7 +120,7 @@ class SnelstartAutomation:
             
             # Generate window report after clicking afschriften button
             time.sleep(1)  # Brief wait for any new dialogs to appear
-            generate_window_report(self.admin_window, "SnelStart_After_Afschriften_Click")
+            self.ui_utils.generate_window_report(self.admin_window, "SnelStart_After_Afschriften_Click")
             
             self.logger.info("Successfully loaded afschriften")
             return True
@@ -132,7 +135,7 @@ class SnelstartAutomation:
         if control is None:
             control = self.main_window
 
-        print_control_tree(control, level)
+        self.ui_utils.print_control_tree(control, level)
     
     def upload_file(self, file_path: str):
         """
