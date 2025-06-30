@@ -44,42 +44,36 @@ class LaunchAutomation:
             self.logger.error(f"Error starting SnelStart: {str(e)}")
             return None
 
-    def get_main_window(self, timeout: int = None, interval: int = None):
+    def get_main_window(self, timeout: int = 30, interval: int = 5):
         """
-        Wait for and return the main SnelStart window (not the login window).
+        Wait for and return the main SnelStart window.
         
         Args:
-            timeout: Maximum time to wait in seconds (optional, uses config default)
-            interval: Check interval in seconds (optional, uses config default)
+            timeout: Maximum time to wait in seconds (default: 30)
+            interval: Check interval in seconds (default: 5)
             
         Returns:
             Main window if found, raises RuntimeError otherwise
         """
-        try:
-            self.logger.info("Waiting for SnelStart main window...")
-            main_window_title = self.window_titles['main_window']
+        elapsed = 0
+        while elapsed < timeout:
+            self.logger.info(f"Waiting for SnelStart window... ({elapsed}/{timeout}s)")
             
-            # Use retry logic to find the main window specifically
-            def find_main_window():
-                for window in Desktop(backend="uia").windows():
-                    try:
-                        window_text = window.window_text()
-                        # Exact match for main window (not substring match)
-                        if window_text == main_window_title:
-                            self.logger.info(f"Found main window: '{window_text}'")
-                            return window
-                    except Exception as e:
-                        self.logger.debug(f"Skipping window due to error: {e}")
-                        continue
-                raise RuntimeError(f"Main window '{main_window_title}' not found")
-            
-            main_window = simple_retry(find_main_window, "find SnelStart main window")
-            self.logger.info(f"SnelStart main window found: '{main_window.window_text()}'")
-            return main_window
-            
-        except Exception as e:
-            self.logger.error(f"Failed to get SnelStart main window: {e}")
-            raise RuntimeError(f"SnelStart main window not found: {e}")
+            for window in Desktop(backend="uia").windows():
+                try:
+                    window_text = window.window_text()
+                    # Substring match for any SnelStart window
+                    if "SnelStart" in window_text:
+                        self.logger.info(f"Found SnelStart window: '{window_text}'")
+                        return window
+                except Exception as e:
+                    self.logger.debug(f"Skipping window due to error: {e}")
+                    continue
+                    
+            time.sleep(interval)
+            elapsed += interval
+
+        raise RuntimeError("SnelStart window not found after timeout")
 
     def get_login_window(self):
         """
