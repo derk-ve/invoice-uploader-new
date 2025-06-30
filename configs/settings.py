@@ -13,7 +13,7 @@ MAX_RETRIES = 3           # Maximum number of retries
 TIMING_CONFIG = {
     'login': {
         'dialog_focus_delay': 2,        # Time to wait after focusing login dialog
-        'input_delay': 2,               # Time to wait between input steps
+        'input_delay': 3,               # Time to wait between input steps
         'auto_login_wait': 5,           # Time to wait for auto-login to complete
         'login_completion_wait': 3,     # Time to wait after manual login submission
         'login_dialog_wait_timeout': 10, # Time to wait for login dialog to appear
