@@ -42,13 +42,11 @@ def get_timing_config():
     }
 
 
-def get_timeouts():
-    """Get simple timeout configuration with optional environment overrides."""
+def get_retry_config():
+    """Get simple retry configuration with optional environment overrides."""
     return {
-        'window_timeout': float(os.getenv('SNELSTART_WINDOW_TIMEOUT', WINDOW_TIMEOUT)),
-        'element_timeout': float(os.getenv('SNELSTART_ELEMENT_TIMEOUT', ELEMENT_TIMEOUT)),
-        'clickable_timeout': float(os.getenv('SNELSTART_CLICKABLE_TIMEOUT', CLICKABLE_TIMEOUT)),
-        'retry_interval': float(os.getenv('SNELSTART_RETRY_INTERVAL', RETRY_INTERVAL))
+        'max_retries': int(os.getenv('SNELSTART_MAX_RETRIES', MAX_RETRIES)),
+        'retry_delay': float(os.getenv('SNELSTART_RETRY_DELAY', RETRY_DELAY))
     }
 
 

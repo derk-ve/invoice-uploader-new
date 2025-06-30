@@ -2,8 +2,8 @@ import time
 from pywinauto.controls.uiawrapper import UIAWrapper
 from pywinauto import Desktop
 from ...utils.logging_setup import get_logger
-from ...utils.config import get_timing_config, get_ui_elements, get_timeouts
-from ...utils.wait_utils import wait_for_element, wait_for_clickable, safe_click
+from ...utils.config import get_timing_config, get_ui_elements
+from ...utils.wait_utils import wait_for_element, safe_click
 
 class InvoiceReaderAutomation:
     """Handles SnelStart invoice reading automation."""
@@ -13,7 +13,6 @@ class InvoiceReaderAutomation:
         self.logger = get_logger(self.__class__.__name__)
         self.timing = get_timing_config()
         self.ui_elements = get_ui_elements()
-        self.timeouts = get_timeouts()
     
     def click_afschriften_inlezen(self, window: UIAWrapper):
         """
@@ -40,14 +39,10 @@ class InvoiceReaderAutomation:
             
             # Wait for the button to be available
             invoice_button = wait_for_element(window, find_invoice_button,
-                                            self.timeouts['element_timeout'],
-                                            self.timeouts['retry_interval'],
                                             f"'{self.ui_elements['invoice_button_text']}' button")
             
             # Use safe_click which includes clickability verification
-            safe_click(invoice_button, 
-                      self.timeouts['clickable_timeout'],
-                      f"'{self.ui_elements['invoice_button_text']}' button")
+            safe_click(invoice_button, f"'{self.ui_elements['invoice_button_text']}' button")
             
             self.logger.info(f"Successfully clicked '{self.ui_elements['invoice_button_text']}' button")
 

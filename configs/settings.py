@@ -5,13 +5,12 @@ Simple configuration settings for SnelStart automation.
 # Application defaults
 DEFAULT_SNELSTART_PATH = r'C:\Program Files\Snelstart\Snelstart.exe'
 
-# Simple timing configuration
-WINDOW_TIMEOUT = 30       # How long to wait for windows to appear/be ready
-ELEMENT_TIMEOUT = 15      # How long to wait for UI elements to exist  
-CLICKABLE_TIMEOUT = 10    # How long to wait for elements to be clickable
-RETRY_INTERVAL = 0.5      # How often to retry (seconds between attempts)
+# Simple retry configuration
+MAX_RETRIES = 10          # How many times to retry operations
+RETRY_DELAY = 1.0         # Seconds to wait between retries
 
-# Legacy timing settings (for backward compatibility)
+# Legacy timing settings (for backward compatibility) 
+WINDOW_TIMEOUT = 30
 WINDOW_CHECK_INTERVAL = 5
 BUTTON_WAIT_TIME = 2  # Legacy - use smart waits instead
 LOGIN_WAIT_TIME = 2   # Legacy - use smart waits instead  

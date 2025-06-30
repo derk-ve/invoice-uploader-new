@@ -1,156 +1,201 @@
 import time
-from typing import Callable, Optional, Any
+from typing import Callable
 from pywinauto.controls.uiawrapper import UIAWrapper
 from pywinauto import Desktop
 from .logging_setup import get_logger
-from .config import get_timeouts
+from .config import get_retry_config
 
 logger = get_logger(__name__)
 
-# Get timeout configuration
-_timeouts = get_timeouts()
+# Get retry configuration
+_config = get_retry_config()
 
 class WaitTimeoutError(Exception):
     """Exception raised when wait operations timeout."""
     pass
 
-def wait_for_element(parent: UIAWrapper, selector_func: Callable[[UIAWrapper], UIAWrapper], 
-                    timeout: float = None, interval: float = None, element_name: str = "element") -> UIAWrapper:
+def simple_retry(operation, operation_name="operation", max_retries=None, retry_delay=None):
     """
-    Wait for an element to exist and be accessible within a parent.
+    Simple retry pattern used everywhere.
+    
+    Args:
+        operation: Function to call (should return result or raise exception)
+        operation_name: Description for error messages
+        max_retries: Number of retries (uses config default if None)
+        retry_delay: Seconds between retries (uses config default if None)
+    
+    Returns:
+        Result from operation
+        
+    Raises:
+        Exception: Last exception after all retries failed
+    """
+    if max_retries is None:
+        max_retries = _config['max_retries']
+    if retry_delay is None:
+        retry_delay = _config['retry_delay']
+    
+    last_exception = None
+    
+    for attempt in range(max_retries):
+        try:
+            result = operation()
+            if attempt > 0:
+                logger.debug(f"{operation_name} succeeded after {attempt + 1} attempts")
+            return result
+        except Exception as e:
+            last_exception = e
+            logger.debug(f"Attempt {attempt + 1}/{max_retries} failed for {operation_name}: {e}")
+            
+            if attempt < max_retries - 1:  # Don't sleep after the last attempt
+                time.sleep(retry_delay)
+    
+    raise Exception(f"{operation_name} failed after {max_retries} attempts. Last error: {last_exception}")
+
+def find_window_by_title(title_substring, exact_match=False):
+    """
+    Find a window by title with debug logging.
+    
+    Args:
+        title_substring: Text that should appear in window title
+        exact_match: If True, title must match exactly
+        
+    Returns:
+        Window if found
+        
+    Raises:
+        Exception: If window not found
+    """
+    all_windows = []
+    
+    try:
+        for window in Desktop(backend="uia").windows():
+            try:
+                window_text = window.window_text()
+                all_windows.append(window_text)
+                
+                if exact_match:
+                    if window_text == title_substring:
+                        logger.debug(f"Found exact match window: '{window_text}'")
+                        return window
+                else:
+                    if title_substring.lower() in window_text.lower():
+                        logger.debug(f"Found window containing '{title_substring}': '{window_text}'")
+                        return window
+            except Exception as e:
+                logger.debug(f"Error checking window: {e}")
+                continue
+    except Exception as e:
+        logger.error(f"Error enumerating windows: {e}")
+    
+    # Log all found windows for debugging
+    logger.error(f"Window with title '{title_substring}' not found. Available windows: {all_windows}")
+    raise Exception(f"Window not found: '{title_substring}'. Available: {all_windows}")
+
+def wait_for_window_by_title(title_substring, exact_match=False):
+    """
+    Wait for a window with specific title to appear.
+    
+    Args:
+        title_substring: Text that should appear in window title
+        exact_match: If True, title must match exactly
+        
+    Returns:
+        The window if found
+        
+    Raises:
+        Exception: If window not found after retries
+    """
+    def find_operation():
+        return find_window_by_title(title_substring, exact_match)
+    
+    return simple_retry(find_operation, f"find window '{title_substring}'")
+
+def wait_for_element(parent, selector_func, element_name="element"):
+    """
+    Wait for an element to exist within a parent.
     
     Args:
         parent: The parent element to search within
         selector_func: Function that takes parent and returns the desired element
-        timeout: Maximum time to wait in seconds (uses config default if None)
-        interval: Time between attempts in seconds (uses config default if None)
         element_name: Description of element for error messages
         
     Returns:
         The found element
         
     Raises:
-        WaitTimeoutError: If element not found within timeout
+        Exception: If element not found after retries
     """
-    if timeout is None:
-        timeout = _timeouts['element_timeout']
-    if interval is None:
-        interval = _timeouts['retry_interval']
+    def find_operation():
+        element = selector_func(parent)
+        if element and element.exists():
+            return element
+        raise Exception(f"Element not found: {element_name}")
     
-    start_time = time.time()
-    attempt = 0
-    
-    while time.time() - start_time < timeout:
-        attempt += 1
-        try:
-            element = selector_func(parent)
-            if element and element.exists():
-                logger.debug(f"Found {element_name} after {attempt} attempts ({time.time() - start_time:.1f}s)")
-                return element
-        except Exception as e:
-            logger.debug(f"Attempt {attempt} failed for {element_name}: {e}")
-        
-        # Exponential backoff with max interval
-        actual_interval = min(interval * (1.2 ** attempt), 2.0)
-        time.sleep(actual_interval)
-    
-    raise WaitTimeoutError(f"Timeout waiting for {element_name} after {timeout}s (parent: {parent.window_text() if parent else 'None'})")
+    return simple_retry(find_operation, element_name)
 
-def wait_for_clickable(element: UIAWrapper, timeout: float = None, element_name: str = "element") -> UIAWrapper:
+def safe_click(element, element_name="element"):
     """
-    Wait for an element to be clickable (visible, enabled, and interactive).
+    Safely click an element after ensuring it's clickable.
     
     Args:
-        element: The element to check
-        timeout: Maximum time to wait in seconds (uses config default if None)
-        element_name: Description of element for error messages
-        
-    Returns:
-        The element if clickable
+        element: The element to click
+        element_name: Description for error messages
         
     Raises:
-        WaitTimeoutError: If element not clickable within timeout
+        Exception: If element not clickable or click fails
     """
-    if timeout is None:
-        timeout = _timeouts['clickable_timeout']
-    
-    start_time = time.time()
-    
-    while time.time() - start_time < timeout:
-        try:
-            if (element.exists() and 
-                element.is_visible() and 
-                element.is_enabled() and
-                hasattr(element, 'click_input')):
-                logger.debug(f"{element_name} is clickable after {time.time() - start_time:.1f}s")
-                return element
-        except Exception as e:
-            logger.debug(f"Clickable check failed for {element_name}: {e}")
+    def click_operation():
+        if not (element.exists() and element.is_visible() and element.is_enabled()):
+            raise Exception(f"Element not clickable: {element_name}")
         
-        time.sleep(0.2)
+        element.click_input()
+        return True
     
-    raise WaitTimeoutError(f"Timeout waiting for {element_name} to be clickable after {timeout}s")
+    simple_retry(click_operation, f"click {element_name}")
+    logger.debug(f"Successfully clicked {element_name}")
 
-def wait_for_window_ready(window: UIAWrapper, timeout: float = None, window_name: str = "window") -> UIAWrapper:
+def safe_type(element, text, element_name="input field"):
     """
-    Wait for a window to be fully loaded and responsive.
+    Safely type text into an element.
     
     Args:
-        window: The window to check
-        timeout: Maximum time to wait in seconds (uses config default if None)
-        window_name: Description of window for error messages
-        
-    Returns:
-        The window if ready
+        element: The element to type into
+        text: Text to type
+        element_name: Description for error messages
         
     Raises:
-        WaitTimeoutError: If window not ready within timeout
+        Exception: If element not ready or typing fails
     """
-    if timeout is None:
-        timeout = _timeouts['window_timeout']
-    
-    start_time = time.time()
-    
-    while time.time() - start_time < timeout:
-        try:
-            if (window.exists() and 
-                window.is_visible() and 
-                window.has_keyboard_focus() or window.can_be_focused()):
-                
-                # Additional check: try to enumerate children to ensure window is responsive
-                try:
-                    list(window.children())
-                    logger.debug(f"{window_name} is ready after {time.time() - start_time:.1f}s")
-                    return window
-                except:
-                    # Window exists but not fully loaded yet
-                    pass
-                    
-        except Exception as e:
-            logger.debug(f"Window ready check failed for {window_name}: {e}")
+    def type_operation():
+        if not (element.exists() and element.is_visible() and element.is_enabled()):
+            raise Exception(f"Element not ready for typing: {element_name}")
         
-        time.sleep(0.5)
+        # Try to set focus if needed
+        if not element.has_keyboard_focus():
+            element.set_focus()
+            time.sleep(0.1)  # Brief pause for focus to take effect
+        
+        element.type_keys(text, with_spaces=True)
+        return True
     
-    raise WaitTimeoutError(f"Timeout waiting for {window_name} to be ready after {timeout}s")
+    simple_retry(type_operation, f"type into {element_name}")
+    logger.debug(f"Successfully typed into {element_name}")
 
-def wait_for_dialog_ready(parent: UIAWrapper, dialog_text: str, timeout: float = None) -> UIAWrapper:
+def wait_for_dialog_ready(parent, dialog_text):
     """
     Wait for a dialog to appear and be ready for interaction.
     
     Args:
         parent: The parent window to search within
         dialog_text: Text that should appear in the dialog
-        timeout: Maximum time to wait in seconds (uses config default if None)
         
     Returns:
         The dialog element
         
     Raises:
-        WaitTimeoutError: If dialog not found within timeout
+        Exception: If dialog not found after retries
     """
-    if timeout is None:
-        timeout = _timeouts['element_timeout']
-    
     def find_dialog(parent_elem):
         for child in parent_elem.descendants():
             try:
@@ -161,130 +206,4 @@ def wait_for_dialog_ready(parent: UIAWrapper, dialog_text: str, timeout: float =
                 continue
         return None
     
-    dialog = wait_for_element(parent, find_dialog, timeout, _timeouts['retry_interval'], f"dialog containing '{dialog_text}'")
-    return wait_for_window_ready(dialog, timeout=_timeouts['window_timeout'], window_name=f"dialog '{dialog_text}'")
-
-def wait_for_window_by_title(title_substring: str, timeout: float = None, exact_match: bool = False) -> UIAWrapper:
-    """
-    Wait for a window with specific title to appear on desktop.
-    
-    Args:
-        title_substring: Text that should appear in window title
-        timeout: Maximum time to wait in seconds (uses config default if None)
-        exact_match: If True, title must match exactly
-        
-    Returns:
-        The window if found
-        
-    Raises:
-        WaitTimeoutError: If window not found within timeout
-    """
-    if timeout is None:
-        timeout = _timeouts['window_timeout']
-    
-    start_time = time.time()
-    
-    while time.time() - start_time < timeout:
-        try:
-            for window in Desktop(backend="uia").windows():
-                window_text = window.window_text()
-                if exact_match:
-                    if window_text == title_substring:
-                        return wait_for_window_ready(window, _timeouts['window_timeout'], f"window '{title_substring}'")
-                else:
-                    if title_substring in window_text:
-                        return wait_for_window_ready(window, _timeouts['window_timeout'], f"window containing '{title_substring}'")
-        except Exception as e:
-            logger.debug(f"Window search failed: {e}")
-        
-        time.sleep(1.0)
-    
-    raise WaitTimeoutError(f"Timeout waiting for window with title '{title_substring}' after {timeout}s")
-
-def wait_for_text_input_ready(element: UIAWrapper, timeout: float = None) -> UIAWrapper:
-    """
-    Wait for a text input field to be ready for typing.
-    
-    Args:
-        element: The input element
-        timeout: Maximum time to wait in seconds (uses config default if None)
-        
-    Returns:
-        The element if ready for input
-        
-    Raises:
-        WaitTimeoutError: If element not ready within timeout
-    """
-    if timeout is None:
-        timeout = _timeouts['clickable_timeout']
-    
-    start_time = time.time()
-    
-    while time.time() - start_time < timeout:
-        try:
-            if (element.exists() and 
-                element.is_visible() and 
-                element.is_enabled() and
-                element.has_keyboard_focus()):
-                return element
-                
-            # Try to set focus if not focused
-            if element.exists() and element.is_visible() and element.is_enabled():
-                element.set_focus()
-                time.sleep(0.1)
-                if element.has_keyboard_focus():
-                    return element
-                    
-        except Exception as e:
-            logger.debug(f"Text input ready check failed: {e}")
-        
-        time.sleep(0.2)
-    
-    raise WaitTimeoutError(f"Timeout waiting for text input to be ready after {timeout}s")
-
-def safe_click(element: UIAWrapper, timeout: float = None, element_name: str = "element") -> None:
-    """
-    Safely click an element after ensuring it's clickable.
-    
-    Args:
-        element: The element to click
-        timeout: Maximum time to wait for element to be clickable (uses config default if None)
-        element_name: Description for error messages
-        
-    Raises:
-        WaitTimeoutError: If element not clickable within timeout
-    """
-    if timeout is None:
-        timeout = _timeouts['clickable_timeout']
-    
-    clickable_element = wait_for_clickable(element, timeout, element_name)
-    try:
-        clickable_element.click_input()
-        logger.debug(f"Successfully clicked {element_name}")
-    except Exception as e:
-        logger.error(f"Failed to click {element_name}: {e}")
-        raise
-
-def safe_type(element: UIAWrapper, text: str, timeout: float = None, element_name: str = "input field") -> None:
-    """
-    Safely type text into an element after ensuring it's ready.
-    
-    Args:
-        element: The element to type into
-        text: Text to type
-        timeout: Maximum time to wait for element to be ready (uses config default if None)
-        element_name: Description for error messages
-        
-    Raises:
-        WaitTimeoutError: If element not ready within timeout
-    """
-    if timeout is None:
-        timeout = _timeouts['clickable_timeout']
-    
-    ready_element = wait_for_text_input_ready(element, timeout)
-    try:
-        ready_element.type_keys(text, with_spaces=True)
-        logger.debug(f"Successfully typed into {element_name}")
-    except Exception as e:
-        logger.error(f"Failed to type into {element_name}: {e}")
-        raise
+    return wait_for_element(parent, find_dialog, f"dialog containing '{dialog_text}'")
