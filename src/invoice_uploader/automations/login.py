@@ -65,48 +65,20 @@ class LoginAutomation:
             raise
 
     def is_logged_in(self, window: UIAWrapper):
-        """Check if user is already logged in by verifying presence of main UI elements."""
+        """Check if user is already logged in by verifying absence of login dialog."""
         self.logger.info("Checking if user is already logged in...")
         
         try:
-            # Look for the ADMINISTRATIE tab which is only visible when logged in
-            verification_tab = self.ui_elements['login_verification_tab']
-            verification_button = self.ui_elements['login_verification_button']
-            
-            # Search for the tab in the ribbon
-            tab_found = False
-            button_found = False
-            
-            for element in window.descendants():
-                try:
-                    # Check for ADMINISTRATIE tab
-                    if (element.friendly_class_name() == "TabItem" and 
-                        verification_tab in element.window_text()):
-                        tab_found = True
-                        self.logger.debug(f"Found verification tab: {element.window_text()}")
-                    
-                    # Check for Administraties button
-                    if (element.friendly_class_name() == "Button" and 
-                        verification_button in element.window_text() and
-                        element.is_enabled()):
-                        button_found = True
-                        self.logger.debug(f"Found verification button: {element.window_text()}")
-                    
-                    # If we found both, we're logged in
-                    if tab_found and button_found:
-                        self.logger.info("User is already logged in - found both verification elements")
-                        return True
-                        
-                except Exception as e:
-                    self.logger.debug(f"Skipping element during login verification: {e}")
-                    continue
-            
-            self.logger.info("Login verification elements not found - user is not logged in")
+            # Try to find the login dialog
+            self.get_login_dialog(window)
+            # If we found the login dialog, user is not logged in
+            self.logger.info("Login dialog found - user is not logged in")
             return False
             
-        except Exception as e:
-            self.logger.warning(f"Error checking login status: {e}")
-            return False
+        except Exception:
+            # If login dialog is not found, user is logged in
+            self.logger.info("Login dialog not found - user is logged in")
+            return True
 
     def login_to_snelstart(self, window: UIAWrapper):
         """Main login function that handles the complete login process."""

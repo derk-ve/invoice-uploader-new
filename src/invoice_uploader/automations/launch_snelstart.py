@@ -60,6 +60,7 @@ class LaunchAutomation:
             # Use original proven window detection logic with retry
             def find_snelstart_window():
                 for window in Desktop(backend="uia").windows():
+                    self.logger.debug(f"Checking if window: {window} belongs to Snelstart")
                     try:
                         if "SnelStart" in window.window_text():
                             self.logger.info(f"Found SnelStart window: '{window.window_text()}'")

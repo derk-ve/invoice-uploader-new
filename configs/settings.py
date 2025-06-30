@@ -30,7 +30,7 @@ GLOBAL_ROOT_LEVEL = 'DEBUG'  # Root logger level - set to DEBUG to allow all con
 LOG_LEVELS = {
     # Class-based loggers (for automation classes using self.__class__.__name__)
     'LoginAutomation': 'INFO',
-    'LaunchAutomation': 'INFO', 
+    'LaunchAutomation': 'DEBUG', 
     'AdministrationAutomation': 'INFO',
     'InvoiceReaderAutomation': 'INFO',
     'SnelstartAutomation': 'INFO',
