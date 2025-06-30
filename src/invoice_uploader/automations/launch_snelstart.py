@@ -3,7 +3,7 @@ import time
 from pywinauto.application import Application
 from pywinauto import Desktop
 from ...utils.logging_setup import get_logger
-from ...utils.config import get_snelstart_path as get_snelstart_path_config, get_timing_config
+from ...utils.config import get_snelstart_path as get_snelstart_path_config
 from ...utils.wait_utils import wait_for_window_by_title
 
 class LaunchAutomation:
@@ -13,7 +13,6 @@ class LaunchAutomation:
         """Initialize the launch automation."""
         self.logger = get_logger(self.__class__.__name__)
         self.app_path = self.get_snelstart_path()
-        self.timing = get_timing_config()
     
     def get_snelstart_path(self):
         """Get the path to the SnelStart application from environment variables."""

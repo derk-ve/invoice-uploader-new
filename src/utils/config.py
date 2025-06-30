@@ -31,22 +31,13 @@ def get_credentials():
     return username, password
 
 
-def get_timing_config():
-    """Get timing configuration values."""
-    return {
-        'window_timeout': WINDOW_TIMEOUT,
-        'window_check_interval': WINDOW_CHECK_INTERVAL,
-        'button_wait_time': BUTTON_WAIT_TIME,
-        'login_wait_time': LOGIN_WAIT_TIME,
-        'admin_open_wait_time': ADMIN_OPEN_WAIT_TIME
-    }
 
 
 def get_retry_config():
     """Get simple retry configuration with optional environment overrides."""
     return {
-        'max_retries': int(os.getenv('SNELSTART_MAX_RETRIES', MAX_RETRIES)),
-        'retry_delay': float(os.getenv('SNELSTART_RETRY_DELAY', RETRY_DELAY))
+        'max_waiting_time': int(os.getenv('SNELSTART_MAX_WAITING_TIME', MAX_WAITING_TIME)),
+        'max_retries': int(os.getenv('SNELSTART_MAX_RETRIES', MAX_RETRIES))
     }
 
 

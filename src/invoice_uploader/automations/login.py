@@ -3,7 +3,7 @@ import time
 from dotenv import load_dotenv
 from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import get_logger
-from ...utils.config import get_credentials, get_timing_config, get_ui_elements
+from ...utils.config import get_credentials, get_ui_elements
 from ...utils.wait_utils import wait_for_dialog_ready, safe_type
 
 load_dotenv()
@@ -15,7 +15,6 @@ class LoginAutomation:
         """Initialize the login automation."""
         self.logger = get_logger(self.__class__.__name__)
         self.username, self.password = get_credentials()
-        self.timing = get_timing_config()
         self.ui_elements = get_ui_elements()
     
     def get_login_dialog(self, window: UIAWrapper):

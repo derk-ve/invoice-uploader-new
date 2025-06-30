@@ -14,15 +14,13 @@ class WaitTimeoutError(Exception):
     """Exception raised when wait operations timeout."""
     pass
 
-def simple_retry(operation, operation_name="operation", max_retries=None, retry_delay=None):
+def simple_retry(operation, operation_name="operation"):
     """
-    Simple retry pattern used everywhere.
+    Simple retry pattern: try MAX_RETRIES times, wait up to MAX_WAITING_TIME per attempt.
     
     Args:
         operation: Function to call (should return result or raise exception)
         operation_name: Description for error messages
-        max_retries: Number of retries (uses config default if None)
-        retry_delay: Seconds between retries (uses config default if None)
     
     Returns:
         Result from operation
@@ -30,26 +28,27 @@ def simple_retry(operation, operation_name="operation", max_retries=None, retry_
     Raises:
         Exception: Last exception after all retries failed
     """
-    if max_retries is None:
-        max_retries = _config['max_retries']
-    if retry_delay is None:
-        retry_delay = _config['retry_delay']
+    max_retries = _config['max_retries']
+    max_waiting_time = _config['max_waiting_time']
     
     last_exception = None
     
     for attempt in range(max_retries):
-        logger.debug(f"Attempt {attempt} in trying to: {operation_name}")
-        try:
-            result = operation()
-            if attempt > 0:
-                logger.debug(f"{operation_name} succeeded after {attempt + 1} attempts")
-            return result
-        except Exception as e:
-            last_exception = e
-            logger.debug(f"Attempt {attempt + 1}/{max_retries} failed for {operation_name}: {e}")
-            
-            if attempt < max_retries - 1:  # Don't sleep after the last attempt
-                time.sleep(retry_delay)
+        logger.debug(f"Attempt {attempt + 1}/{max_retries} for {operation_name}")
+        
+        start_time = time.time()
+        while time.time() - start_time < max_waiting_time:
+            try:
+                result = operation()
+                if attempt > 0:
+                    logger.debug(f"{operation_name} succeeded after {attempt + 1} attempts")
+                return result
+            except Exception as e:
+                last_exception = e
+                # Wait a bit before next check within this attempt
+                time.sleep(0.5)
+        
+        logger.debug(f"Attempt {attempt + 1} timed out after {max_waiting_time}s for {operation_name}")
     
     raise Exception(f"{operation_name} failed after {max_retries} attempts. Last error: {last_exception}")
 

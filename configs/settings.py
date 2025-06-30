@@ -5,11 +5,10 @@ Simple configuration settings for SnelStart automation.
 # Application defaults
 DEFAULT_SNELSTART_PATH = r'C:\Program Files\Snelstart\Snelstart.exe'
 
-# Simple timing configuration
-WINDOW_TIMEOUT = 30       # How long to wait for windows to appear/be ready
-ELEMENT_TIMEOUT = 15      # How long to wait for UI elements to exist  
-CLICKABLE_TIMEOUT = 10    # How long to wait for elements to be clickable
-RETRY_INTERVAL = 0.5      # How often to retry (seconds between attempts)
+# Simple retry configuration
+MAX_WAITING_TIME = 30     # Maximum seconds to wait per retry attempt
+MAX_RETRIES = 3           # Maximum number of retries
+
 
 # UI element identifiers
 LOGIN_DIALOG_TEXT = "Inloggen"

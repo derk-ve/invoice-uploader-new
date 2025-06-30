@@ -3,7 +3,7 @@ from pywinauto import Desktop
 import time
 from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import get_logger
-from ...utils.config import get_timing_config, get_ui_elements
+from ...utils.config import get_ui_elements
 from ...utils.wait_utils import wait_for_element, safe_click
 
 class AdministrationAutomation:
@@ -12,7 +12,6 @@ class AdministrationAutomation:
     def __init__(self):
         """Initialize the administration automation."""
         self.logger = get_logger(self.__class__.__name__)
-        self.timing = get_timing_config()
         self.ui_elements = get_ui_elements()
     
     def get_administratie_window(self, window: UIAWrapper):
