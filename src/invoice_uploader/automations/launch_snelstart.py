@@ -8,14 +8,15 @@ from ...utils.config import Config
 class LaunchAutomation:
     """Handles SnelStart application launch and window detection."""
     
-    # Window detection constants
-    DEFAULT_TIMEOUT = 30
-    DEFAULT_INTERVAL = 5
-    
     def __init__(self):
         """Initialize the launch automation."""
         self.logger = LoggingSetup.get_logger(self.__class__.__name__)
         self.app_path = self.get_snelstart_path()
+        
+        # Get timing configuration from centralized config
+        timing = Config.get_timing_config('launch')
+        self.DEFAULT_TIMEOUT = timing.get('default_timeout', 30)
+        self.DEFAULT_INTERVAL = timing.get('default_interval', 5)
     
     def get_snelstart_path(self):
         """Get the path to the SnelStart application from environment variables."""
@@ -46,16 +47,38 @@ class LaunchAutomation:
             self.logger.error(f"Error starting SnelStart: {str(e)}")
             return None
 
-    def get_main_window(self, timeout: int = None, interval: int = None):
+    def _find_main_window(self):
         """
-        Wait for and return the main SnelStart window.
+        Pure action function: searches for SnelStart window once without waiting.
+        
+        Returns:
+            Main window if found, None otherwise
+        """
+        for window in Desktop(backend="uia").windows():
+            try:
+                window_text = window.window_text()
+                # Substring match for any SnelStart window
+                if "SnelStart" in window_text:
+                    self.logger.debug(f"Found SnelStart window: '{window_text}'")
+                    return window
+            except Exception as e:
+                self.logger.debug(f"Skipping window due to error: {e}")
+                continue
+        return None
+    
+    def _wait_for_main_window(self, timeout: int = None, interval: int = None):
+        """
+        Pure wait function: polls for main window to appear.
         
         Args:
             timeout: Maximum time to wait in seconds (uses DEFAULT_TIMEOUT if None)
             interval: Check interval in seconds (uses DEFAULT_INTERVAL if None)
             
         Returns:
-            Main window if found, raises RuntimeError otherwise
+            Main window when found
+            
+        Raises:
+            RuntimeError: If window not found after timeout
         """
         if timeout is None:
             timeout = self.DEFAULT_TIMEOUT
@@ -66,21 +89,28 @@ class LaunchAutomation:
         while elapsed < timeout:
             self.logger.info(f"Waiting for SnelStart window... ({elapsed}/{timeout}s)")
             
-            for window in Desktop(backend="uia").windows():
-                try:
-                    window_text = window.window_text()
-                    # Substring match for any SnelStart window
-                    if "SnelStart" in window_text:
-                        self.logger.info(f"Found SnelStart window: '{window_text}'")
-                        return window
-                except Exception as e:
-                    self.logger.debug(f"Skipping window due to error: {e}")
-                    continue
+            window = self._find_main_window()
+            if window:
+                self.logger.info(f"Found SnelStart window: '{window.window_text()}'")
+                return window
                     
             time.sleep(interval)
             elapsed += interval
 
         raise RuntimeError("SnelStart window not found after timeout")
+    
+    def get_main_window(self, timeout: int = None, interval: int = None):
+        """
+        Orchestration function: finds main window with waiting/polling.
+        
+        Args:
+            timeout: Maximum time to wait in seconds (uses DEFAULT_TIMEOUT if None)
+            interval: Check interval in seconds (uses DEFAULT_INTERVAL if None)
+            
+        Returns:
+            Main window if found, raises RuntimeError otherwise
+        """
+        return self._wait_for_main_window(timeout, interval)
 
 
 

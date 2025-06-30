@@ -95,6 +95,22 @@ class Config:
         from configs.settings import DEFAULT_LOG_LEVEL as default_level
         return os.getenv('DEFAULT_LOG_LEVEL', default_level)
 
+    @staticmethod
+    def get_timing_config(module_name=None):
+        """Get timing configuration for automation modules.
+        
+        Args:
+            module_name: Optional module name (e.g., 'login', 'launch', 'administration')
+                        If None, returns entire timing config
+        
+        Returns:
+            Timing configuration dict
+        """
+        from configs.settings import TIMING_CONFIG
+        if module_name:
+            return TIMING_CONFIG.get(module_name, {})
+        return TIMING_CONFIG
+
 
 # Create singleton instance for easy access
 config = Config()

@@ -13,18 +13,22 @@ load_dotenv()
 class LoginAutomation:
     """Handles SnelStart login automation."""
     
-    # Login timing constants
-    DIALOG_FOCUS_DELAY = 2
-    INPUT_DELAY = 2
-    AUTO_LOGIN_WAIT = 5
-    LOGIN_COMPLETION_WAIT = 3
-    
     def __init__(self):
         """Initialize the login automation."""
         self.logger = LoggingSetup.get_logger(self.__class__.__name__)
         self.username, self.password = Config.get_credentials()
         self.ui_elements = Config.get_ui_elements()
         self.launch_automation = LaunchAutomation()
+        
+        # Get timing configuration from centralized config
+        timing = Config.get_timing_config('login')
+        self.DIALOG_FOCUS_DELAY = timing.get('dialog_focus_delay', 2)
+        self.INPUT_DELAY = timing.get('input_delay', 2)
+        self.AUTO_LOGIN_WAIT = timing.get('auto_login_wait', 5)
+        self.LOGIN_COMPLETION_WAIT = timing.get('login_completion_wait', 3)
+        self.LOGIN_DIALOG_WAIT_TIMEOUT = timing.get('login_dialog_wait_timeout', 10)
+        self.LOGIN_DIALOG_WAIT_INTERVAL = timing.get('login_dialog_wait_interval', 2)
+        self.LOGIN_COMPLETION_TIMEOUT = timing.get('login_completion_timeout', 10)
     
     def _get_main_window(self, main_window: UIAWrapper = None):
         """Get main window, retrieving it if not provided."""
@@ -33,59 +37,158 @@ class LoginAutomation:
         return main_window
 
     def get_login_dialog(self, window: UIAWrapper):
-        """Search for and return the login dialog inside the main window."""
-        self.logger.info("Searching for login dialog inside main window...")
+        """Search for and return the login dialog inside the main window (single attempt)."""
+        self.logger.debug("Searching for login dialog inside main window...")
         for child in window.descendants():
             try:
                 if child.friendly_class_name() == "Dialog" and self.ui_elements['login_dialog_text'] in child.window_text():
-                    self.logger.info(f"Found login dialog: '{child.window_text()}'")
+                    self.logger.debug(f"Found login dialog: '{child.window_text()}'")
                     return child
             except Exception as e:
                 self.logger.debug(f"Skipping element due to error: {e}")
         raise RuntimeError("Login dialog not found inside main window")
+    
+    def _wait_for_login_dialog(self, window: UIAWrapper):
+        """
+        Wait for login dialog to appear with retry logic.
+        
+        Args:
+            window: The main window to search in
+            
+        Returns:
+            Login dialog if found, None if not found after timeout (indicating already logged in)
+        """
+        def find_dialog():
+            try:
+                return self.get_login_dialog(window)
+            except RuntimeError:
+                return None
+        
+        try:
+            self.logger.info("Waiting for login dialog to appear...")
+            result = wait_with_timeout(
+                lambda: find_dialog() is not None,
+                timeout=self.LOGIN_DIALOG_WAIT_TIMEOUT,
+                interval=self.LOGIN_DIALOG_WAIT_INTERVAL,
+                description="login dialog detection",
+                provide_feedback=True
+            )
+            if result:
+                return self.get_login_dialog(window)
+        except WaitTimeoutError:
+            self.logger.info("Login dialog not found after timeout - assuming already logged in")
+            return None
+
+    def _try_auto_login(self, login_dialog: UIAWrapper):
+        """
+        Try auto-login by waiting for login dialog to disappear automatically.
+        
+        Args:
+            login_dialog: The login dialog to monitor
+            
+        Returns:
+            True if auto-login succeeded, False if manual login is needed
+        """
+        def check_auto_login():
+            try:
+                # Check if dialog still exists and is visible
+                if not login_dialog.is_visible():
+                    self.logger.info("Login dialog is no longer visible — auto-login succeeded.")
+                    return True
+            except Exception:
+                self.logger.info("Login dialog no longer exists — auto-login succeeded.")
+                return True
+            return False  # Dialog still exists, continue waiting
+        
+        try:
+            self.logger.info("Checking for auto-login...")
+            wait_with_timeout(check_auto_login, timeout=self.AUTO_LOGIN_WAIT, interval=1, 
+                            description="auto-login completion", provide_feedback=False)
+            return True  # Auto-login succeeded
+        except WaitTimeoutError:
+            self.logger.info("Auto-login timeout — manual login required")
+            return False
 
     def _enter_username(self, login_dialog: UIAWrapper, username: str):
-        """Enter username in the login dialog."""
+        """Pure action: Enter username in the login dialog without waiting."""
         self.logger.info("Entering username...")
         login_dialog.type_keys(username, with_spaces=True)
-        time.sleep(self.INPUT_DELAY)
 
     def _navigate_to_password(self, login_dialog: UIAWrapper):
-        """Navigate to password field and select password login option."""
+        """Pure action: Navigate to password field and select password login option."""
         self.logger.info("Navigating to password field...")
         login_dialog.type_keys("{TAB}")
-        time.sleep(self.INPUT_DELAY)
         login_dialog.type_keys("{ENTER}")
-        time.sleep(self.INPUT_DELAY)
         
         self.logger.info("Selecting password login option...")
         login_dialog.type_keys("{TAB}{TAB}{ENTER}")
-        time.sleep(self.INPUT_DELAY)
 
     def _enter_password(self, login_dialog: UIAWrapper, password: str):
-        """Enter password in the login dialog."""
+        """Pure action: Enter password in the login dialog without waiting."""
         self.logger.info("Entering password...")
         login_dialog.type_keys(password, with_spaces=True)
-        time.sleep(self.INPUT_DELAY)
 
     def _submit_login(self, login_dialog: UIAWrapper):
         """Submit the login form."""
         self.logger.info("Submitting login...")
         login_dialog.type_keys("{ENTER}")
 
+    def _wait_between_steps(self, step_name: str, delay: float = None):
+        """Pure wait function: adds timing delays between login steps."""
+        if delay is None:
+            delay = self.INPUT_DELAY
+        self.logger.debug(f"Waiting {delay}s after {step_name}...")
+        time.sleep(delay)
+    
+    def _wait_for_login_completion(self, main_window: UIAWrapper):
+        """
+        Smart wait function: waits for login process to complete by checking login status.
+        
+        Args:
+            main_window: The main window to check login status against
+            
+        Returns:
+            True if login completed successfully
+            
+        Raises:
+            WaitTimeoutError: If login not completed within timeout
+        """
+        def check_login_complete():
+            return self.is_logged_in(main_window)
+        
+        try:
+            self.logger.info("Waiting for login to complete...")
+            wait_with_timeout(
+                check_login_complete,
+                timeout=self.LOGIN_COMPLETION_TIMEOUT,
+                interval=1,
+                description="login completion verification",
+                provide_feedback=True
+            )
+            return True
+        except WaitTimeoutError:
+            self.logger.error("Login completion timeout - login may have failed")
+            raise
+    
     def perform_login(self, login_dialog: UIAWrapper, username: str, password: str):
-        """Perform the login sequence in the SnelStart login dialog."""
+        """Orchestration function: perform login sequence with proper timing."""
         self.logger.info("Attempting to perform login...")
         
         try:
             # Focus the login dialog
             login_dialog.set_focus()
-            time.sleep(self.DIALOG_FOCUS_DELAY)
+            self._wait_between_steps("dialog focus", self.DIALOG_FOCUS_DELAY)
             
-            # Perform login steps
+            # Perform login steps with timing
             self._enter_username(login_dialog, username)
+            self._wait_between_steps("username entry")
+            
             self._navigate_to_password(login_dialog)
+            self._wait_between_steps("password navigation")
+            
             self._enter_password(login_dialog, password)
+            self._wait_between_steps("password entry")
+            
             self._submit_login(login_dialog)
             
             self.logger.info("Login attempt complete")
@@ -118,41 +221,35 @@ class LoginAutomation:
             return False
 
     def login_to_snelstart(self, main_window: UIAWrapper = None):
-        """Main login function that handles the complete login process."""
+        """
+        Main login function that handles the complete login process.
+        
+        This orchestration function follows a clear 4-step process:
+        1. Wait for login dialog (with retry)
+        2. Try auto-login  
+        3. Manual login (if needed)
+        4. Wait for login completion (smart waiting)
+        """
         try:
             main_window = self._get_main_window(main_window)
             
-            # Try to find login dialog inside main window
-            try:
-                login_dialog = self.get_login_dialog(main_window)
-            except RuntimeError:
-                self.logger.info("Login dialog not found — assuming already logged in.")
+            # Step 1: Wait for login dialog (with retry)
+            login_dialog = self._wait_for_login_dialog(main_window)
+            if not login_dialog:
+                self.logger.info("No login dialog found - already logged in")
                 return True
-
-            # Wait briefly to see if the dialog disappears automatically (auto-login)
-            def check_auto_login():
-                try:
-                    # Check if dialog still exists and is visible
-                    if not login_dialog.is_visible():
-                        self.logger.info("Login dialog is no longer visible — auto-login succeeded.")
-                        return True
-                except Exception:
-                    self.logger.info("Login dialog no longer exists — auto-login succeeded.")
-                    return True
-                return False  # Dialog still exists, continue waiting
             
-            try:
-                wait_with_timeout(check_auto_login, timeout=self.AUTO_LOGIN_WAIT, interval=1, 
-                                description="auto-login completion", provide_feedback=False)
-                return True  # Auto-login succeeded
-            except WaitTimeoutError:
-                self.logger.info("Auto-login timeout — proceeding with manual login...")
-
-            # Still exists? Then perform manual login
+            # Step 2: Try auto-login
+            if self._try_auto_login(login_dialog):
+                self.logger.info("Auto-login succeeded")
+                return True
+            
+            # Step 3: Manual login (separate from waiting)
+            self.logger.info("Proceeding with manual login...")
             self.perform_login(login_dialog, self.username, self.password)
             
-            # Wait a moment for login to complete
-            time.sleep(self.LOGIN_COMPLETION_WAIT)
+            # Step 4: Wait for login completion (smart waiting)
+            self._wait_for_login_completion(main_window)
             self.logger.info("Manual login completed successfully")
             return True
 

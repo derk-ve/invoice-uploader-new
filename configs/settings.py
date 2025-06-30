@@ -9,6 +9,26 @@ DEFAULT_SNELSTART_PATH = r'C:\Program Files\Snelstart\Snelstart.exe'
 MAX_WAITING_TIME = 30     # Maximum seconds to wait per retry attempt
 MAX_RETRIES = 3           # Maximum number of retries
 
+# Timing configuration for automation actions
+TIMING_CONFIG = {
+    'login': {
+        'dialog_focus_delay': 2,        # Time to wait after focusing login dialog
+        'input_delay': 2,               # Time to wait between input steps
+        'auto_login_wait': 5,           # Time to wait for auto-login to complete
+        'login_completion_wait': 3,     # Time to wait after manual login submission
+        'login_dialog_wait_timeout': 10, # Time to wait for login dialog to appear
+        'login_dialog_wait_interval': 2, # Interval between login dialog detection attempts
+        'login_completion_timeout': 10   # Time to wait for login completion verification
+    },
+    'launch': {
+        'default_timeout': 30,       # Default timeout for window detection
+        'default_interval': 5        # Default interval for window polling
+    },
+    'administration': {
+        'workspace_ready_timeout': 3 # Time to wait for workspace to load after clicking Row 1
+    }
+}
+
 
 # UI element identifiers
 LOGIN_DIALOG_TEXT = "Inloggen"
