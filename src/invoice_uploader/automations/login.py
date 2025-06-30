@@ -6,6 +6,7 @@ from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
 from ...utils.wait_utils import simple_retry, safe_type
 from .launch_snelstart import LaunchAutomation
+from ...utils.ui_utils import generate_window_report
 
 load_dotenv()
 
@@ -96,6 +97,7 @@ class LoginAutomation:
                 self.logger.warning("Login window not found and user not logged in — this is unexpected.")
                 return False
 
+            self.ui_utils.generate_window_report(login_window, "Snelstart_Login_Window")
             self.logger.info("Login window found — checking for auto-login...")
             
             # Wait briefly to see if the window disappears automatically (auto-login)
@@ -105,7 +107,8 @@ class LoginAutomation:
                 return True
 
             # Still not logged in? Get the login window again and perform manual login
-            login_window = self.launch_automation.get_login_window()
+            generate_window_report(login_window, "SnelStart_Login_Window_Before_Login")
+            
             if login_window is None:
                 # Window disappeared, check if we're logged in
                 if self.is_logged_in():

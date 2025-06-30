@@ -15,7 +15,7 @@ def main():
         snelstart = initialize_snelstart()
         if not snelstart:
             return
-        time.sleep(2)
+        time.sleep(5)
         print('\n')
 
         if not perform_login(snelstart):
