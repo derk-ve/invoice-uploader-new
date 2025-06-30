@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
-from ...utils.wait_utils import wait_for_dialog_ready, safe_type
+from ...utils.wait_utils import simple_retry, safe_type
 
 load_dotenv()
 
@@ -68,7 +68,11 @@ class LoginAutomation:
         """Main login function that handles the complete login process."""
         try:
             try:
-                login_dialog = wait_for_dialog_ready(window, self.ui_elements['login_dialog_text'])
+                # Use wait_utils retry logic with the proven get_login_dialog method
+                def find_login_dialog():
+                    return self.get_login_dialog(window)
+                
+                login_dialog = simple_retry(find_login_dialog, "find login dialog")
                 self.logger.info(f"Found and verified login dialog is ready")
             except Exception:
                 self.logger.info("Login dialog not found — assuming already logged in.")
