@@ -3,7 +3,8 @@ import time
 from dotenv import load_dotenv
 from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import get_logger
-from ...utils.config import get_credentials, get_timing_config, get_ui_elements
+from ...utils.config import get_credentials, get_timing_config, get_ui_elements, get_wait_timeouts
+from ...utils.wait_utils import wait_for_dialog_ready, wait_for_text_input_ready, safe_type, safe_click
 
 load_dotenv()
 
@@ -16,6 +17,7 @@ class LoginAutomation:
         self.username, self.password = get_credentials()
         self.timing = get_timing_config()
         self.ui_elements = get_ui_elements()
+        self.wait_timeouts = get_wait_timeouts()
     
     def get_login_dialog(self, window: UIAWrapper):
         """Search for and return the login dialog inside the main window."""
@@ -33,59 +35,60 @@ class LoginAutomation:
         """Perform the login sequence in the SnelStart application."""
         self.logger.info("Attempting to perform login...")
         
-        wait_time = self.timing['login_wait_time']
-        
-        # Focus the login dialog
-        login_dialog.set_focus()
-        time.sleep(wait_time)
-        
-        # Enter username
-        self.logger.info("Entering username...")
-        login_dialog.type_keys(username, with_spaces=True)
-        time.sleep(wait_time)
-        
-        # Navigate to password field
-        self.logger.info("Navigating to password field...")
-        login_dialog.type_keys("{TAB}")
-        time.sleep(wait_time)
-        login_dialog.type_keys("{ENTER}")
-        time.sleep(wait_time)
-        
-        # Click "Doorgaan met wachtwoord"
-        self.logger.info("Selecting password login option...")
-        login_dialog.type_keys("{TAB}{TAB}{ENTER}")
-        time.sleep(wait_time)
-        
-        # Enter password
-        self.logger.info("Entering password...")
-        login_dialog.type_keys(password, with_spaces=True)
-        time.sleep(wait_time)
-        
-        # Submit login
-        self.logger.info("Submitting login...")
-        login_dialog.type_keys("{ENTER}")
-        
-        self.logger.info("Login attempt complete")
+        try:
+            # Ensure dialog is ready for interaction
+            ready_dialog = wait_for_text_input_ready(login_dialog, self.wait_timeouts['text_input_timeout'])
+            
+            # Enter username
+            self.logger.info("Entering username...")
+            safe_type(ready_dialog, username, self.wait_timeouts['text_input_timeout'], "username field")
+            
+            # Navigate to password field
+            self.logger.info("Navigating to password field...")
+            ready_dialog.type_keys("{TAB}")
+            ready_dialog.type_keys("{ENTER}")
+            
+            # Click "Doorgaan met wachtwoord"
+            self.logger.info("Selecting password login option...")
+            ready_dialog.type_keys("{TAB}{TAB}{ENTER}")
+            
+            # Wait briefly for password field to be ready
+            time.sleep(0.5)
+            
+            # Enter password
+            self.logger.info("Entering password...")
+            safe_type(ready_dialog, password, self.wait_timeouts['text_input_timeout'], "password field")
+            
+            # Submit login
+            self.logger.info("Submitting login...")
+            ready_dialog.type_keys("{ENTER}")
+            
+            self.logger.info("Login attempt complete")
+            
+        except Exception as e:
+            self.logger.error(f"Error during login sequence: {e}")
+            raise
 
     def login_to_snelstart(self, window: UIAWrapper):
         """Main login function that handles the complete login process."""
         try:
             try:
-                login_dialog = self.get_login_dialog(window)
-            except RuntimeError:
+                login_dialog = wait_for_dialog_ready(window, self.ui_elements['login_dialog_text'], 
+                                                    self.wait_timeouts['dialog_timeout'])
+                self.logger.info(f"Found and verified login dialog is ready")
+            except Exception:
                 self.logger.info("Login dialog not found — assuming already logged in.")
                 return True
 
-            # Wait briefly to see if the dialog disappears automatically
-            self.logger.info("Login dialog found — waiting briefly to check for auto-login...")
+            # Wait briefly to see if the dialog disappears automatically (auto-login)
+            self.logger.info("Login dialog found — checking for auto-login...")
             try:
-                # Try accessing something on the dialog after waiting
                 time.sleep(2)
-                if not login_dialog.is_visible():
-                    self.logger.info("Login dialog is no longer visible — assuming auto-login succeeded.")
+                if not login_dialog.exists() or not login_dialog.is_visible():
+                    self.logger.info("Login dialog disappeared — auto-login succeeded.")
                     return True
             except Exception:
-                self.logger.info("Login dialog no longer exists — assuming auto-login succeeded.")
+                self.logger.info("Login dialog no longer accessible — auto-login succeeded.")
                 return True
 
             # Still exists? Then perform manual login

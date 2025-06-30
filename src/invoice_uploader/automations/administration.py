@@ -3,7 +3,8 @@ from pywinauto import Desktop
 import time
 from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import get_logger
-from ...utils.config import get_timing_config, get_ui_elements
+from ...utils.config import get_timing_config, get_ui_elements, get_wait_timeouts
+from ...utils.wait_utils import wait_for_element, wait_for_clickable, safe_click
 
 class AdministrationAutomation:
     """Handles SnelStart administration window automation."""
@@ -13,6 +14,7 @@ class AdministrationAutomation:
         self.logger = get_logger(self.__class__.__name__)
         self.timing = get_timing_config()
         self.ui_elements = get_ui_elements()
+        self.wait_timeouts = get_wait_timeouts()
     
     def get_administratie_window(self, window: UIAWrapper):
         """
@@ -28,17 +30,35 @@ class AdministrationAutomation:
             RuntimeError: If the row could not be found or clicked.
         """
         try:
-            for ctrl in window.descendants():
-                if ctrl.friendly_class_name() == "Custom" and ctrl.window_text() == self.ui_elements['admin_row_text']:
-                    ctrl.set_focus()
-                    ctrl.double_click_input()
-                    self.logger.info("Double-clicked row 1 to open administratie.")
-                    time.sleep(self.timing['admin_open_wait_time'])
-                    return
-            raise RuntimeError("Row 1 not found in administratie view")
+            def find_admin_row(parent):
+                for ctrl in parent.descendants():
+                    try:
+                        if (ctrl.friendly_class_name() == "Custom" and 
+                            ctrl.window_text() == self.ui_elements['admin_row_text']):
+                            return ctrl
+                    except:
+                        continue
+                return None
+            
+            # Wait for the admin row to be available and clickable
+            admin_row = wait_for_element(window, find_admin_row, 
+                                       self.wait_timeouts['element_timeout'], 
+                                       self.wait_timeouts['wait_interval'],
+                                       f"admin row '{self.ui_elements['admin_row_text']}'")
+            
+            # Ensure it's clickable before double-clicking
+            clickable_row = wait_for_clickable(admin_row, 
+                                             self.wait_timeouts['clickable_timeout'],
+                                             f"admin row '{self.ui_elements['admin_row_text']}'")
+            
+            # Perform the double-click
+            clickable_row.set_focus()
+            clickable_row.double_click_input()
+            self.logger.info(f"Successfully double-clicked '{self.ui_elements['admin_row_text']}' to open administratie")
+            
         except Exception as e:
             self.logger.error(f"Failed to open administratie: {e}")
-            raise RuntimeError("Could not open administratie window")
+            raise RuntimeError(f"Could not open administratie window: {e}")
 
 
 # Backwards compatibility function for existing code
