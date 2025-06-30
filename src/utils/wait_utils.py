@@ -38,6 +38,7 @@ def simple_retry(operation, operation_name="operation", max_retries=None, retry_
     last_exception = None
     
     for attempt in range(max_retries):
+        logger.debug(f"Attempt {attempt} in trying to: {operation_name}")
         try:
             result = operation()
             if attempt > 0:

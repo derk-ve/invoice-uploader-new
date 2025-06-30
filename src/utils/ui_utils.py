@@ -140,14 +140,14 @@ def generate_window_report(control: UIAWrapper, window_name: str = None, reports
         }
         
         # Save JSON report
-        json_filename = f"{clean_name}_{timestamp}.json"
+        json_filename = f"{clean_name}.json"
         json_path = os.path.join(reports_dir, json_filename)
         
         with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(report_data, f, indent=2, ensure_ascii=False)
         
         # Save human-readable text report
-        txt_filename = f"{clean_name}_{timestamp}.txt"
+        txt_filename = f"{clean_name}.txt"
         txt_path = os.path.join(reports_dir, txt_filename)
         
         with open(txt_path, 'w', encoding='utf-8') as f:
