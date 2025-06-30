@@ -1,10 +1,9 @@
-from pywinauto import Desktop
-
 import time
 from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
-from ...utils.wait_utils import wait_for_element, safe_click
+from ...utils.wait_utils import wait_with_timeout, WaitTimeoutError
+from ...utils.ui_utils import UIUtils
 
 class AdministrationAutomation:
     """Handles SnelStart administration window automation."""
@@ -13,6 +12,7 @@ class AdministrationAutomation:
         """Initialize the administration automation."""
         self.logger = LoggingSetup.get_logger(self.__class__.__name__)
         self.ui_elements = Config.get_ui_elements()
+        self.ui_utils = UIUtils()
     
     def get_administratie_window(self, window: UIAWrapper):
         """
@@ -28,24 +28,37 @@ class AdministrationAutomation:
             RuntimeError: If the row could not be found or clicked.
         """
         try:
-            def find_admin_row(parent):
-                for ctrl in parent.descendants():
-                    try:
-                        if (ctrl.friendly_class_name() == "Custom" and 
-                            ctrl.window_text() == self.ui_elements['admin_row_text']):
-                            return ctrl
-                    except:
-                        continue
-                return None
+            # Direct search through descendants (like working code)
+            for ctrl in window.descendants():
+                try:
+                    if (ctrl.friendly_class_name() == "Custom" and 
+                        ctrl.window_text() == self.ui_elements['admin_row_text']):
+                        ctrl.set_focus()
+                        ctrl.double_click_input()
+                        self.logger.info(f"Successfully double-clicked '{self.ui_elements['admin_row_text']}' to open administratie")
+                        
+                        # Post-click stabilization wait
+                        def check_ready():
+                            return True  # Simple readiness check
+                        
+                        try:
+                            wait_with_timeout(check_ready, timeout=3, interval=1, 
+                                            description="administration window stabilization", 
+                                            provide_feedback=False)
+                        except WaitTimeoutError:
+                            self.logger.warning("Timeout waiting for administration to stabilize")
+                        
+                        # Generate window report after opening
+                        self.ui_utils.generate_window_report(window, "SnelStart_Administration_Opened")
+                        
+                        return
+                        
+                except Exception as e:
+                    self.logger.debug(f"Skipping control due to error: {e}")
+                    continue
             
-            # Wait for the admin row to be available
-            admin_row = wait_for_element(window, find_admin_row, 
-                                       f"admin row '{self.ui_elements['admin_row_text']}'")
-            
-            # Perform the double-click
-            admin_row.set_focus()
-            admin_row.double_click_input()
-            self.logger.info(f"Successfully double-clicked '{self.ui_elements['admin_row_text']}' to open administratie")
+            # If we get here, row was not found
+            raise RuntimeError(f"Row '{self.ui_elements['admin_row_text']}' not found in administratie view")
             
         except Exception as e:
             self.logger.error(f"Failed to open administratie: {e}")
