@@ -37,7 +37,15 @@ class AdministrationAutomation:
                         
                         # Post-click stabilization wait
                         def check_ready():
-                            return True  # Simple readiness check
+                            # Check if administration workspace has loaded by looking for workspace elements
+                            try:
+                                for control in window.descendants():
+                                    if (control.window_text() == "Dashboard" or 
+                                        control.window_text() == "Afschriften Inlezen"):
+                                        return True
+                                return False
+                            except:
+                                return False
                         
                         try:
                             wait_with_timeout(check_ready, timeout=3, interval=1, 
