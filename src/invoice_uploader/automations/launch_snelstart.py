@@ -4,7 +4,7 @@ from pywinauto.application import Application
 from pywinauto import Desktop
 from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
-from ...utils.wait_utils import wait_for_window_by_title
+from ...utils.wait_utils import simple_retry
 
 class LaunchAutomation:
     """Handles SnelStart application launch and window detection."""
@@ -36,11 +36,7 @@ class LaunchAutomation:
             self.logger.info("Activating SnelStart Application...")
             app = Application(backend='uia').start(app_path)
             
-            # Wait for the application window to appear instead of fixed sleep
-            self.logger.info("Waiting for SnelStart window to appear...")
-            main_window = wait_for_window_by_title("SnelStart")
-            
-            self.logger.info(f"SnelStart application started successfully with window: '{main_window.window_text()}'")
+            self.logger.info(f"SnelStart application started successfully")
             return app
             
         except Exception as e:
@@ -60,8 +56,20 @@ class LaunchAutomation:
         """
         try:
             self.logger.info("Waiting for SnelStart window...")
-            main_window = wait_for_window_by_title("SnelStart")
             
+            # Use original proven window detection logic with retry
+            def find_snelstart_window():
+                for window in Desktop(backend="uia").windows():
+                    try:
+                        if "SnelStart" in window.window_text():
+                            self.logger.info(f"Found SnelStart window: '{window.window_text()}'")
+                            return window
+                    except Exception as e:
+                        self.logger.debug(f"Skipping window due to error: {e}")
+                        continue
+                raise RuntimeError("SnelStart window not found")
+            
+            main_window = simple_retry(find_snelstart_window, "find SnelStart window")
             self.logger.info(f"SnelStart window found: '{main_window.window_text()}'")
             return main_window
             
