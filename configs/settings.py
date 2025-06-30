@@ -15,6 +15,10 @@ LOGIN_DIALOG_TEXT = "Inloggen"
 ADMIN_ROW_TEXT = "Row 1"
 INVOICE_BUTTON_TEXT = "Afschriften Inlezen"
 
+# Window title patterns
+MAIN_WINDOW_TITLE = "SnelStart 12"
+LOGIN_WINDOW_TITLE = "Inloggen SnelStart 12"
+
 # Login verification elements (only visible when logged in)
 LOGIN_VERIFICATION_TAB = "ADMINISTRATIE"
 LOGIN_VERIFICATION_BUTTON = "Administraties"

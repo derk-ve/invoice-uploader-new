@@ -73,7 +73,7 @@ class SnelstartAutomation:
                 self.logger.error("No main window available for login")
                 return False
                 
-            login_success = self.login_automation.login_to_snelstart(self.main_window)
+            login_success = self.login_automation.login_to_snelstart()
             
             # Generate window report after login
             if login_success:

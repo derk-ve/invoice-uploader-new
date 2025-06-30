@@ -54,6 +54,14 @@ class Config:
         }
 
     @staticmethod
+    def get_window_titles():
+        """Get window title patterns."""
+        return {
+            'main_window': MAIN_WINDOW_TITLE,
+            'login_window': LOGIN_WINDOW_TITLE
+        }
+
+    @staticmethod
     def get_log_level(class_name):
         """Get log level for a specific class.
         
@@ -103,6 +111,9 @@ def get_retry_config():
 
 def get_ui_elements():
     return config.get_ui_elements()
+
+def get_window_titles():
+    return config.get_window_titles()
 
 def get_log_level(class_name):
     return config.get_log_level(class_name)

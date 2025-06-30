@@ -13,6 +13,7 @@ class LaunchAutomation:
         """Initialize the launch automation."""
         self.logger = LoggingSetup.get_logger(self.__class__.__name__)
         self.app_path = self.get_snelstart_path()
+        self.window_titles = Config.get_window_titles()
     
     def get_snelstart_path(self):
         """Get the path to the SnelStart application from environment variables."""
@@ -45,7 +46,7 @@ class LaunchAutomation:
 
     def get_main_window(self, timeout: int = None, interval: int = None):
         """
-        Wait for and return the main SnelStart window.
+        Wait for and return the main SnelStart window (not the login window).
         
         Args:
             timeout: Maximum time to wait in seconds (optional, uses config default)
@@ -55,28 +56,93 @@ class LaunchAutomation:
             Main window if found, raises RuntimeError otherwise
         """
         try:
-            self.logger.info("Waiting for SnelStart window...")
-            windows = []
-            # Use original proven window detection logic with retry
-            def find_snelstart_window():
+            self.logger.info("Waiting for SnelStart main window...")
+            main_window_title = self.window_titles['main_window']
+            
+            # Use retry logic to find the main window specifically
+            def find_main_window():
                 for window in Desktop(backend="uia").windows():
                     try:
-                        if "SnelStart 12" in window.window_text():
-                            windows.append(window)
-                            self.logger.info(f"Found SnelStart window: '{window.window_text()}'")
+                        window_text = window.window_text()
+                        # Exact match for main window (not substring match)
+                        if window_text == main_window_title:
+                            self.logger.info(f"Found main window: '{window_text}'")
+                            return window
                     except Exception as e:
                         self.logger.debug(f"Skipping window due to error: {e}")
                         continue
-                raise RuntimeError("SnelStart window not found")
+                raise RuntimeError(f"Main window '{main_window_title}' not found")
             
-            self.logger.debug(f"Windows found: {windows}")
-            main_window = simple_retry(find_snelstart_window, "find SnelStart window")
-            self.logger.info(f"SnelStart window found: '{main_window.window_text()}'")
+            main_window = simple_retry(find_main_window, "find SnelStart main window")
+            self.logger.info(f"SnelStart main window found: '{main_window.window_text()}'")
             return main_window
             
         except Exception as e:
             self.logger.error(f"Failed to get SnelStart main window: {e}")
-            raise RuntimeError(f"SnelStart window not found: {e}")
+            raise RuntimeError(f"SnelStart main window not found: {e}")
+
+    def get_login_window(self):
+        """
+        Find and return the login window if it exists.
+        
+        Returns:
+            Login window if found, None if not found
+        """
+        try:
+            self.logger.info("Searching for SnelStart login window...")
+            login_window_title = self.window_titles['login_window']
+            
+            for window in Desktop(backend="uia").windows():
+                try:
+                    window_text = window.window_text()
+                    # Exact match for login window
+                    if window_text == login_window_title:
+                        self.logger.info(f"Found login window: '{window_text}'")
+                        return window
+                except Exception as e:
+                    self.logger.debug(f"Skipping window due to error: {e}")
+                    continue
+            
+            self.logger.info("Login window not found")
+            return None
+            
+        except Exception as e:
+            self.logger.warning(f"Error searching for login window: {e}")
+            return None
+
+    def get_all_snelstart_windows(self):
+        """
+        Get all SnelStart-related windows for debugging purposes.
+        
+        Returns:
+            Dictionary with 'main' and 'login' windows (values can be None)
+        """
+        try:
+            self.logger.debug("Searching for all SnelStart windows...")
+            main_window_title = self.window_titles['main_window']
+            login_window_title = self.window_titles['login_window']
+            
+            windows = {'main': None, 'login': None}
+            
+            for window in Desktop(backend="uia").windows():
+                try:
+                    window_text = window.window_text()
+                    if window_text == main_window_title:
+                        windows['main'] = window
+                        self.logger.debug(f"Found main window: '{window_text}'")
+                    elif window_text == login_window_title:
+                        windows['login'] = window  
+                        self.logger.debug(f"Found login window: '{window_text}'")
+                except Exception as e:
+                    self.logger.debug(f"Skipping window due to error: {e}")
+                    continue
+            
+            self.logger.debug(f"Windows found: main={windows['main'] is not None}, login={windows['login'] is not None}")
+            return windows
+            
+        except Exception as e:
+            self.logger.warning(f"Error searching for SnelStart windows: {e}")
+            return {'main': None, 'login': None}
 
 
 # Backwards compatibility functions for existing code
@@ -94,3 +160,13 @@ def get_main_window(timeout: int = 30, interval: int = 5):
     """Backwards compatibility function."""
     launch_automation = LaunchAutomation()
     return launch_automation.get_main_window(timeout, interval)
+
+def get_login_window():
+    """Backwards compatibility function."""
+    launch_automation = LaunchAutomation()
+    return launch_automation.get_login_window()
+
+def get_all_snelstart_windows():
+    """Backwards compatibility function."""
+    launch_automation = LaunchAutomation()
+    return launch_automation.get_all_snelstart_windows()
