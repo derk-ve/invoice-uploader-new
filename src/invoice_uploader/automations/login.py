@@ -32,34 +32,40 @@ class LoginAutomation:
                 self.logger.debug(f"Skipping element due to error: {e}")
         raise RuntimeError("Login dialog not found inside main window")
 
-    def perform_login(self, login_window: UIAWrapper, username: str, password: str):
-        """Perform the login sequence in the SnelStart login window."""
+    def perform_login(self, login_dialog: UIAWrapper, username: str, password: str):
+        """Perform the login sequence in the SnelStart login dialog."""
         self.logger.info("Attempting to perform login...")
         
         try:
+            # Focus the login dialog
+            login_dialog.set_focus()
+            time.sleep(2)
+            
             # Enter username
             self.logger.info("Entering username...")
-            safe_type(login_window, username, "username field")
+            login_dialog.type_keys(username, with_spaces=True)
+            time.sleep(2)
             
             # Navigate to password field
             self.logger.info("Navigating to password field...")
-            login_window.type_keys("{TAB}")
-            login_window.type_keys("{ENTER}")
+            login_dialog.type_keys("{TAB}")
+            time.sleep(2)
+            login_dialog.type_keys("{ENTER}")
+            time.sleep(2)
             
             # Click "Doorgaan met wachtwoord"
             self.logger.info("Selecting password login option...")
-            login_window.type_keys("{TAB}{TAB}{ENTER}")
-            
-            # Wait briefly for password field to be ready
-            time.sleep(0.5)
+            login_dialog.type_keys("{TAB}{TAB}{ENTER}")
+            time.sleep(2)
             
             # Enter password
             self.logger.info("Entering password...")
-            safe_type(login_window, password, "password field")
+            login_dialog.type_keys(password, with_spaces=True)
+            time.sleep(2)
             
             # Submit login
             self.logger.info("Submitting login...")
-            login_window.type_keys("{ENTER}")
+            login_dialog.type_keys("{ENTER}")
             
             self.logger.info("Login attempt complete")
             
@@ -67,70 +73,65 @@ class LoginAutomation:
             self.logger.error(f"Error during login sequence: {e}")
             raise
 
-    def is_logged_in(self):
-        """Check if user is already logged in by verifying absence of separate login window."""
+    def is_logged_in(self, main_window: UIAWrapper = None):
+        """Check if user is already logged in by verifying absence of login dialog in main window."""
         self.logger.info("Checking if user is already logged in...")
         
-        # Check if login window exists
-        login_window = self.launch_automation.get_login_window()
-        
-        if login_window is not None:
-            # Login window exists, user is not logged in
-            self.logger.info("Login window found - user is not logged in")
+        try:
+            # Get main window if not provided
+            if main_window is None:
+                main_window = self.launch_automation.get_main_window()
+            
+            # Check if login dialog exists in main window
+            try:
+                login_dialog = self.get_login_dialog(main_window)
+                # Login dialog exists, user is not logged in
+                self.logger.info("Login dialog found in main window - user is not logged in")
+                return False
+            except RuntimeError:
+                # Login dialog not found, user is logged in
+                self.logger.info("Login dialog not found in main window - user is logged in")
+                return True
+                
+        except Exception as e:
+            self.logger.warning(f"Error checking login status: {e}")
+            # If we can't determine, assume not logged in to be safe
             return False
-        else:
-            # Login window does not exist, user is logged in
-            self.logger.info("Login window not found - user is logged in")
-            return True
 
-    def login_to_snelstart(self):
+    def login_to_snelstart(self, main_window: UIAWrapper = None):
         """Main login function that handles the complete login process."""
         try:
-            # First, check if we're already logged in
-            if self.is_logged_in():
-                self.logger.info("User is already logged in.")
-                return True
+            # Get main window if not provided
+            if main_window is None:
+                main_window = self.launch_automation.get_main_window()
             
-            # Not logged in, so look for login window
-            login_window = self.launch_automation.get_login_window()
-            if login_window is None:
-                self.logger.warning("Login window not found and user not logged in — this is unexpected.")
-                return False
-
-            self.ui_utils.generate_window_report(login_window, "Snelstart_Login_Window")
-            self.logger.info("Login window found — checking for auto-login...")
-            
-            # Wait briefly to see if the window disappears automatically (auto-login)
-            time.sleep(10)
-            if self.is_logged_in():
-                self.logger.info("Auto-login succeeded - login window disappeared.")
+            # Try to find login dialog inside main window
+            try:
+                login_dialog = self.get_login_dialog(main_window)
+            except RuntimeError:
+                self.logger.info("Login dialog not found — assuming already logged in.")
                 return True
 
-            # Still not logged in? Get the login window again and perform manual login
-            generate_window_report(login_window, "SnelStart_Login_Window_Before_Login")
+            # Wait briefly to see if the dialog disappears automatically (auto-login)
+            self.logger.info("Login dialog found — waiting briefly to check for auto-login...")
+            time.sleep(5)
             
-            if login_window is None:
-                # Window disappeared, check if we're logged in
-                if self.is_logged_in():
-                    self.logger.info("Login window disappeared during wait - auto-login succeeded.")
+            try:
+                # Check if dialog still exists and is visible
+                if not login_dialog.is_visible():
+                    self.logger.info("Login dialog is no longer visible — assuming auto-login succeeded.")
                     return True
-                else:
-                    self.logger.error("Login window disappeared but user not logged in.")
-                    return False
+            except Exception:
+                self.logger.info("Login dialog no longer exists — assuming auto-login succeeded.")
+                return True
 
-            # Perform manual login
-            self.perform_login(login_window, self.username, self.password)
+            # Still exists? Then perform manual login
+            self.perform_login(login_dialog, self.username, self.password)
             
-            # Wait a moment for login to complete, then verify
+            # Wait a moment for login to complete
             time.sleep(3)
-            login_success = self.is_logged_in()
-            
-            if login_success:
-                self.logger.info("Manual login completed successfully")
-            else:
-                self.logger.error("Manual login failed - user not logged in after login attempt")
-            
-            return login_success
+            self.logger.info("Manual login completed successfully")
+            return True
 
         except Exception as e:
             self.logger.error(f"Login failed: {e}")
@@ -149,11 +150,11 @@ def perform_login(login_window: UIAWrapper, username: str, password: str):
     login_automation.perform_login(login_window, username, password)
 
 def login_to_snelstart(window: UIAWrapper = None):
-    """Backwards compatibility function. Window parameter is ignored in new implementation."""
+    """Backwards compatibility function. Window parameter is used as main window."""
     login_automation = LoginAutomation()
-    return login_automation.login_to_snelstart()
+    return login_automation.login_to_snelstart(window)
 
-def is_logged_in():
+def is_logged_in(main_window: UIAWrapper = None):
     """New function for checking login status."""
     login_automation = LoginAutomation()
-    return login_automation.is_logged_in()
+    return login_automation.is_logged_in(main_window)

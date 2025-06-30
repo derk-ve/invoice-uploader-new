@@ -46,14 +46,14 @@ class SnelstartAutomation:
                 return False
             
             # Wait for the main window to appear
+            time.sleep(25)
             self.main_window = self.launch_automation.get_main_window()
             
             self.logger.info(f"Activated Snelstart application")
             self.logger.info(f"Window title: {self.main_window.window_text()}")
             
             # Generate window report for main window
-            self.ui_utils.generate_window_report(self.main_window, "SnelStart_Main_Window")
-            
+            self.ui_utils.generate_window_report(self.main_window, "SnelStart_Main_Window_Before_Login")            
             return True
             
         except Exception as e:
@@ -73,11 +73,11 @@ class SnelstartAutomation:
                 self.logger.error("No main window available for login")
                 return False
                 
-            login_success = self.login_automation.login_to_snelstart()
+            login_success = self.login_automation.login_to_snelstart(self.main_window)
             
             # Generate window report after login
             if login_success:
-                self.ui_utils.generate_window_report(self.main_window, "SnelStart_After_Login")
+                self.ui_utils.generate_window_report(self.main_window, "SnelStart_Main_Window_After_Login")
             
             return login_success
             
