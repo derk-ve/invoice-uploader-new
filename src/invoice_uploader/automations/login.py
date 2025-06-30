@@ -6,6 +6,7 @@ from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
 from .launch_snelstart import LaunchAutomation
 from ...utils.ui_utils import generate_window_report
+from ...utils.wait_utils import wait_with_timeout, WaitTimeoutError
 
 load_dotenv()
 
@@ -129,17 +130,23 @@ class LoginAutomation:
                 return True
 
             # Wait briefly to see if the dialog disappears automatically (auto-login)
-            self.logger.info("Login dialog found — waiting briefly to check for auto-login...")
-            time.sleep(self.AUTO_LOGIN_WAIT)
+            def check_auto_login():
+                try:
+                    # Check if dialog still exists and is visible
+                    if not login_dialog.is_visible():
+                        self.logger.info("Login dialog is no longer visible — auto-login succeeded.")
+                        return True
+                except Exception:
+                    self.logger.info("Login dialog no longer exists — auto-login succeeded.")
+                    return True
+                return False  # Dialog still exists, continue waiting
             
             try:
-                # Check if dialog still exists and is visible
-                if not login_dialog.is_visible():
-                    self.logger.info("Login dialog is no longer visible — assuming auto-login succeeded.")
-                    return True
-            except Exception:
-                self.logger.info("Login dialog no longer exists — assuming auto-login succeeded.")
-                return True
+                wait_with_timeout(check_auto_login, timeout=self.AUTO_LOGIN_WAIT, interval=1, 
+                                description="auto-login completion", provide_feedback=False)
+                return True  # Auto-login succeeded
+            except WaitTimeoutError:
+                self.logger.info("Auto-login timeout — proceeding with manual login...")
 
             # Still exists? Then perform manual login
             self.perform_login(login_dialog, self.username, self.password)

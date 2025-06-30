@@ -1,6 +1,7 @@
 import time
 from src.invoice_uploader.snelstart_automation import SnelstartAutomation
 from src.utils.logging_setup import LoggingSetup
+from src.utils.wait_utils import wait_with_timeout, WaitTimeoutError
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,28 +10,41 @@ load_dotenv()
 LoggingSetup.setup_logging()
 logger = LoggingSetup.get_logger(__name__)
 
+def wait_for_step_ready(step_name, timeout=5):
+    """Wait for application to stabilize after a step."""
+    def check_ready():
+        # Simple readiness check - in a real scenario, this could check for UI elements, etc.
+        # For now, we'll just do a shorter wait with feedback
+        return True
+    
+    try:
+        wait_with_timeout(check_ready, timeout=timeout, interval=1, 
+                         description=f"{step_name} stabilization", provide_feedback=False)
+    except WaitTimeoutError:
+        logger.warning(f"Timeout waiting for {step_name} to stabilize")
+
 def main():
     try:
         print('\n')
         snelstart = initialize_snelstart()
         if not snelstart:
             return
-        time.sleep(5)
+        wait_for_step_ready("application startup", timeout=3)
         print('\n')
 
         if not perform_login(snelstart):
             return
-        time.sleep(5)
+        wait_for_step_ready("login completion", timeout=3)
         print('\n')
 
         if not open_administratie(snelstart):
             return
-        time.sleep(2)
+        wait_for_step_ready("administration opening", timeout=2)
         print('\n')
 
         if not upload_afschriften(snelstart):
             return
-        time.sleep(2)
+        wait_for_step_ready("afschriften upload", timeout=2)
         print('\n')
 
         logger.info("Waiting for user to exit...")

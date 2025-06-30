@@ -45,8 +45,7 @@ class SnelstartAutomation:
             if not self.app:
                 return False
             
-            # Wait for the main window to appear
-            time.sleep(25)
+            # Wait for the main window to appear (get_main_window has built-in timeout/interval)
             self.main_window = self.launch_automation.get_main_window()
             
             self.logger.info(f"Activated Snelstart application")

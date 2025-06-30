@@ -213,6 +213,48 @@ class WaitUtils:
         
         return self.wait_for_element(parent, find_dialog, f"dialog containing '{dialog_text}'")
 
+    def wait_with_timeout(self, condition_func, timeout=30, interval=2, description="condition", 
+                         provide_feedback=True):
+        """
+        Wait for a condition with timeout/interval pattern (like get_main_window).
+        
+        Args:
+            condition_func: Function that returns True/truthy when condition is met, 
+                           False/falsy to continue waiting, or raises exception on error
+            timeout: Maximum time to wait in seconds (default: 30)
+            interval: Check interval in seconds (default: 2)  
+            description: What we're waiting for (for logging)
+            provide_feedback: Whether to log progress (default: True)
+        
+        Returns:
+            True when condition met, or the truthy value returned by condition_func
+            
+        Raises:
+            WaitTimeoutError: If timeout reached without condition being met
+            Exception: Any exception raised by condition_func
+        """
+        elapsed = 0
+        
+        while elapsed < timeout:
+            if provide_feedback:
+                self.logger.info(f"Waiting for {description}... ({elapsed}/{timeout}s)")
+            
+            try:
+                result = condition_func()
+                if result:  # Condition met
+                    if provide_feedback and elapsed > 0:
+                        self.logger.info(f"{description} completed after {elapsed}s")
+                    return result
+            except Exception as e:
+                # Let condition_func decide if exceptions should stop waiting or continue
+                self.logger.debug(f"Exception in condition check for {description}: {e}")
+                raise e
+                
+            time.sleep(interval)
+            elapsed += interval
+
+        raise WaitTimeoutError(f"Timeout waiting for {description} after {timeout}s")
+
 
 # Create singleton instance for easy access
 wait_utils = WaitUtils()
@@ -240,3 +282,7 @@ def safe_type(element, text, element_name="input field"):
 
 def wait_for_dialog_ready(parent, dialog_text):
     return wait_utils.wait_for_dialog_ready(parent, dialog_text)
+
+def wait_with_timeout(condition_func, timeout=30, interval=2, description="condition", 
+                     provide_feedback=True):
+    return wait_utils.wait_with_timeout(condition_func, timeout, interval, description, provide_feedback)
