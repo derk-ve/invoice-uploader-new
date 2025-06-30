@@ -56,20 +56,20 @@ class LaunchAutomation:
         """
         try:
             self.logger.info("Waiting for SnelStart window...")
-            
+            windows = []
             # Use original proven window detection logic with retry
             def find_snelstart_window():
                 for window in Desktop(backend="uia").windows():
-                    self.logger.debug(f"Checking if window: {window} belongs to Snelstart")
                     try:
-                        if "SnelStart" in window.window_text():
+                        if "SnelStart 12" in window.window_text():
+                            windows.append(window)
                             self.logger.info(f"Found SnelStart window: '{window.window_text()}'")
-                            return window
                     except Exception as e:
                         self.logger.debug(f"Skipping window due to error: {e}")
                         continue
                 raise RuntimeError("SnelStart window not found")
             
+            self.logger.debug(f"Windows found: {windows}")
             main_window = simple_retry(find_snelstart_window, "find SnelStart window")
             self.logger.info(f"SnelStart window found: '{main_window.window_text()}'")
             return main_window
