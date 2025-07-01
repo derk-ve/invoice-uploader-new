@@ -282,9 +282,6 @@ class LoginAutomation:
             self.logger.info("Proceeding with manual login...")
             self.perform_login(login_dialog, self.username, self.password)
             
-            # Step 4: Wait for login completion (smart waiting)
-            self.wait_for_login_completion(main_window)
-            self.logger.info("Manual login completed successfully")
             return True
 
         except Exception as e:

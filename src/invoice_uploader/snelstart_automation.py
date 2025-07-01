@@ -110,7 +110,7 @@ class SnelstartAutomation:
             self.bookkeeping_window = bookkeeping_window
 
             # Generate window report for bookkeeping window
-            self.ui_utils.generate_window_report(self.admin_window, "SnelStart_Bookkeeping_Window")
+            self.ui_utils.generate_window_report(self.bookkeeping_window, "SnelStart_Bookkeeping_Window")
 
             self.logger.info("Successfully opened Administratie section")
         
