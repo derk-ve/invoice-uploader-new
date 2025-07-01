@@ -1,0 +1,9 @@
+amount,description,date,reference,account
+-125.50,"Payment for invoice INV-2024-001 office supplies",2024-01-15,TXN001,NL91ABNA0417164300
+-89.20,"Monthly subscription Software License INV-2024-002",2024-01-16,TXN002,NL91ABNA0417164300
+-456.78,"Equipment purchase ref: INV-2024-003 hardware",2024-01-17,TXN003,NL91ABNA0417164300
+-25.00,"Coffee supplies monthly delivery",2024-01-18,TXN004,NL91ABNA0417164300
+-150.00,"Office rent payment INV-2024-005",2024-01-20,TXN005,NL91ABNA0417164300
+-320.45,"Marketing services invoice INV-2024-007",2024-01-22,TXN006,NL91ABNA0417164300
+-75.30,"Utility bill electricity Jan 2024",2024-01-25,TXN007,NL91ABNA0417164300
+1500.00,"Customer payment received - thank you",2024-01-26,TXN008,NL91ABNA0417164300

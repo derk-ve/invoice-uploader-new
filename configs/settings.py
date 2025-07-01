@@ -28,6 +28,13 @@ TIMING_CONFIG = {
         'workspace_ready_timeout': 30, # Time to wait for workspace to load after clicking Row 1
         'boekhouden_tab_timeout': 15,  # Time to wait for BOEKHOUDEN tab to become available
         'boekhouden_ready_timeout': 15 # Time to wait for bookkeeping interface to load
+    },
+    'invoice_matching': {
+        'amount_tolerance': 0.01,           # Default amount tolerance for matching
+        'case_sensitive_description': False, # Case sensitivity for description matching
+        'require_exact_invoice_number': True, # Require exact invoice number match
+        'minimum_confidence_score': 0.7,    # Minimum confidence score for matches
+        'max_matches_per_transaction': 1     # Maximum matches per transaction
     }
 }
 
@@ -61,6 +68,9 @@ LOG_LEVELS = {
     'NavigateToBookkeepingAutomation': 'INFO',
     'DoBookkeepingAutomation': 'INFO',
     'SnelstartAutomation': 'INFO',
+    'InvoiceMatcher': 'INFO',
+    'PDFScanner': 'DEBUG',
+    'MT940Parser': 'INFO',
     'UIUtils': 'INFO',
     'WaitUtils': 'DEBUG',
     'Config': 'INFO',
