@@ -114,7 +114,7 @@ class LoginAutomation:
         self.logger.info("Entering username...")
         login_dialog.type_keys(username, with_spaces=True)
 
-    def _submit_username(self, login_dialog: UIAWrapper)
+    def _submit_username(self, login_dialog: UIAWrapper):
         """Pure action: Navigate to password field and select password login option."""
         self.logger.info("Navigating to password field...")
         login_dialog.type_keys("{TAB}")

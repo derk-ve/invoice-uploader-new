@@ -1,11 +1,11 @@
 Window Report: SnelStart_Main_Window_Before_Login
-Generated: 2025-06-30 19:17:20
+Generated: 2025-06-30 23:44:35
 Total Elements: 68
 ============================================================
 
 ├── Dialog: 'SnelStart 12' [Enabled: False, Visible: True]
   ├── Dialog: 'Inloggen SnelStart 12' [Enabled: True, Visible: True]
-    ├── Pane (ID: 1247496) [Enabled: True, Visible: True]
+    ├── Pane (ID: 7210798) [Enabled: True, Visible: True]
       ├── Pane [Enabled: True, Visible: True]
         ├── Pane: 'SnelStart' [Enabled: True, Visible: True]
           ├── Pane [Enabled: False, Visible: True]
@@ -33,7 +33,7 @@ Total Elements: 68
       ├── Button: 'Maximise' [Enabled: True, Visible: True]
       ├── Button: 'Close' [Enabled: True, Visible: True]
   ├── Pane [Enabled: False, Visible: True]
-  ├── Pane: 'Status Bar' (ID: 4850262) [Enabled: True, Visible: False]
+  ├── Pane: 'Status Bar' (ID: 3999920) [Enabled: True, Visible: False]
     ├── Static: 'Static' [Enabled: True, Visible: False]
     ├── Static: 'Static' [Enabled: True, Visible: True]
     ├── Button: 'Item' [Enabled: True, Visible: False]
@@ -42,8 +42,8 @@ Total Elements: 68
     ├── Static: 'Static' [Enabled: True, Visible: True]
     ├── Static: 'Static' [Enabled: True, Visible: True]
     ├── Static: 'Static' [Enabled: True, Visible: False]
-  ├── Pane (ID: 788648) [Enabled: True, Visible: False]
-  ├── Pane: 'The Ribbon' (ID: 3016654) [Enabled: True, Visible: True]
+  ├── Pane (ID: 5310000) [Enabled: True, Visible: False]
+  ├── Pane: 'The Ribbon' (ID: 4064646) [Enabled: True, Visible: True]
     ├── Button [Enabled: True, Visible: True]
     ├── TabControl: 'Ribbon Tabs' [Enabled: True, Visible: True]
       ├── TabItem: 'ADMINISTRATIE' [Enabled: True, Visible: True]
