@@ -15,6 +15,7 @@ from src.utils.logging_setup import LoggingSetup
 from .components.file_selector import FileSelector
 from .components.results_display import ResultsDisplay
 from .controllers.matching_controller import MatchingController
+from .styles.theme import AppTheme
 
 
 class InvoiceMatcherApp:
@@ -23,8 +24,12 @@ class InvoiceMatcherApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.root.title("Invoice Matcher")
-        self.root.geometry("800x600")
+        self.root.title("📊 Invoice Matcher - Professional Edition")
+        self.root.geometry("1200x800")
+        self.root.minsize(1000, 700)
+        
+        # Apply professional styling
+        self.style = AppTheme.configure_styles(self.root)
         
         # Initialize logging
         LoggingSetup.setup_logging()
@@ -38,11 +43,14 @@ class InvoiceMatcherApp:
         
         # Connect callbacks
         self._connect_callbacks()
+        
+        # Apply final styling touches
+        self._apply_final_styling()
     
     def _setup_components(self):
         """Initialize all components and controllers."""
-        # Main frame for components
-        self.main_frame = ttk.Frame(self.root, padding="10")
+        # Main frame for components with professional styling
+        self.main_frame = ttk.Frame(self.root, style='Main.TFrame', padding=AppTheme.SPACING['lg'])
         
         # Initialize components
         self.file_selector = FileSelector(self.main_frame)
@@ -54,23 +62,20 @@ class InvoiceMatcherApp:
         self.status_label = None
     
     def _setup_ui(self):
-        """Create the main UI layout."""
-        # Configure main window grid
+        """Create the enhanced main UI layout."""
+        # Configure main window grid for responsive design
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         self.main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Configure main frame grid
-        self.main_frame.columnconfigure(1, weight=1)
-        self.main_frame.rowconfigure(4, weight=1)  # Results area expands
+        # Configure main frame grid with better proportions
+        self.main_frame.columnconfigure(0, weight=1)
+        self.main_frame.rowconfigure(3, weight=1)  # Results area expands (adjusted row)
         
         current_row = 0
         
-        # Title
-        title_label = ttk.Label(self.main_frame, text="Invoice Matching Tool", 
-                               font=("Arial", 16, "bold"))
-        title_label.grid(row=current_row, column=0, columnspan=3, pady=(0, 20))
-        current_row += 1
+        # Professional header section
+        current_row = self._setup_header(current_row)
         
         # File selector component
         current_row = self.file_selector.setup_ui(current_row)
@@ -81,9 +86,9 @@ class InvoiceMatcherApp:
         # Results display component
         self.results_display.setup_ui(current_row)
     
-    def _setup_control_panel(self, row_start: int) -> int:
+    def _setup_header(self, row_start: int) -> int:
         """
-        Setup the control panel with matching button and status.
+        Setup the professional header section.
         
         Args:
             row_start: Starting row for grid layout
@@ -91,21 +96,113 @@ class InvoiceMatcherApp:
         Returns:
             Next available row number
         """
-        # Control panel frame
-        button_frame = ttk.Frame(self.main_frame)
-        button_frame.grid(row=row_start, column=0, columnspan=3, pady=20)
+        # Header frame with professional styling
+        header_frame = ttk.Frame(self.main_frame, style='Header.TFrame')
+        header_frame.grid(row=row_start, column=0, columnspan=4, 
+                         sticky=(tk.W, tk.E), pady=(0, AppTheme.SPACING['xl']))
+        header_frame.configure(padding=AppTheme.SPACING['lg'])
         
-        # Match button
-        self.match_button = ttk.Button(button_frame, text="Run Matching", 
-                                      command=self._on_run_matching, 
-                                      style="Accent.TButton")
-        self.match_button.pack(side=tk.LEFT, padx=(0, 10))
+        # App title with icon
+        title_label = ttk.Label(
+            header_frame, 
+            text="📊 Invoice Matching Tool", 
+            font=('Segoe UI', 20, 'bold'),
+            foreground='white',
+            background=AppTheme.COLORS['primary']
+        )
+        title_label.pack(side=tk.LEFT)
         
-        # Status label
-        self.status_label = ttk.Label(button_frame, text="Ready", foreground="green")
+        # Version/subtitle
+        subtitle_label = ttk.Label(
+            header_frame,
+            text="Professional Edition - Advanced Invoice Processing",
+            font=AppTheme.FONTS['body'],
+            foreground='white',
+            background=AppTheme.COLORS['primary']
+        )
+        subtitle_label.pack(side=tk.LEFT, padx=(AppTheme.SPACING['md'], 0))
+        
+        return row_start + 1
+    
+    def _setup_control_panel(self, row_start: int) -> int:
+        """
+        Setup the enhanced control panel with professional styling.
+        
+        Args:
+            row_start: Starting row for grid layout
+            
+        Returns:
+            Next available row number
+        """
+        # Control panel frame with card styling
+        control_frame = AppTheme.create_card_frame(self.main_frame)
+        control_frame.grid(row=row_start, column=0, columnspan=4, 
+                          sticky=(tk.W, tk.E), 
+                          pady=(AppTheme.SPACING['md'], AppTheme.SPACING['xl']))
+        
+        # Button container
+        button_container = ttk.Frame(control_frame, style='Card.TFrame')
+        button_container.pack(fill=tk.X)
+        
+        # Match button with professional styling
+        self.match_button = ttk.Button(
+            button_container, 
+            text=f"{AppTheme.get_icon('search')} Run Matching", 
+            command=self._on_run_matching, 
+            style="Primary.TButton"
+        )
+        self.match_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
+        
+        # Status with icon
+        status_container = ttk.Frame(button_container, style='Card.TFrame')
+        status_container.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        
+        # Status icon
+        self.status_icon = ttk.Label(
+            status_container, 
+            text=AppTheme.get_icon('checkmark'), 
+            style='Card.TLabel',
+            font=AppTheme.FONTS['heading']
+        )
+        self.status_icon.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['xs']))
+        
+        # Status label with professional styling
+        self.status_label = ttk.Label(
+            status_container, 
+            text="Ready to process", 
+            style='Success.TLabel'
+        )
         self.status_label.pack(side=tk.LEFT)
         
         return row_start + 1
+    
+    def _apply_final_styling(self):
+        """Apply final styling touches and optimizations."""
+        # Configure additional treeview styling for tables
+        self.style.configure(
+            'Professional.Treeview',
+            rowheight=28,  # Increase row height for better readability
+            font=AppTheme.FONTS['body']
+        )
+        
+        # Configure tag colors for treeview items
+        self.style.configure(
+            'Professional.Treeview.Item',
+            foreground=AppTheme.COLORS['text_primary']
+        )
+        
+        # Add alternating row colors
+        self.style.configure(
+            'Professional.Treeview',
+            background=AppTheme.COLORS['surface'],
+            fieldbackground=AppTheme.COLORS['surface']
+        )
+        
+        # Configure notebook tab styling
+        self.style.configure(
+            'Professional.TNotebook.Tab',
+            focuscolor='none'
+        )
     
     def _connect_callbacks(self):
         """Connect component callbacks."""
@@ -158,14 +255,14 @@ class InvoiceMatcherApp:
             if summary:
                 # Show results
                 self.results_display.show_matching_results(summary)
-                self._set_status("Complete", "green")
+                self._set_status("Matching completed successfully", "success", "checkmark")
             else:
-                self._set_status("Error", "red")
+                self._set_status("Processing failed", "error", "error")
                 
         except Exception as e:
             self.logger.error(f"Unexpected error during matching: {e}")
             self.results_display.show_error(f"Unexpected error: {e}")
-            self._set_status("Error", "red")
+            self._set_status("Error occurred", "error", "error")
         
         finally:
             # Restore UI state
@@ -173,27 +270,45 @@ class InvoiceMatcherApp:
     
     def _set_processing_state(self, processing: bool):
         """
-        Update UI state for processing.
+        Update UI state for processing with enhanced visual feedback.
         
         Args:
             processing: True if processing, False if idle
         """
         if processing:
             self.match_button.config(state="disabled")
-            self._set_status("Processing...", "orange")
+            self._set_status("Processing...", "warning", "search")
         else:
             self.match_button.config(state="normal")
     
-    def _set_status(self, text: str, color: str):
+    def _set_status(self, text: str, status_type: str, icon_type: str = None):
         """
-        Update status label.
+        Update status label with professional styling.
         
         Args:
             text: Status text
-            color: Text color
+            status_type: Status type ('success', 'warning', 'error', 'info')
+            icon_type: Icon type for the status
         """
-        if self.status_label:
-            self.status_label.config(text=text, foreground=color)
+        if self.status_label and self.status_icon:
+            # Update text
+            self.status_label.config(text=text)
+            
+            # Update icon
+            if icon_type:
+                self.status_icon.config(text=AppTheme.get_icon(icon_type))
+            
+            # Apply styling based on status type
+            color_map = {
+                'success': AppTheme.COLORS['success'],
+                'warning': AppTheme.COLORS['warning'],
+                'error': AppTheme.COLORS['error'],
+                'info': AppTheme.COLORS['info']
+            }
+            
+            color = color_map.get(status_type, AppTheme.COLORS['text_primary'])
+            self.status_label.config(foreground=color)
+            self.status_icon.config(foreground=color)
     
     # Matching controller callback handlers
     def _on_step_start(self, step_name: str):
@@ -215,7 +330,7 @@ class InvoiceMatcherApp:
     def _on_error(self, error_message: str):
         """Handle error notifications."""
         self.results_display.show_error(error_message)
-        self._set_status("Error", "red")
+        self._set_status("Error occurred", "error", "error")
 
 
 def main():
