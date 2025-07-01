@@ -66,11 +66,11 @@ uv sync
 # Run the main SnelStart automation workflow
 python main.py
 
-# Run standalone invoice matching demo
+# Run standalone invoice matching demo (command line)
 python demo.py
 
-# Test SnelStart connection and debug UI elements
-python src/snelstart_automation/tests/test_connection.py
+# Run invoice matching with graphical user interface
+python demo_app.py
 
 # Run with debug logging (modify logging level in respective files)
 # Default logging is INFO level with timestamped output
@@ -95,20 +95,15 @@ python src/snelstart_automation/tests/test_connection.py
 
 ## Testing Approach
 
-### SnelStart Automation Testing
-Use `src/snelstart_automation/tests/test_connection.py` to verify:
-- SnelStart application startup
-- Window detection and connection
-- Login process functionality
-- UI element tree structure for debugging
+#### SnelStart Automation Testing
+- **Production Testing**: Use `python main.py` to test the complete SnelStart automation workflow
+- **UI Debugging**: Use the built-in `print_control_tree()` function in `ui_utils.py` for debugging UI structure
+- **Manual Testing**: The automation includes comprehensive logging for troubleshooting issues
 
-The test script includes interactive debugging features and comprehensive logging to troubleshoot automation issues.
-
-### Invoice Matching Testing
-Use `demo.py` to test invoice matching functionality:
-- Place MT940 files (*.STA, *.MT940) in `data/transactions/`
-- Place PDF invoices in `data/invoices/`
-- Run the demo to see matching results and statistics
+#### Invoice Matching Testing
+- **Command Line**: Use `python demo.py` to test invoice matching functionality
+- **Graphical Interface**: Use `python demo_app.py` for interactive testing with UI feedback
+- **Test Data**: Place MT940 files (*.STA, *.MT940) in `data/transactions/` and PDF invoices in `data/invoices/`
 
 ## Folder Structure
 
@@ -116,6 +111,7 @@ Use `demo.py` to test invoice matching functionality:
 invoice-uploader-new/
 ├── main.py                             # Entry point - orchestrates SnelStart automation workflow
 ├── demo.py                             # Standalone invoice matching demo script
+├── demo_app.py                         # Graphical UI launcher for invoice matching
 ├── pyproject.toml                      # Project configuration with dependencies (name: invoice-agent2)
 ├── uv.lock                             # Dependency lock file
 ├── CLAUDE.md                           # This documentation file
@@ -131,37 +127,36 @@ invoice-uploader-new/
 └── src/
     ├── invoice_matching/               # Invoice matching engine package
     │   ├── __init__.py                 # Package initialization and exports
-    │   ├── core/                       # Core matching functionality
-    │   │   ├── __init__.py             # Core module initialization
-    │   │   ├── matcher.py              # InvoiceMatcher - core matching logic
-    │   │   ├── models.py               # Data models (Transaction, Invoice, MatchResult)
-    │   │   ├── mt940_parser.py         # MT940 bank statement parser
-    │   │   └── pdf_scanner.py          # PDF invoice scanner and metadata extractor
-    │   ├── tests/                      # Invoice matching tests and sample data
-    │   │   ├── __init__.py             # Test package initialization
-    │   │   ├── test_matcher.py         # Unit tests for matching functionality
-    │   │   └── sample_data/            # Sample files for testing
-    │   ├── ui/                         # Future UI components (currently unused)
-    │   │   └── __init__.py
-    │   └── utils/                      # Invoice matching utilities (currently unused)
-    │       └── __init__.py
+    │   └── core/                       # Core matching functionality
+    │       ├── __init__.py             # Core module initialization
+    │       ├── matcher.py              # InvoiceMatcher - core matching logic
+    │       ├── models.py               # Data models (Transaction, Invoice, MatchResult)
+    │       ├── mt940_parser.py         # MT940 bank statement parser
+    │       └── pdf_scanner.py          # PDF invoice scanner and metadata extractor
     ├── snelstart_automation/           # SnelStart UI automation package
     │   ├── snelstart_auto.py           # Core automation orchestrator class
-    │   ├── automations/                # Automation modules with class-based design
-    │   │   ├── __init__.py             # Module exports (classes + backwards compatibility)
-    │   │   ├── launch_snelstart.py     # LaunchAutomation - application startup
-    │   │   ├── login.py                # LoginAutomation - authentication workflow
-    │   │   ├── navigate_to_bookkeeping.py # NavigateToBookkeepingAutomation - workspace navigation
-    │   │   └── do_bookkeeping.py       # DoBookkeepingAutomation - bookkeeping initiation
-    │   └── tests/                      # Testing modules
-    │       ├── __init__.py             # Test package initialization
-    │       └── test_connection.py      # Connection testing and debugging
+    │   └── automations/                # Automation modules with class-based design
+    │       ├── __init__.py             # Module exports (classes + backwards compatibility)
+    │       ├── launch_snelstart.py     # LaunchAutomation - application startup
+    │       ├── login.py                # LoginAutomation - authentication workflow
+    │       ├── navigate_to_bookkeeping.py # NavigateToBookkeepingAutomation - workspace navigation
+    │       └── do_bookkeeping.py       # DoBookkeepingAutomation - bookkeeping initiation
     └── utils/                          # Shared utility modules
         ├── __init__.py                 # Package initialization
         ├── ui_utils.py                 # UI debugging, element search, and report generation
         ├── wait_utils.py               # Advanced wait operations and retry logic
         ├── config.py                   # Centralized configuration management
         └── logging_setup.py            # Configurable logging system
+└── ui/                                 # Graphical user interface package
+    ├── __init__.py                     # UI package initialization  
+    ├── main_app.py                     # Main application window (modular architecture)
+    ├── components/                     # Reusable UI components
+    │   ├── __init__.py                 # Components package initialization
+    │   ├── file_selector.py            # File selection UI component
+    │   └── results_display.py          # Results display and progress UI component
+    └── controllers/                    # Business logic controllers
+        ├── __init__.py                 # Controllers package initialization
+        └── matching_controller.py      # Invoice matching business logic controller
 ```
 
 ## Implementation Status
@@ -175,19 +170,26 @@ invoice-uploader-new/
 - **Bookkeeping Process Initiation**: Clicks "Afschriften Inlezen" button to start bank statement import process
 - **UI Debugging Infrastructure**: Advanced control tree printing, element search utilities, and automated window report generation
 - **Error Handling**: Comprehensive logging and exception handling throughout all modules with configurable log levels
-- **Connection Testing**: Standalone test script for debugging UI automation issues
 - **Code Organization**: Fully restructured codebase with proper separation of concerns into modular class-based architecture
 - **Configuration Management**: Centralized configuration system with environment variable overrides and timing configurations
 - **Advanced Wait Operations**: Sophisticated retry logic, timeout handling, and UI element interaction safety
 
 #### Invoice Matching Engine
 - **MT940 Parser**: Complete parsing of MT940 bank statement files with transaction extraction
-- **PDF Scanner**: Invoice metadata extraction from PDF filenames with flexible number detection
+- **PDF Scanner**: Invoice metadata extraction from PDF filenames with flexible number detection (duplicate detection fixed)
 - **Core Matching Logic**: Intelligent matching of transactions to invoices based on invoice numbers in descriptions
 - **Data Models**: Comprehensive data structures for transactions, invoices, and matching results
 - **Reporting System**: Detailed matching statistics, confidence scoring, and summary reporting
-- **Demo Application**: Standalone script for testing invoice matching with sample data
-- **Test Infrastructure**: Unit tests and sample data for validation
+- **Demo Applications**: Both command-line (`demo.py`) and graphical (`demo_app.py`) interfaces for testing functionality
+
+#### Graphical User Interface
+- **Modular Architecture**: Clean separation of UI components, business logic, and data handling
+- **File Selection Component**: Intuitive file selection for MT940 and PDF files with validation
+- **Results Display Component**: Real-time progress updates and comprehensive results presentation
+- **Matching Controller**: Business logic orchestration with progress callbacks and error handling
+- **Professional Desktop Interface**: Native Tkinter application with proper error handling and user feedback
+- **Import Path Management**: Clean package structure with proper relative imports from project root
+- **Code Organization**: Reduced main application from 275 lines to 233 lines with additional modular components
 
 ### ⚠️ Areas for Enhancement
 
@@ -200,11 +202,23 @@ invoice-uploader-new/
 - **Advanced Matching Algorithms**: Could implement fuzzy matching, amount-based matching, or date-based matching
 - **Configuration Flexibility**: More configurable matching parameters and thresholds
 
-### 🚀 Suggested Enhancement Priority
+### 🚀 Suggested Next Steps
 
-1. **File Dialog Automation**: Implement file selection dialog handling in `do_bookkeeping.py`
-2. **Integration Bridge**: Connect invoice matching results to SnelStart file upload workflow
+#### Phase 1: Complete SnelStart Integration
+1. **UI Integration with SnelStart**: Add SnelStart automation controls to the graphical interface
+2. **File Dialog Automation**: Implement file selection dialog handling in `do_bookkeeping.py`
+3. **End-to-End Workflow**: Connect invoice matching results directly to SnelStart file upload
+
+#### Phase 2: Enhanced Features
+1. **Configuration UI**: Add settings panel for SnelStart credentials and matching parameters
+2. **Export Functionality**: Add ability to export matching results to CSV/Excel
 3. **Enhanced PDF Processing**: Add PDF content parsing for more robust invoice number extraction
+4. **Batch Processing**: Support for processing multiple MT940/PDF file sets
+
+#### Phase 3: Advanced Capabilities
+1. **Workflow Automation**: One-click processing from file selection to SnelStart upload
+2. **Historical Tracking**: Keep track of processed files and matching history
+3. **Advanced Matching Algorithms**: Fuzzy matching, amount-based matching, date-based matching
 4. **Comprehensive Testing**: Integration tests with real-world data files
 
 ## Recent Changes and Architecture Evolution
@@ -227,8 +241,16 @@ invoice-uploader-new/
 #### Invoice Matching System
 - **InvoiceMatcher**: Core matching algorithm with confidence scoring and detailed reporting
 - **MT940Parser**: Bank statement parsing with comprehensive transaction extraction
-- **PDFScanner**: Invoice metadata extraction from PDF files with flexible number detection
+- **PDFScanner**: Invoice metadata extraction from PDF files with flexible number detection and duplicate prevention
 - **Data Models**: Complete type-safe data structures for all entities
+
+#### Graphical User Interface (Latest Addition)
+- **Modular UI Architecture**: Complete refactoring from monolithic 275-line file to clean modular components
+- **FileSelector Component**: Dedicated file selection UI with validation and progress callbacks
+- **ResultsDisplay Component**: Professional results presentation with real-time progress updates
+- **MatchingController**: Business logic separation with comprehensive error handling and progress notifications
+- **Clean Import Structure**: Proper package organization allowing execution from project root
+- **MVC Pattern Implementation**: Clear separation of Model (data), View (UI), and Controller (business logic)
 
 #### Technical Infrastructure
 - **Centralized Configuration**: All settings, timing, and UI elements managed in `configs/settings.py`

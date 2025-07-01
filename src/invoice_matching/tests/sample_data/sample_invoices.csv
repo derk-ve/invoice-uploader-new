@@ -1,8 +1,0 @@
-amount,invoice_number,date,description,vendor
-125.50,INV-2024-001,2024-01-10,"Office supplies - paper and pens",Office Depot
-89.20,INV-2024-002,2024-01-12,"Software License Monthly",TechSoft Solutions
-456.78,INV-2024-003,2024-01-14,"Computer Hardware - Monitors",Hardware Plus
-150.00,INV-2024-005,2024-01-18,"Office Rent January",Property Management Co
-320.45,INV-2024-007,2024-01-20,"Marketing Campaign Design",Creative Agency
-200.00,INV-2024-008,2024-01-22,"Consulting Services",Business Consultants
-99.99,INV-2024-009,2024-01-24,"Website Hosting Annual",Web Services Inc
