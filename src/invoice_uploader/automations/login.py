@@ -5,7 +5,6 @@ from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
 from .launch_snelstart import LaunchAutomation
-from ...utils.ui_utils import generate_window_report
 from ...utils.wait_utils import wait_with_timeout, WaitTimeoutError
 
 load_dotenv()
@@ -141,6 +140,31 @@ class LoginAutomation:
             delay = self.INPUT_DELAY
         self.logger.debug(f"Waiting {delay}s after {step_name}...")
         time.sleep(delay)
+
+
+
+    def is_admin_row_ready(
+        self,
+        main_window: UIAWrapper
+    ) -> bool:
+        """
+        Returns True if the 'Row 1' element is visible and enabled in the main window.
+        """
+
+        admin_row_text = Config.get_ui_elements()['admin_row_text']
+        try:
+            for ctrl in main_window.descendants():
+                if (
+                    ctrl.friendly_class_name() == "Custom"
+                    and ctrl.window_text() == admin_row_text
+                    and ctrl.is_visible()
+                    and ctrl.is_enabled()
+                ):
+                    return True
+        except Exception:
+            pass
+        return False
+    
     
     def _wait_for_login_completion(self, main_window: UIAWrapper):
         """
@@ -156,7 +180,7 @@ class LoginAutomation:
             WaitTimeoutError: If login not completed within timeout
         """
         def check_login_complete():
-            return self.is_logged_in(main_window)
+            return self.is_logged_in(main_window) and self.is_admin_row_ready(main_window)
         
         try:
             self.logger.info("Waiting for login to complete...")
@@ -167,6 +191,7 @@ class LoginAutomation:
                 description="login completion verification",
                 provide_feedback=True
             )
+            time.sleep(2)
             return True
         except WaitTimeoutError:
             self.logger.error("Login completion timeout - login may have failed")
