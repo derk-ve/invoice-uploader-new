@@ -87,6 +87,9 @@ class SnelstartAutomation:
                 
             login_success = self.login_automation.login_to_snelstart(self.main_window)
             
+            self.login_automation.wait_for_login_completion(self.main_window)
+            self.logger.info("Manual login completed successfully")
+            
             # Generate window report after login
             if login_success:
                 self.ui_utils.generate_window_report(self.main_window, "SnelStart_Main_Window_After_Login")

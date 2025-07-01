@@ -166,7 +166,7 @@ class LoginAutomation:
         return False
     
     
-    def _wait_for_login_completion(self, main_window: UIAWrapper):
+    def wait_for_login_completion(self, main_window: UIAWrapper):
         """
         Smart wait function: waits for login process to complete by checking login status.
         
@@ -283,7 +283,7 @@ class LoginAutomation:
             self.perform_login(login_dialog, self.username, self.password)
             
             # Step 4: Wait for login completion (smart waiting)
-            self._wait_for_login_completion(main_window)
+            self.wait_for_login_completion(main_window)
             self.logger.info("Manual login completed successfully")
             return True
 
@@ -312,3 +312,8 @@ def is_logged_in(main_window: UIAWrapper = None):
     """New function for checking login status."""
     login_automation = LoginAutomation()
     return login_automation.is_logged_in(main_window)
+
+def wait_for_login_completion(main_window: UIAWrapper = None):
+    """New function for waiting for login completion."""
+    login_automation = LoginAutomation()
+    return login_automation.wait_for_login_completion(main_window)
