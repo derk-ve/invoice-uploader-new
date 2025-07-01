@@ -25,7 +25,7 @@ TIMING_CONFIG = {
         'default_interval': 5        # Default interval for window polling
     },
     'administration': {
-        'workspace_ready_timeout': 3 # Time to wait for workspace to load after clicking Row 1
+        'workspace_ready_timeout': 30 # Time to wait for workspace to load after clicking Row 1
     }
 }
 

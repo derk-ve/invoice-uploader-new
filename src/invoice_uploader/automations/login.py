@@ -191,7 +191,7 @@ class LoginAutomation:
                 description="login completion verification",
                 provide_feedback=True
             )
-            time.sleep(2)
+            time.sleep(5)
             return True
         except WaitTimeoutError:
             self.logger.error("Login completion timeout - login may have failed")
