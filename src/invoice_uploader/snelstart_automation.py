@@ -42,6 +42,7 @@ class SnelstartAutomation:
         try:
             # Quick check if SnelStart is already running (1 second check)
             try:
+                self.launch_automation.wait_for_main_window(timeout=1, interval=1)
                 self.main_window = self.launch_automation.get_main_window()
                 self.logger.info("SnelStart already running - connected to existing instance")
                 self.logger.info(f"Window title: {self.main_window.window_text()}")
