@@ -4,6 +4,8 @@ from pywinauto.application import Application
 from pywinauto import Desktop
 from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
+from ...utils.wait_utils import wait_with_timeout
+
 
 class LaunchAutomation:
     """Handles SnelStart application launch and window detection."""
@@ -66,38 +68,23 @@ class LaunchAutomation:
                 continue
         return None
     
-    def _wait_for_main_window(self, timeout: int = None, interval: int = None):
-        """
-        Pure wait function: polls for main window to appear.
-        
-        Args:
-            timeout: Maximum time to wait in seconds (uses DEFAULT_TIMEOUT if None)
-            interval: Check interval in seconds (uses DEFAULT_INTERVAL if None)
-            
-        Returns:
-            Main window when found
-            
-        Raises:
-            RuntimeError: If window not found after timeout
-        """
+    def _wait_for_main_window(self, timeout=None, interval=None):
         if timeout is None:
             timeout = self.DEFAULT_TIMEOUT
         if interval is None:
             interval = self.DEFAULT_INTERVAL
-            
-        elapsed = 0
-        while elapsed < timeout:
-            self.logger.info(f"Waiting for SnelStart window... ({elapsed}/{timeout}s)")
-            
-            window = self._find_main_window()
-            if window:
-                self.logger.info(f"Found SnelStart window: '{window.window_text()}'")
-                return window
-                    
-            time.sleep(interval)
-            elapsed += interval
 
-        raise RuntimeError("SnelStart window not found after timeout")
+        def main_window_exists():
+            window = self._find_main_window()
+            return window
+
+        return wait_with_timeout(
+            main_window_exists,
+            timeout=timeout,
+            interval=interval,
+            description="main window to appear",
+            provide_feedback=True  # or False if you want no logging
+        )
     
     def get_main_window(self, timeout: int = None, interval: int = None):
         """

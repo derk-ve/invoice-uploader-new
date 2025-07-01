@@ -82,7 +82,7 @@ class AdministrationAutomation:
         try:
             wait_with_timeout(check_ready, timeout=timeout, interval=3, 
                             description="administration workspace ready", 
-                            provide_feedback=False)
+                            provide_feedback=True)
             return True
         except WaitTimeoutError:
             self.logger.warning("Timeout waiting for administration workspace to be ready")
