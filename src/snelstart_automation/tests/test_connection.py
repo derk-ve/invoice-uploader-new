@@ -1,4 +1,4 @@
-from ..snelstart_automation import SnelstartAutomation
+from ..snelstart_auto import SnelstartAutomation
 from ...utils.logging_setup import LoggingSetup
 
 # Setup logging

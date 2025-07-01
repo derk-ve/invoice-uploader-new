@@ -12,7 +12,7 @@ The codebase follows a modular architecture with clear separation of concerns:
 
 - **main.py**: Entry point that orchestrates the complete workflow (initialize → login → open admin → upload statements)
 - **SnelstartAutomation**: Main automation class that coordinates all operations and manages application lifecycle
-- **Automation modules**: Organized in `src/invoice_uploader/automations/` folder with distinct responsibilities:
+- **Automation modules**: Organized in `src/snelstart_automation/automations/` folder with distinct responsibilities:
   - `launch_snelstart.py`: Application startup and window detection logic
   - `login.py`: Handles authentication flow with credential management
   - `administration.py`: Opens the administration window by double-clicking "Row 1"
@@ -23,7 +23,7 @@ The codebase follows a modular architecture with clear separation of concerns:
   - `config.py`: Centralized configuration management with environment variable support
   - `logging_setup.py`: Configurable logging system with per-class log levels
 - **Configuration**: `configs/settings.py` contains all application settings, timing configurations, and UI element identifiers
-- **Testing**: `src/invoice_uploader/tests/` folder contains connection testing and debugging scripts
+- **Testing**: `src/snelstart_automation/tests/` folder contains connection testing and debugging scripts
 
 ## Key Dependencies and Environment
 
@@ -48,7 +48,7 @@ uv sync
 python main.py
 
 # Test connection and debug UI elements
-python src/invoice_uploader/tests/test_connection.py
+python src/snelstart_automation/tests/test_connection.py
 
 # Run with debug logging (modify logging level in respective files)
 # Default logging is INFO level with timestamped output
@@ -88,8 +88,8 @@ invoice-uploader-new/
 ├── reports/                            # Auto-generated UI window reports (JSON + TXT)
 ├── screenshots/                        # Auto-generated debug screenshots
 └── src/
-    ├── invoice_uploader/               # Main automation package
-    │   ├── snelstart_automation.py     # Core automation orchestrator class
+    ├── snelstart_automation/           # Main automation package
+    │   ├── snelstart_auto.py           # Core automation orchestrator class
     │   ├── automations/                # Automation modules with class-based design
     │   │   ├── __init__.py             # Module exports (classes + backwards compatibility)
     │   │   ├── launch_snelstart.py     # LaunchAutomation - application startup

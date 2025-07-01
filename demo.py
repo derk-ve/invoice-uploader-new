@@ -15,6 +15,9 @@ from pathlib import Path
 sys.path.append('src')
 
 from invoice_matching import PDFScanner, parse_mt940_file, do_bookkeeping
+from utils.logging_setup import LoggingSetup
+LoggingSetup.setup_logging()
+logger = LoggingSetup.get_logger(__name__)
 
 
 def main():

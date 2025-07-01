@@ -1,5 +1,5 @@
 import time
-from src.invoice_uploader.snelstart_automation import SnelstartAutomation
+from src.snelstart_automation.snelstart_auto import SnelstartAutomation
 from src.utils.logging_setup import LoggingSetup
 from src.utils.wait_utils import wait_with_timeout, WaitTimeoutError
 from dotenv import load_dotenv

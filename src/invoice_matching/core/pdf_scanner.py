@@ -99,13 +99,13 @@ class PDFScanner:
         # Try each pattern
         for pattern in self.patterns:
             # Try case-insensitive match first
-            self.logger.debug(f"Trying pattern: {pattern} on {name_without_ext}")
+            self.logger.debug(f"Trying pattern: {pattern.lower()} on {name_without_ext}")
             match = re.search(pattern.lower(), name_without_ext)
             if match:
                 # Return the original case version
                 original_match = re.search(pattern, original_name, re.IGNORECASE)
                 if original_match:
-                    return original_match.group(1)
+                    return original_match.group(0)
         
         return None
     

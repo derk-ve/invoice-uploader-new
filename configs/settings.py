@@ -58,7 +58,7 @@ LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s - [%(name)s.%(funcName)s
 
 # Global logging configuration
 DEFAULT_LOG_LEVEL = 'INFO'  # Default level for loggers not explicitly defined
-GLOBAL_ROOT_LEVEL = 'DEBUG'  # Root logger level - set to DEBUG to allow all configured levels through
+GLOBAL_ROOT_LEVEL = 'INFO'  # Root logger level - set to DEBUG to allow all configured levels through
 
 # Per-class log levels (can be overridden by environment variables)
 LOG_LEVELS = {
@@ -78,5 +78,5 @@ LOG_LEVELS = {
 
     # Module-level loggers (for files using __name__)
     '__main__': 'INFO',  # main.py
-    'src.invoice_uploader.tests.test_connection': 'INFO',  # test_connection.py
+    'src.snelstart_automation.tests.test_connection': 'INFO',  # test_connection.py
 }
