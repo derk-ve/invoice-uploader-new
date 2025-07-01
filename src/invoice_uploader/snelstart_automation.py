@@ -51,7 +51,7 @@ class SnelstartAutomation:
                 self.ui_utils.generate_window_report(self.main_window, "SnelStart_Main_Window_Existing")
                 return True
                 
-            except RuntimeError:
+            except Exception as e:
                 # SnelStart not running, launch new instance
                 self.logger.info("SnelStart not running - launching new instance")
                 self.app = self.launch_automation.start_snelstart_application()
