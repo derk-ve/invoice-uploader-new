@@ -70,11 +70,13 @@ class AdministrationAutomation:
         def check_ready():
             # Check if administration workspace has loaded by looking for workspace elements
             try:
-                for control in window.descendants():
-                    if (control.window_text() == "Dashboard" or 
-                        control.window_text() == "Afschriften Inlezen"):
-                        return True
-                return False
+                # for control in window.descendants():
+                #     if (control.window_text() == "Dashboard" or 
+                #         control.window_text() == "Afschriften Inlezen"):
+                #         return True
+                # return False
+                time.sleep(10)
+                return True
             except:
                 return False
         

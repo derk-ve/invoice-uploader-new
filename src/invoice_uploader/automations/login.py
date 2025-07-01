@@ -216,8 +216,12 @@ class LoginAutomation:
                 self.logger.info("Login dialog found in main window - user is not logged in")
                 return False
             except RuntimeError:
-                # Login dialog not found, user is logged in
-                self.logger.info("Login dialog not found in main window - user is logged in")
+                 # Login dialog not found, now check if main window is enabled
+                if main_window.is_enabled():
+                    self.logger.info("Login dialog not found and main window is enabled - user is logged in")
+                    return True
+                else:# Login dialog not found, user is logged in
+                    self.logger.info("Login dialog not found but main window is not enabled - still loading")
                 return True
                 
         except Exception as e:
