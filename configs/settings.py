@@ -35,6 +35,13 @@ TIMING_CONFIG = {
         'require_exact_invoice_number': True, # Require exact invoice number match
         'minimum_confidence_score': 0.7,    # Minimum confidence score for matches
         'max_matches_per_transaction': 1     # Maximum matches per transaction
+    },
+    'transaction_filtering': {
+        'enabled': True,                    # Enable transaction filtering
+        'royal_canin_keywords': ['ROYAL CANIN', 'ROYALCANIN', 'ROYAL CANIN NEDERLAND B.'],
+        'sip_pattern': r'SIP\d{7,9}',      # Pattern for SIP invoice numbers
+        'require_both': True,               # Both ROYAL CANIN and SIP required for match
+        'case_sensitive': False             # Case-insensitive keyword matching
     }
 }
 

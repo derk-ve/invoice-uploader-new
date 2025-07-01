@@ -19,12 +19,18 @@ class Transaction:
         date: Transaction date
         reference: Bank reference number
         account: Bank account number (optional)
+        counterparty_name: Name of the counterparty (extracted from SEPA fields)
+        remittance_info: Remittance information (invoice numbers, etc.)
+        counterparty_iban: IBAN of the counterparty (optional)
     """
     amount: Decimal
     description: str
     date: datetime
     reference: str
     account: Optional[str] = None
+    counterparty_name: Optional[str] = None
+    remittance_info: Optional[str] = None
+    counterparty_iban: Optional[str] = None
     
     def __post_init__(self):
         """Validate transaction data after initialization."""
