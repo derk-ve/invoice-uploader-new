@@ -1,7 +1,7 @@
 {
   "window_name": "SnelStart_Main_Window_After_Login",
-  "timestamp": "20250630_234458",
-  "total_elements": 40,
+  "timestamp": "20250701_091134",
+  "total_elements": 93,
   "elements": [
     {
       "level": 0,
@@ -10,7 +10,7 @@
       "control_id": 0,
       "enabled": true,
       "visible": true,
-      "rect": "(L184, T171, R1775, B967)"
+      "rect": "(L0, T194, R1591, B990)"
     },
     {
       "level": 1,
@@ -19,106 +19,583 @@
       "control_id": 0,
       "enabled": true,
       "visible": true,
-      "rect": "(L134, T121, R1825, B1017)"
-    },
-    {
-      "level": 1,
-      "class_name": "Pane",
-      "text": "Status Bar",
-      "control_id": 3999920,
-      "enabled": true,
-      "visible": false,
-      "rect": "(L185, T933, R1774, B968)"
-    },
-    {
-      "level": 2,
-      "class_name": "Static",
-      "text": "Static",
-      "control_id": null,
-      "enabled": true,
-      "visible": false,
-      "rect": "(L0, T0, R0, B0)"
-    },
-    {
-      "level": 2,
-      "class_name": "Static",
-      "text": "Static",
-      "control_id": null,
-      "enabled": true,
-      "visible": true,
-      "rect": "(L1600, T935, R1750, B963)"
-    },
-    {
-      "level": 2,
-      "class_name": "Button",
-      "text": "Item",
-      "control_id": null,
-      "enabled": true,
-      "visible": false,
-      "rect": "(L0, T0, R0, B0)"
-    },
-    {
-      "level": 2,
-      "class_name": "Static",
-      "text": "Static",
-      "control_id": null,
-      "enabled": true,
-      "visible": true,
-      "rect": "(L186, T935, R201, B963)"
-    },
-    {
-      "level": 2,
-      "class_name": "Static",
-      "text": "Static",
-      "control_id": null,
-      "enabled": true,
-      "visible": true,
-      "rect": "(L188, T935, R298, B963)"
-    },
-    {
-      "level": 2,
-      "class_name": "Static",
-      "text": "Static",
-      "control_id": null,
-      "enabled": true,
-      "visible": true,
-      "rect": "(L298, T935, R313, B963)"
-    },
-    {
-      "level": 2,
-      "class_name": "Static",
-      "text": "Static",
-      "control_id": null,
-      "enabled": true,
-      "visible": true,
-      "rect": "(L313, T935, R328, B963)"
-    },
-    {
-      "level": 2,
-      "class_name": "Static",
-      "text": "Static",
-      "control_id": null,
-      "enabled": true,
-      "visible": false,
-      "rect": "(L0, T0, R0, B0)"
+      "rect": "(L-50, T144, R1641, B1040)"
     },
     {
       "level": 1,
       "class_name": "Pane",
       "text": "",
-      "control_id": 5310000,
-      "enabled": false,
+      "control_id": 1771638,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1, T280, R1590, B969)"
+    },
+    {
+      "level": 2,
+      "class_name": "TabControl",
+      "text": "The BackstageViewControl",
+      "control_id": 1507844,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1, T280, R1590, B969)"
+    },
+    {
+      "level": 3,
+      "class_name": "Pane",
+      "text": "The BackstageViewClientControl",
+      "control_id": 984036,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L241, T280, R1590, B969)"
+    },
+    {
+      "level": 4,
+      "class_name": "Pane",
+      "text": "The XtraLayoutControl",
+      "control_id": 852478,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L241, T280, R1590, B969)"
+    },
+    {
+      "level": 5,
+      "class_name": "Static",
+      "text": "Andere administratie openen...",
+      "control_id": 1902628,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L259, T928, R467, B952)"
+    },
+    {
+      "level": 5,
+      "class_name": "Pane",
+      "text": "",
+      "control_id": 854300,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L910, T298, R1573, B952)"
+    },
+    {
+      "level": 6,
+      "class_name": "Pane",
+      "text": "",
+      "control_id": 592236,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L910, T298, R1573, B952)"
+    },
+    {
+      "level": 7,
+      "class_name": "ScrollBar",
+      "text": "scroll bar",
+      "control_id": 1509530,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1550, T299, R1571, B950)"
+    },
+    {
+      "level": 8,
+      "class_name": "Button",
+      "text": "Line Up",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1550, T299, R1571, B320)"
+    },
+    {
+      "level": 8,
+      "class_name": "Button",
+      "text": "Page Up",
+      "control_id": null,
+      "enabled": true,
       "visible": false,
-      "rect": "(L191, T389, R1767, B927)"
+      "rect": "(L0, T0, R0, B0)"
+    },
+    {
+      "level": 8,
+      "class_name": "Thumb",
+      "text": "Position",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1550, T320, R1571, B416)"
+    },
+    {
+      "level": 8,
+      "class_name": "Button",
+      "text": "Page Down",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1550, T416, R1571, B929)"
+    },
+    {
+      "level": 8,
+      "class_name": "Button",
+      "text": "Line Down",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1550, T929, R1571, B950)"
+    },
+    {
+      "level": 5,
+      "class_name": "Pane",
+      "text": "",
+      "control_id": 1770014,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L259, T298, R905, B923)"
+    },
+    {
+      "level": 6,
+      "class_name": "Table",
+      "text": "",
+      "control_id": 787430,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L259, T298, R905, B923)"
+    },
+    {
+      "level": 7,
+      "class_name": "Pane",
+      "text": "",
+      "control_id": 5834506,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L260, T299, R904, B367)"
+    },
+    {
+      "level": 8,
+      "class_name": "Pane",
+      "text": "The XtraLayoutControl",
+      "control_id": 4589422,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L260, T299, R904, B365)"
+    },
+    {
+      "level": 9,
+      "class_name": "Button",
+      "text": "Clear",
+      "control_id": 5048190,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L610, T318, R698, B346)"
+    },
+    {
+      "level": 9,
+      "class_name": "Pane",
+      "text": "",
+      "control_id": 8389758,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L279, T318, R510, B346)"
+    },
+    {
+      "level": 10,
+      "class_name": "Edit",
+      "text": "",
+      "control_id": 590336,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L284, T321, R488, B341)"
+    },
+    {
+      "level": 9,
+      "class_name": "Button",
+      "text": "Find",
+      "control_id": 2885292,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L515, T318, R603, B346)"
+    },
+    {
+      "level": 9,
+      "class_name": "Button",
+      "text": "",
+      "control_id": 590084,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L704, T318, R734, B346)"
+    },
+    {
+      "level": 9,
+      "class_name": "Button",
+      "text": "",
+      "control_id": 3147194,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L739, T318, R769, B346)"
+    },
+    {
+      "level": 9,
+      "class_name": "Button",
+      "text": "",
+      "control_id": 656302,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L774, T318, R804, B346)"
+    },
+    {
+      "level": 9,
+      "class_name": "Button",
+      "text": "",
+      "control_id": 7669652,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L809, T318, R852, B346)"
+    },
+    {
+      "level": 9,
+      "class_name": "Button",
+      "text": "",
+      "control_id": 5440896,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L856, T318, R886, B346)"
+    },
+    {
+      "level": 9,
+      "class_name": "Table",
+      "text": "Root",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L260, T299, R904, B365)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "lciCloseButton",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L275, T314, R308, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "lciFind",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L276, T314, R512, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "lciFindButton",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L513, T314, R606, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "lciClearButton",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L608, T314, R701, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "lciNextButton",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L589, T314, R682, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "lciPrevButton",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L496, T314, R589, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "EmptySpaceItem",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L700, T314, R701, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "RefreshLayoutControlItem",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L701, T314, R736, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "ShareLayoutControlItem",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L736, T314, R771, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "ShareLayoutControlItem",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L771, T314, R806, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "CustomizationLayoutControlItem",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L806, T314, R854, B350)"
+    },
+    {
+      "level": 10,
+      "class_name": "DataItem",
+      "text": "HelpLayoutControlItem",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L854, T314, R889, B350)"
+    },
+    {
+      "level": 7,
+      "class_name": "Custom",
+      "text": "Header Panel",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L260, T366, R904, B394)"
+    },
+    {
+      "level": 8,
+      "class_name": "Header",
+      "text": "Naam",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L260, T366, R333, B394)"
+    },
+    {
+      "level": 8,
+      "class_name": "Header",
+      "text": "Soort",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L333, T366, R406, B394)"
+    },
+    {
+      "level": 8,
+      "class_name": "Header",
+      "text": "Laatst geopend",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L405, T366, R478, B394)"
+    },
+    {
+      "level": 8,
+      "class_name": "Header",
+      "text": "Eigenaar",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L478, T366, R552, B394)"
+    },
+    {
+      "level": 7,
+      "class_name": "Custom",
+      "text": "Data Panel",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L260, T394, R904, B922)"
+    },
+    {
+      "level": 8,
+      "class_name": "Custom",
+      "text": "Row 1",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L260, T394, R904, B422)"
+    },
+    {
+      "level": 9,
+      "class_name": "DataItem",
+      "text": "Naam row 0",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L260, T394, R331, B422)"
+    },
+    {
+      "level": 9,
+      "class_name": "DataItem",
+      "text": "Soort row 0",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L333, T394, R404, B422)"
+    },
+    {
+      "level": 9,
+      "class_name": "DataItem",
+      "text": "Laatst geopend row 0",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L405, T394, R476, B422)"
+    },
+    {
+      "level": 9,
+      "class_name": "DataItem",
+      "text": "Eigenaar row 0",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L478, T394, R551, B422)"
+    },
+    {
+      "level": 5,
+      "class_name": "Table",
+      "text": "Root",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L241, T280, R1590, B969)"
+    },
+    {
+      "level": 6,
+      "class_name": "DataItem",
+      "text": "layoutControlItem1",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L256, T295, R907, B925)"
+    },
+    {
+      "level": 6,
+      "class_name": "DataItem",
+      "text": "layoutControlItem2",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L908, T295, R1576, B954)"
+    },
+    {
+      "level": 6,
+      "class_name": "Table",
+      "text": "layoutControlGroup2",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L256, T925, R907, B954)"
+    },
+    {
+      "level": 7,
+      "class_name": "DataItem",
+      "text": "layoutControlItem4",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L256, T925, R469, B954)"
+    },
+    {
+      "level": 7,
+      "class_name": "DataItem",
+      "text": "emptySpaceItem1",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L469, T925, R908, B954)"
+    },
+    {
+      "level": 3,
+      "class_name": "TabItem",
+      "text": "Starten",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1, T283, R241, B339)"
+    },
+    {
+      "level": 3,
+      "class_name": "TabItem",
+      "text": "Administratiebeheer",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1, T339, R241, B395)"
+    },
+    {
+      "level": 3,
+      "class_name": "TabItem",
+      "text": "Online back-up",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1, T395, R241, B451)"
+    },
+    {
+      "level": 3,
+      "class_name": "TabItem",
+      "text": "Gebruikers",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1, T451, R241, B507)"
+    },
+    {
+      "level": 3,
+      "class_name": "TabItem",
+      "text": "Licentie",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1, T508, R241, B564)"
+    },
+    {
+      "level": 3,
+      "class_name": "MenuItem",
+      "text": "Versie 12.181.8\r\nRelatienummer: 683778",
+      "control_id": null,
+      "enabled": true,
+      "visible": true,
+      "rect": "(L1, T565, R241, B618)"
+    },
+    {
+      "level": 1,
+      "class_name": "Pane",
+      "text": "",
+      "control_id": 918384,
+      "enabled": true,
+      "visible": false,
+      "rect": "(L8, T411, R1584, B927)"
     },
     {
       "level": 1,
       "class_name": "Pane",
       "text": "The Ribbon",
-      "control_id": 4064646,
+      "control_id": 459280,
       "enabled": true,
       "visible": true,
-      "rect": "(L185, T171, R1774, B382)"
+      "rect": "(L1, T194, R1590, B405)"
     },
     {
       "level": 2,
@@ -127,7 +604,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L185, T221, R281, B257)"
+      "rect": "(L1, T244, R97, B280)"
     },
     {
       "level": 2,
@@ -136,7 +613,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L185, T221, R1774, B257)"
+      "rect": "(L1, T244, R1590, B280)"
     },
     {
       "level": 3,
@@ -145,7 +622,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L283, T221, R428, B257)"
+      "rect": "(L99, T244, R244, B280)"
     },
     {
       "level": 2,
@@ -154,7 +631,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L185, T256, R1774, B382)"
+      "rect": "(L1, T279, R1590, B405)"
     },
     {
       "level": 3,
@@ -163,7 +640,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L185, T256, R1774, B382)"
+      "rect": "(L1, T279, R1590, B405)"
     },
     {
       "level": 4,
@@ -172,7 +649,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L185, T256, R520, B387)"
+      "rect": "(L1, T279, R336, B410)"
     },
     {
       "level": 5,
@@ -181,7 +658,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L188, T260, R298, B355)"
+      "rect": "(L4, T283, R114, B378)"
     },
     {
       "level": 5,
@@ -190,16 +667,16 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L299, T260, R372, B355)"
+      "rect": "(L115, T283, R188, B378)"
     },
     {
       "level": 5,
       "class_name": "Button",
       "text": "Gebruikers",
       "control_id": null,
-      "enabled": false,
+      "enabled": true,
       "visible": true,
-      "rect": "(L373, T260, R458, B355)"
+      "rect": "(L189, T283, R274, B378)"
     },
     {
       "level": 5,
@@ -208,7 +685,7 @@
       "control_id": null,
       "enabled": false,
       "visible": true,
-      "rect": "(L459, T260, R528, B355)"
+      "rect": "(L275, T283, R344, B378)"
     },
     {
       "level": 5,
@@ -217,7 +694,7 @@
       "control_id": null,
       "enabled": false,
       "visible": true,
-      "rect": "(L529, T260, R628, B355)"
+      "rect": "(L345, T283, R444, B378)"
     },
     {
       "level": 5,
@@ -226,7 +703,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L459, T260, R517, B355)"
+      "rect": "(L275, T283, R333, B378)"
     },
     {
       "level": 6,
@@ -262,7 +739,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L520, T256, R658, B387)"
+      "rect": "(L336, T279, R474, B410)"
     },
     {
       "level": 5,
@@ -271,7 +748,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L549, T260, R627, B355)"
+      "rect": "(L365, T283, R443, B378)"
     },
     {
       "level": 5,
@@ -289,7 +766,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L658, T256, R867, B387)"
+      "rect": "(L474, T279, R683, B410)"
     },
     {
       "level": 5,
@@ -298,7 +775,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L660, T260, R863, B288)"
+      "rect": "(L476, T283, R679, B311)"
     },
     {
       "level": 5,
@@ -307,7 +784,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L660, T288, R863, B316)"
+      "rect": "(L476, T310, R679, B338)"
     },
     {
       "level": 5,
@@ -316,14 +793,14 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L660, T315, R863, B343)"
+      "rect": "(L476, T338, R679, B366)"
     },
     {
       "level": 2,
       "class_name": "Toolbar",
       "text": "Caption Bar",
       "control_id": null,
-      "enabled": false,
+      "enabled": true,
       "visible": false,
       "rect": "(L0, T0, R0, B0)"
     },
@@ -334,7 +811,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L194, T181, R1765, B210)"
+      "rect": "(L10, T204, R1581, B233)"
     },
     {
       "level": 2,
@@ -343,7 +820,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1681, T180, R1711, B210)"
+      "rect": "(L1498, T203, R1528, B233)"
     },
     {
       "level": 2,
@@ -352,7 +829,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1709, T180, R1739, B210)"
+      "rect": "(L1525, T203, R1555, B233)"
     },
     {
       "level": 2,
@@ -361,7 +838,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1736, T180, R1766, B210)"
+      "rect": "(L1553, T203, R1583, B233)"
     }
   ]
 }

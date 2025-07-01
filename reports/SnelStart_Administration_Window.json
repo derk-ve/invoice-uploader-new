@@ -1,7 +1,7 @@
 {
   "window_name": "SnelStart_Administration_Window",
-  "timestamp": "20250630_191812",
-  "total_elements": 110,
+  "timestamp": "20250701_091147",
+  "total_elements": 107,
   "elements": [
     {
       "level": 0,
@@ -10,7 +10,7 @@
       "control_id": 0,
       "enabled": true,
       "visible": true,
-      "rect": "(L229, T208, R1820, B1004)"
+      "rect": "(L0, T194, R1591, B990)"
     },
     {
       "level": 1,
@@ -19,79 +19,79 @@
       "control_id": 0,
       "enabled": true,
       "visible": true,
-      "rect": "(L179, T158, R1870, B1054)"
+      "rect": "(L-50, T144, R1641, B1040)"
     },
     {
       "level": 1,
       "class_name": "Pane",
       "text": "",
-      "control_id": 7603468,
+      "control_id": 1771638,
       "enabled": true,
       "visible": true,
-      "rect": "(L230, T294, R1819, B983)"
+      "rect": "(L1, T280, R1590, B969)"
     },
     {
       "level": 2,
       "class_name": "TabControl",
       "text": "The BackstageViewControl",
-      "control_id": 2819462,
+      "control_id": 1507844,
       "enabled": true,
       "visible": true,
-      "rect": "(L230, T294, R1819, B983)"
+      "rect": "(L1, T280, R1590, B969)"
     },
     {
       "level": 3,
       "class_name": "Pane",
       "text": "The BackstageViewClientControl",
-      "control_id": 6686510,
+      "control_id": 984036,
       "enabled": true,
       "visible": true,
-      "rect": "(L470, T294, R1819, B983)"
+      "rect": "(L241, T280, R1590, B969)"
     },
     {
       "level": 4,
       "class_name": "Pane",
       "text": "The XtraLayoutControl",
-      "control_id": 6227860,
+      "control_id": 852478,
       "enabled": true,
       "visible": true,
-      "rect": "(L470, T294, R1819, B983)"
+      "rect": "(L241, T280, R1590, B969)"
     },
     {
       "level": 5,
       "class_name": "Static",
       "text": "Andere administratie openen...",
-      "control_id": 2427120,
+      "control_id": 1902628,
       "enabled": true,
       "visible": true,
-      "rect": "(L488, T941, R696, B965)"
+      "rect": "(L259, T928, R467, B952)"
     },
     {
       "level": 5,
       "class_name": "Pane",
       "text": "",
-      "control_id": 10159364,
+      "control_id": 854300,
       "enabled": true,
       "visible": true,
-      "rect": "(L1139, T311, R1802, B965)"
+      "rect": "(L910, T298, R1573, B952)"
     },
     {
       "level": 6,
       "class_name": "Pane",
       "text": "",
-      "control_id": 5179228,
+      "control_id": 592236,
       "enabled": true,
       "visible": true,
-      "rect": "(L1139, T311, R1802, B965)"
+      "rect": "(L910, T298, R1573, B952)"
     },
     {
       "level": 7,
       "class_name": "ScrollBar",
       "text": "scroll bar",
-      "control_id": 5178794,
+      "control_id": 1509530,
       "enabled": true,
       "visible": true,
-      "rect": "(L1779, T313, R1800, B964)"
+      "rect": "(L1550, T299, R1571, B950)"
     },
     {
       "level": 8,
@@ -100,7 +100,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1779, T313, R1800, B334)"
+      "rect": "(L1550, T299, R1571, B320)"
     },
     {
       "level": 8,
@@ -118,7 +118,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1779, T334, R1800, B430)"
+      "rect": "(L1550, T320, R1571, B416)"
     },
     {
       "level": 8,
@@ -127,7 +127,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1779, T430, R1800, B943)"
+      "rect": "(L1550, T416, R1571, B929)"
     },
     {
       "level": 8,
@@ -136,115 +136,115 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1779, T943, R1800, B964)"
+      "rect": "(L1550, T929, R1571, B950)"
     },
     {
       "level": 5,
       "class_name": "Pane",
       "text": "",
-      "control_id": 5048168,
+      "control_id": 1770014,
       "enabled": false,
       "visible": true,
-      "rect": "(L488, T311, R1134, B936)"
+      "rect": "(L259, T298, R905, B923)"
     },
     {
       "level": 6,
       "class_name": "Table",
       "text": "",
-      "control_id": 5703586,
+      "control_id": 787430,
       "enabled": false,
       "visible": true,
-      "rect": "(L488, T311, R1134, B936)"
+      "rect": "(L259, T298, R905, B923)"
     },
     {
       "level": 7,
       "class_name": "Pane",
       "text": "",
-      "control_id": 6293336,
+      "control_id": 5834506,
       "enabled": false,
       "visible": true,
-      "rect": "(L489, T313, R1133, B381)"
+      "rect": "(L260, T299, R904, B367)"
     },
     {
       "level": 8,
       "class_name": "Pane",
       "text": "The XtraLayoutControl",
-      "control_id": 6948132,
+      "control_id": 4589422,
       "enabled": true,
       "visible": true,
-      "rect": "(L489, T313, R1133, B379)"
+      "rect": "(L260, T299, R904, B365)"
     },
     {
       "level": 9,
       "class_name": "Button",
       "text": "Clear",
-      "control_id": 407045550,
+      "control_id": 5048190,
       "enabled": false,
       "visible": true,
-      "rect": "(L839, T331, R927, B359)"
+      "rect": "(L610, T318, R698, B346)"
     },
     {
       "level": 9,
       "class_name": "Pane",
       "text": "",
-      "control_id": 239208260,
+      "control_id": 8389758,
       "enabled": false,
       "visible": true,
-      "rect": "(L508, T331, R739, B359)"
+      "rect": "(L279, T318, R510, B346)"
     },
     {
       "level": 9,
       "class_name": "Button",
       "text": "Find",
-      "control_id": 592000,
+      "control_id": 2885292,
       "enabled": false,
       "visible": true,
-      "rect": "(L744, T331, R832, B359)"
+      "rect": "(L515, T318, R603, B346)"
     },
     {
       "level": 9,
       "class_name": "Button",
       "text": "",
-      "control_id": 5310328,
+      "control_id": 590084,
       "enabled": false,
       "visible": true,
-      "rect": "(L933, T331, R963, B359)"
+      "rect": "(L704, T318, R734, B346)"
     },
     {
       "level": 9,
       "class_name": "Button",
       "text": "",
-      "control_id": 4720508,
+      "control_id": 3147194,
       "enabled": false,
       "visible": true,
-      "rect": "(L968, T331, R998, B359)"
+      "rect": "(L739, T318, R769, B346)"
     },
     {
       "level": 9,
       "class_name": "Button",
       "text": "",
-      "control_id": 2951022,
+      "control_id": 656302,
       "enabled": false,
       "visible": true,
-      "rect": "(L1003, T331, R1033, B359)"
+      "rect": "(L774, T318, R804, B346)"
     },
     {
       "level": 9,
       "class_name": "Button",
       "text": "",
-      "control_id": 1313032,
+      "control_id": 7669652,
       "enabled": false,
       "visible": true,
-      "rect": "(L1038, T331, R1081, B359)"
+      "rect": "(L809, T318, R852, B346)"
     },
     {
       "level": 9,
       "class_name": "Button",
       "text": "",
-      "control_id": 3410176,
+      "control_id": 5440896,
       "enabled": false,
       "visible": true,
-      "rect": "(L1085, T331, R1115, B359)"
+      "rect": "(L856, T318, R886, B346)"
     },
     {
       "level": 9,
@@ -253,7 +253,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L489, T313, R1133, B379)"
+      "rect": "(L260, T299, R904, B365)"
     },
     {
       "level": 10,
@@ -262,7 +262,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L504, T328, R537, B364)"
+      "rect": "(L275, T314, R308, B350)"
     },
     {
       "level": 10,
@@ -271,7 +271,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L505, T328, R741, B364)"
+      "rect": "(L276, T314, R512, B350)"
     },
     {
       "level": 10,
@@ -280,7 +280,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L741, T328, R834, B364)"
+      "rect": "(L513, T314, R606, B350)"
     },
     {
       "level": 10,
@@ -289,7 +289,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L836, T328, R929, B364)"
+      "rect": "(L608, T314, R701, B350)"
     },
     {
       "level": 10,
@@ -298,7 +298,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L818, T328, R911, B364)"
+      "rect": "(L589, T314, R682, B350)"
     },
     {
       "level": 10,
@@ -307,7 +307,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L725, T328, R818, B364)"
+      "rect": "(L496, T314, R589, B350)"
     },
     {
       "level": 10,
@@ -316,7 +316,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L929, T328, R930, B364)"
+      "rect": "(L700, T314, R701, B350)"
     },
     {
       "level": 10,
@@ -325,7 +325,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L930, T328, R965, B364)"
+      "rect": "(L701, T314, R736, B350)"
     },
     {
       "level": 10,
@@ -334,7 +334,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L965, T328, R1000, B364)"
+      "rect": "(L736, T314, R771, B350)"
     },
     {
       "level": 10,
@@ -343,7 +343,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1000, T328, R1035, B364)"
+      "rect": "(L771, T314, R806, B350)"
     },
     {
       "level": 10,
@@ -352,7 +352,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1035, T328, R1083, B364)"
+      "rect": "(L806, T314, R854, B350)"
     },
     {
       "level": 10,
@@ -361,7 +361,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1083, T328, R1118, B364)"
+      "rect": "(L854, T314, R889, B350)"
     },
     {
       "level": 7,
@@ -370,7 +370,7 @@
       "control_id": null,
       "enabled": false,
       "visible": true,
-      "rect": "(L489, T380, R1133, B408)"
+      "rect": "(L260, T366, R904, B394)"
     },
     {
       "level": 8,
@@ -379,34 +379,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L489, T380, R562, B408)"
-    },
-    {
-      "level": 9,
-      "class_name": "Header",
-      "text": "Soort",
-      "control_id": null,
-      "enabled": true,
-      "visible": true,
-      "rect": "(L335, T205, R408, B233)"
-    },
-    {
-      "level": 9,
-      "class_name": "Header",
-      "text": "Laatst geopend",
-      "control_id": null,
-      "enabled": true,
-      "visible": true,
-      "rect": "(L408, T205, R481, B233)"
-    },
-    {
-      "level": 9,
-      "class_name": "Header",
-      "text": "Eigenaar",
-      "control_id": null,
-      "enabled": true,
-      "visible": true,
-      "rect": "(L480, T205, R554, B233)"
+      "rect": "(L260, T366, R333, B394)"
     },
     {
       "level": 8,
@@ -415,7 +388,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L335, T205, R408, B233)"
+      "rect": "(L333, T366, R406, B394)"
     },
     {
       "level": 8,
@@ -424,7 +397,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L408, T205, R481, B233)"
+      "rect": "(L405, T366, R478, B394)"
     },
     {
       "level": 8,
@@ -433,16 +406,16 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L480, T205, R554, B233)"
+      "rect": "(L478, T366, R552, B394)"
     },
     {
       "level": 7,
       "class_name": "Custom",
       "text": "Data Panel",
       "control_id": null,
-      "enabled": true,
+      "enabled": false,
       "visible": true,
-      "rect": "(L263, T233, R907, B782)"
+      "rect": "(L260, T394, R904, B922)"
     },
     {
       "level": 8,
@@ -451,7 +424,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L263, T233, R907, B261)"
+      "rect": "(L260, T394, R904, B422)"
     },
     {
       "level": 9,
@@ -460,7 +433,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L263, T233, R334, B261)"
+      "rect": "(L260, T394, R331, B422)"
     },
     {
       "level": 9,
@@ -469,7 +442,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L335, T233, R406, B261)"
+      "rect": "(L333, T394, R404, B422)"
     },
     {
       "level": 9,
@@ -478,7 +451,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L408, T233, R479, B261)"
+      "rect": "(L405, T394, R476, B422)"
     },
     {
       "level": 9,
@@ -487,7 +460,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L480, T233, R553, B261)"
+      "rect": "(L478, T394, R551, B422)"
     },
     {
       "level": 5,
@@ -496,7 +469,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L244, T119, R1593, B829)"
+      "rect": "(L241, T280, R1590, B969)"
     },
     {
       "level": 6,
@@ -505,7 +478,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L259, T134, R910, B785)"
+      "rect": "(L256, T295, R907, B925)"
     },
     {
       "level": 6,
@@ -514,7 +487,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L910, T134, R1578, B814)"
+      "rect": "(L908, T295, R1576, B954)"
     },
     {
       "level": 6,
@@ -523,7 +496,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L259, T785, R910, B814)"
+      "rect": "(L256, T925, R907, B954)"
     },
     {
       "level": 7,
@@ -532,7 +505,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L259, T785, R472, B814)"
+      "rect": "(L256, T925, R469, B954)"
     },
     {
       "level": 7,
@@ -541,7 +514,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L471, T785, R910, B814)"
+      "rect": "(L469, T925, R908, B954)"
     },
     {
       "level": 3,
@@ -550,7 +523,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L4, T121, R244, B177)"
+      "rect": "(L1, T283, R241, B339)"
     },
     {
       "level": 3,
@@ -559,7 +532,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L4, T178, R244, B234)"
+      "rect": "(L1, T339, R241, B395)"
     },
     {
       "level": 3,
@@ -568,7 +541,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L4, T234, R244, B290)"
+      "rect": "(L1, T395, R241, B451)"
     },
     {
       "level": 3,
@@ -577,7 +550,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L4, T290, R244, B346)"
+      "rect": "(L1, T451, R241, B507)"
     },
     {
       "level": 3,
@@ -586,7 +559,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L4, T346, R244, B402)"
+      "rect": "(L1, T508, R241, B564)"
     },
     {
       "level": 3,
@@ -595,25 +568,25 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L4, T404, R244, B457)"
+      "rect": "(L1, T565, R241, B618)"
     },
     {
       "level": 1,
       "class_name": "Pane",
       "text": "",
-      "control_id": 788648,
+      "control_id": 918384,
       "enabled": true,
       "visible": false,
-      "rect": "(L236, T425, R1812, B963)"
+      "rect": "(L8, T411, R1584, B949)"
     },
     {
       "level": 1,
       "class_name": "Pane",
       "text": "The Ribbon",
-      "control_id": 3016654,
+      "control_id": 459280,
       "enabled": true,
       "visible": true,
-      "rect": "(L230, T208, R1819, B419)"
+      "rect": "(L1, T194, R1590, B405)"
     },
     {
       "level": 2,
@@ -622,7 +595,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L230, T258, R326, B294)"
+      "rect": "(L1, T244, R97, B280)"
     },
     {
       "level": 2,
@@ -631,7 +604,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L230, T258, R1819, B294)"
+      "rect": "(L1, T244, R1590, B280)"
     },
     {
       "level": 3,
@@ -640,7 +613,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L328, T258, R473, B294)"
+      "rect": "(L99, T244, R244, B280)"
     },
     {
       "level": 3,
@@ -703,7 +676,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L230, T293, R1819, B419)"
+      "rect": "(L1, T279, R1590, B405)"
     },
     {
       "level": 3,
@@ -712,7 +685,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L230, T293, R1819, B419)"
+      "rect": "(L1, T279, R1590, B405)"
     },
     {
       "level": 4,
@@ -721,7 +694,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L230, T293, R309, B424)"
+      "rect": "(L1, T279, R80, B410)"
     },
     {
       "level": 5,
@@ -730,7 +703,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L234, T296, R303, B391)"
+      "rect": "(L5, T283, R74, B378)"
     },
     {
       "level": 6,
@@ -766,7 +739,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L309, T293, R423, B424)"
+      "rect": "(L80, T279, R194, B410)"
     },
     {
       "level": 5,
@@ -775,7 +748,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L321, T296, R407, B391)"
+      "rect": "(L93, T283, R179, B378)"
     },
     {
       "level": 4,
@@ -784,7 +757,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L423, T293, R517, B424)"
+      "rect": "(L194, T279, R288, B410)"
     },
     {
       "level": 5,
@@ -802,7 +775,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L430, T296, R508, B391)"
+      "rect": "(L201, T283, R279, B378)"
     },
     {
       "level": 4,
@@ -811,7 +784,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L516, T293, R791, B424)"
+      "rect": "(L288, T279, R563, B410)"
     },
     {
       "level": 5,
@@ -820,7 +793,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L519, T296, R618, B391)"
+      "rect": "(L290, T283, R389, B378)"
     },
     {
       "level": 5,
@@ -829,7 +802,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L619, T296, R707, B391)"
+      "rect": "(L390, T283, R478, B378)"
     },
     {
       "level": 5,
@@ -838,7 +811,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L708, T296, R788, B391)"
+      "rect": "(L479, T283, R559, B378)"
     },
     {
       "level": 5,
@@ -856,7 +829,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L791, T293, R960, B424)"
+      "rect": "(L563, T279, R732, B410)"
     },
     {
       "level": 5,
@@ -865,7 +838,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L794, T296, R859, B391)"
+      "rect": "(L565, T283, R630, B378)"
     },
     {
       "level": 5,
@@ -874,7 +847,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L860, T296, R956, B391)"
+      "rect": "(L631, T283, R727, B378)"
     },
     {
       "level": 4,
@@ -883,7 +856,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L960, T293, R1055, B424)"
+      "rect": "(L731, T279, R826, B410)"
     },
     {
       "level": 5,
@@ -892,7 +865,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L970, T296, R1044, B391)"
+      "rect": "(L741, T283, R815, B378)"
     },
     {
       "level": 4,
@@ -901,7 +874,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1055, T293, R1169, B424)"
+      "rect": "(L826, T279, R940, B410)"
     },
     {
       "level": 5,
@@ -910,7 +883,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1065, T296, R1156, B391)"
+      "rect": "(L836, T283, R927, B378)"
     },
     {
       "level": 4,
@@ -919,7 +892,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1169, T293, R1378, B424)"
+      "rect": "(L940, T279, R1149, B410)"
     },
     {
       "level": 5,
@@ -928,7 +901,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1171, T296, R1374, B324)"
+      "rect": "(L943, T283, R1146, B311)"
     },
     {
       "level": 5,
@@ -937,7 +910,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1171, T324, R1374, B352)"
+      "rect": "(L943, T310, R1146, B338)"
     },
     {
       "level": 5,
@@ -946,7 +919,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1171, T351, R1374, B379)"
+      "rect": "(L943, T338, R1146, B366)"
     },
     {
       "level": 2,
@@ -964,7 +937,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L239, T218, R1810, B247)"
+      "rect": "(L10, T204, R1581, B233)"
     },
     {
       "level": 2,
@@ -973,7 +946,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1726, T216, R1756, B246)"
+      "rect": "(L1498, T203, R1528, B233)"
     },
     {
       "level": 2,
@@ -982,7 +955,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1754, T216, R1784, B246)"
+      "rect": "(L1525, T203, R1555, B233)"
     },
     {
       "level": 2,
@@ -991,7 +964,7 @@
       "control_id": null,
       "enabled": true,
       "visible": true,
-      "rect": "(L1781, T216, R1811, B246)"
+      "rect": "(L1553, T203, R1583, B233)"
     }
   ]
 }
