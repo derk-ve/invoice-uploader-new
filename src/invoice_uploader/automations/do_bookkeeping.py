@@ -5,20 +5,20 @@ from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
 from ...utils.wait_utils import wait_for_element, safe_click
 
-class InvoiceReaderAutomation:
-    """Handles SnelStart invoice reading automation."""
+class DoBookkeepingAutomation:
+    """Handles SnelStart bookkeeping automation."""
     
     def __init__(self):
-        """Initialize the invoice reader automation."""
+        """Initialize the bookkeeping automation."""
         self.logger = LoggingSetup.get_logger(self.__class__.__name__)
         self.ui_elements = Config.get_ui_elements()
     
-    def click_afschriften_inlezen(self, window: UIAWrapper):
+    def start_bookkeeping_process(self, window: UIAWrapper):
         """
-        Clicks the 'Afschriften Inlezen' button inside the Boekhouden toolbar.
+        Starts the bookkeeping process by clicking the 'Afschriften Inlezen' button inside the Boekhouden toolbar.
 
         Args:
-            window (UIAWrapper): The administratie window.
+            window (UIAWrapper): The bookkeeping window.
 
         Raises:
             RuntimeError: If the button could not be found or clicked.
@@ -51,7 +51,7 @@ class InvoiceReaderAutomation:
 
 
 # Backwards compatibility function for existing code
-def click_afschriften_inlezen(window: UIAWrapper):
+def start_bookkeeping_process(window: UIAWrapper):
     """Backwards compatibility function."""
-    invoice_reader_automation = InvoiceReaderAutomation()
-    return invoice_reader_automation.click_afschriften_inlezen(window)
+    bookkeeping_automation = DoBookkeepingAutomation()
+    return bookkeeping_automation.start_bookkeeping_process(window)

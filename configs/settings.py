@@ -58,8 +58,8 @@ LOG_LEVELS = {
     # Class-based loggers (for automation classes using self.__class__.__name__)
     'LoginAutomation': 'INFO',
     'LaunchAutomation': 'DEBUG', 
-    'AdministrationAutomation': 'INFO',
-    'InvoiceReaderAutomation': 'INFO',
+    'NavigateToBookkeepingAutomation': 'INFO',
+    'DoBookkeepingAutomation': 'INFO',
     'SnelstartAutomation': 'INFO',
     'UIUtils': 'INFO',
     'WaitUtils': 'DEBUG',

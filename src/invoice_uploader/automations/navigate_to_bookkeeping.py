@@ -4,11 +4,11 @@ from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
 from ...utils.wait_utils import wait_with_timeout, WaitTimeoutError
 
-class AdministrationAutomation:
-    """Handles SnelStart administration window automation."""
+class NavigateToBookkeepingAutomation:
+    """Handles navigation to SnelStart bookkeeping interface."""
     
     def __init__(self):
-        """Initialize the administration automation."""
+        """Initialize the navigate to bookkeeping automation."""
         self.logger = LoggingSetup.get_logger(self.__class__.__name__)
         self.ui_elements = Config.get_ui_elements()
         
@@ -90,12 +90,12 @@ class AdministrationAutomation:
             self.logger.warning("Timeout waiting for administration workspace to be ready")
             raise
     
-    def get_administratie_window(self, window: UIAWrapper):
+    def navigate_to_administration(self, window: UIAWrapper):
         """
-        Orchestration function: opens administratie by clicking Row 1 and waiting for workspace.
+        Orchestration function: navigates to administration by clicking Row 1 and waiting for workspace.
 
         Args:
-            window (UIAWrapper): The main administratie view window.
+            window (UIAWrapper): The main window.
 
         Returns:
             None
@@ -191,7 +191,7 @@ class AdministrationAutomation:
             self.logger.warning("Timeout waiting for bookkeeping interface to be ready")
             raise
 
-    def navigate_to_boekhouden(self, window: UIAWrapper):
+    def navigate_to_bookkeeping_tab(self, window: UIAWrapper):
         """
         Orchestration function: navigates to bookkeeping section by clicking BOEKHOUDEN tab.
 
@@ -219,12 +219,12 @@ class AdministrationAutomation:
 
 
 # Backwards compatibility functions for existing code
-def get_administratie_window(window: UIAWrapper):
+def navigate_to_administration(window: UIAWrapper):
     """Backwards compatibility function."""
-    admin_automation = AdministrationAutomation()
-    return admin_automation.get_administratie_window(window)
+    admin_automation = NavigateToBookkeepingAutomation()
+    return admin_automation.navigate_to_administration(window)
 
-def navigate_to_boekhouden(window: UIAWrapper):
+def navigate_to_bookkeeping_tab(window: UIAWrapper):
     """Backwards compatibility function for bookkeeping navigation."""
-    admin_automation = AdministrationAutomation()
-    return admin_automation.navigate_to_boekhouden(window)
+    admin_automation = NavigateToBookkeepingAutomation()
+    return admin_automation.navigate_to_bookkeeping_tab(window)

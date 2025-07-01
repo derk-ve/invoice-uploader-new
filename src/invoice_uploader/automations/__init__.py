@@ -5,21 +5,21 @@ Automation modules for SnelStart application interaction.
 # Import classes
 from .launch_snelstart import LaunchAutomation
 from .login import LoginAutomation
-from .administration import AdministrationAutomation
-from .read_invoices import InvoiceReaderAutomation
+from .navigate_to_bookkeeping import NavigateToBookkeepingAutomation
+from .do_bookkeeping import DoBookkeepingAutomation
 
 # Import backwards compatibility functions
 from .launch_snelstart import get_snelstart_path, start_snelstart_application, get_main_window
 from .login import get_login_dialog, perform_login, login_to_snelstart
-from .administration import get_administratie_window, navigate_to_boekhouden
-from .read_invoices import click_afschriften_inlezen
+from .navigate_to_bookkeeping import navigate_to_administration, navigate_to_bookkeeping_tab
+from .do_bookkeeping import start_bookkeeping_process
 
 __all__ = [
     # Classes
     'LaunchAutomation',
     'LoginAutomation',
-    'AdministrationAutomation', 
-    'InvoiceReaderAutomation',
+    'NavigateToBookkeepingAutomation', 
+    'DoBookkeepingAutomation',
     # Backwards compatibility functions
     'get_snelstart_path',
     'start_snelstart_application', 
@@ -27,7 +27,7 @@ __all__ = [
     'get_login_dialog',
     'perform_login',
     'login_to_snelstart',
-    'get_administratie_window',
-    'navigate_to_boekhouden',
-    'click_afschriften_inlezen'
+    'navigate_to_administration',
+    'navigate_to_bookkeeping_tab',
+    'start_bookkeeping_process'
 ]

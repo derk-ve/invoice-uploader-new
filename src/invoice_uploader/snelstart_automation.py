@@ -4,8 +4,8 @@ from ..utils.ui_utils import UIUtils
 from ..utils.logging_setup import LoggingSetup
 from .automations.launch_snelstart import LaunchAutomation
 from .automations.login import LoginAutomation
-from .automations.administration import AdministrationAutomation
-from .automations.read_invoices import InvoiceReaderAutomation
+from .automations.navigate_to_bookkeeping import NavigateToBookkeepingAutomation
+from .automations.do_bookkeeping import DoBookkeepingAutomation
 
 class SnelstartAutomation:
     def __init__(self):
@@ -21,8 +21,8 @@ class SnelstartAutomation:
         # Initialize automation components
         self.launch_automation = LaunchAutomation()
         self.login_automation = LoginAutomation()
-        self.admin_automation = AdministrationAutomation()
-        self.invoice_reader_automation = InvoiceReaderAutomation()
+        self.admin_automation = NavigateToBookkeepingAutomation()
+        self.bookkeeping_automation = DoBookkeepingAutomation()
         
         # Application state
         self.app_path = self.launch_automation.app_path
@@ -103,8 +103,8 @@ class SnelstartAutomation:
     def open_bookkeeping(self):
         try:
 
-            self.admin_automation.get_administratie_window(self.main_window)
-            self.admin_automation.navigate_to_boekhouden(self.main_window)
+            self.admin_automation.navigate_to_administration(self.main_window)
+            self.admin_automation.navigate_to_bookkeeping_tab(self.main_window)
 
             bookkeeping_window = self.main_window  # The function doesn't return the window, it opens it
             self.bookkeeping_window = bookkeeping_window
@@ -134,7 +134,7 @@ class SnelstartAutomation:
                 return False
             
             # Click on the "Afschriften Inlezen" button
-            self.invoice_reader_automation.click_afschriften_inlezen(self.admin_window)
+            self.bookkeeping_automation.start_bookkeeping_process(self.admin_window)
             
             # Generate window report after clicking afschriften button
             time.sleep(1)  # Brief wait for any new dialogs to appear
