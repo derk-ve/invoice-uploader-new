@@ -42,9 +42,9 @@ def main():
         wait_for_step_ready("administration opening", timeout=2)
         print('\n')
 
-        if not upload_afschriften(snelstart):
+        if not do_bookkeeping(snelstart):
             return
-        wait_for_step_ready("afschriften upload", timeout=2)
+        wait_for_step_ready("bookkeeping", timeout=2)
         print('\n')
 
         logger.info("Waiting for user to exit...")
@@ -52,6 +52,8 @@ def main():
 
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
+        logger.info("Waiting for user to exit...")
+        wait_for_user_exit(snelstart)
 
 def initialize_snelstart():
     logger.info("Starting Snelstart...")
@@ -72,17 +74,17 @@ def perform_login(snelstart: SnelstartAutomation):
 
 
 def open_bookkeeping(snelstart: SnelstartAutomation):
-    logger.info("Opening Administratie window...")
+    logger.info("Navigating to bookkeeping tab...")
     if snelstart.open_bookkeeping():
-        logger.info("Administratie window opened")
+        logger.info("Bookkeeping tab opened")
         return True
-    logger.error("Failed to open Administratie window")
+    logger.error("Failed to open bookkeeping tab")
     return False
 
-def upload_afschriften(snelstart: SnelstartAutomation):
-    logger.info("Uploading Afschriften...")
-    if snelstart.load_in_afschriften():
-        logger.info("Successfully uploaded afschriften")
+def do_bookkeeping(snelstart: SnelstartAutomation):
+    logger.info("Doing bookkeeping...")
+    if snelstart.do_bookkeeping():
+        logger.info("Successfully did bookkeeping")
         snelstart.print_control_tree(snelstart.admin_window)
         return True
     logger.error("Failed to upload afschriften")
