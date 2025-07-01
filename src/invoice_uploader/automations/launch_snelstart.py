@@ -49,7 +49,7 @@ class LaunchAutomation:
             self.logger.error(f"Error starting SnelStart: {str(e)}")
             return None
 
-    def _find_main_window(self):
+    def get_main_window(self):
         """
         Pure action function: searches for SnelStart window once without waiting.
         
@@ -68,14 +68,14 @@ class LaunchAutomation:
                 continue
         return None
     
-    def _wait_for_main_window(self, timeout=None, interval=None):
+    def wait_for_main_window(self, timeout=None, interval=None):
         if timeout is None:
             timeout = self.DEFAULT_TIMEOUT
         if interval is None:
             interval = self.DEFAULT_INTERVAL
 
         def main_window_exists():
-            window = self._find_main_window()
+            window = self.get_main_window()
             return window
 
         return wait_with_timeout(
@@ -86,18 +86,6 @@ class LaunchAutomation:
             provide_feedback=True  # or False if you want no logging
         )
     
-    def get_main_window(self, timeout: int = None, interval: int = None):
-        """
-        Orchestration function: finds main window with waiting/polling.
-        
-        Args:
-            timeout: Maximum time to wait in seconds (uses DEFAULT_TIMEOUT if None)
-            interval: Check interval in seconds (uses DEFAULT_INTERVAL if None)
-            
-        Returns:
-            Main window if found, raises RuntimeError otherwise
-        """
-        return self._wait_for_main_window(timeout, interval)
 
 
 
@@ -112,8 +100,8 @@ def start_snelstart_application(app_path: str):
     launch_automation = LaunchAutomation()
     return launch_automation.start_snelstart_application(app_path)
 
-def get_main_window(timeout: int = 30, interval: int = 5):
+def get_main_window():
     """Backwards compatibility function."""
     launch_automation = LaunchAutomation()
-    return launch_automation.get_main_window(timeout, interval)
+    return launch_automation.get_main_window()
 
