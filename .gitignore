@@ -28,6 +28,5 @@ wheels/
 
 # Project-specific ignores
 logs/
-invoices/
 uv.lock
 .python-version
