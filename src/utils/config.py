@@ -49,6 +49,7 @@ class Config:
             'login_dialog_text': LOGIN_DIALOG_TEXT,
             'admin_row_text': ADMIN_ROW_TEXT,
             'invoice_button_text': INVOICE_BUTTON_TEXT,
+            'boekhouden_tab_text': BOEKHOUDEN_TAB_TEXT,
             'login_verification_tab': LOGIN_VERIFICATION_TAB,
             'login_verification_button': LOGIN_VERIFICATION_BUTTON
         }
