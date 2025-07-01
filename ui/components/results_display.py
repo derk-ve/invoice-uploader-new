@@ -16,7 +16,7 @@ from src.invoice_matching.core.models import MatchingSummary
 class ResultsDisplay:
     """Enhanced component for displaying matching results with tabbed interface."""
     
-    def __init__(self, parent: ttk.Widget):
+    def __init__(self, parent: tk.Widget):
         """
         Initialize results display component.
         

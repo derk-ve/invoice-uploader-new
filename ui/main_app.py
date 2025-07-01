@@ -60,6 +60,7 @@ class InvoiceMatcherApp:
         # UI state
         self.match_button = None
         self.status_label = None
+        self.status_icon = None
     
     def _setup_ui(self):
         """Create the enhanced main UI layout."""

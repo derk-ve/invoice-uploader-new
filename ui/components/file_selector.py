@@ -11,7 +11,7 @@ from typing import List, Callable, Optional
 class FileSelector:
     """Component for handling file selection UI and logic."""
     
-    def __init__(self, parent: ttk.Widget):
+    def __init__(self, parent: tk.Widget):
         """
         Initialize file selector component.
         

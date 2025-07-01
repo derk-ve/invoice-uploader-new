@@ -16,7 +16,7 @@ from src.invoice_matching.core.models import Transaction, Invoice, MatchResult
 class DataTable:
     """Base class for data table components."""
     
-    def __init__(self, parent: ttk.Widget, title: str, columns: List[Tuple[str, str, int]]):
+    def __init__(self, parent: tk.Widget, title: str, columns: List[Tuple[str, str, int]]):
         """
         Initialize data table.
         
@@ -116,7 +116,7 @@ class DataTable:
 class MatchesTable(DataTable):
     """Table for displaying matched transaction-invoice pairs."""
     
-    def __init__(self, parent: ttk.Widget):
+    def __init__(self, parent: tk.Widget):
         """Initialize matches table."""
         columns = [
             ('date', 'Date', 100),
@@ -184,7 +184,7 @@ class MatchesTable(DataTable):
 class UnmatchedTransactionsTable(DataTable):
     """Table for displaying unmatched transactions."""
     
-    def __init__(self, parent: ttk.Widget):
+    def __init__(self, parent: tk.Widget):
         """Initialize unmatched transactions table."""
         columns = [
             ('date', 'Date', 100),
@@ -257,7 +257,7 @@ class UnmatchedTransactionsTable(DataTable):
 class UnmatchedInvoicesTable(DataTable):
     """Table for displaying unmatched invoices."""
     
-    def __init__(self, parent: ttk.Widget):
+    def __init__(self, parent: tk.Widget):
         """Initialize unmatched invoices table."""
         columns = [
             ('invoice_num', 'Invoice Number', 150),

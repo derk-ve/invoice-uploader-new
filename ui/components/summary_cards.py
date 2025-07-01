@@ -14,7 +14,7 @@ from src.invoice_matching.core.models import MatchingSummary
 class SummaryCards:
     """Component for displaying matching summary in visual metric cards."""
     
-    def __init__(self, parent: ttk.Widget):
+    def __init__(self, parent: tk.Widget):
         """
         Initialize summary cards component.
         
@@ -49,7 +49,8 @@ class SummaryCards:
         # Cards container frame
         self.cards_frame = ttk.Frame(self.parent, style='Main.TFrame')
         self.cards_frame.grid(row=current_row, column=0, columnspan=4, 
-                             sticky=(tk.W, tk.E), pady=(0, AppTheme.SPACING['lg']))\n        
+                             sticky=(tk.W, tk.E), pady=(0, AppTheme.SPACING['lg']))
+        
         # Configure grid weights for responsive layout
         for i in range(4):
             self.cards_frame.columnconfigure(i, weight=1)
