@@ -6,12 +6,9 @@ import os
 from pathlib import Path
 from typing import List, Optional, Callable
 
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
-
-from invoice_matching import PDFScanner, parse_mt940_file, do_bookkeeping
-from invoice_matching.core.models import MatchingSummary
-from utils.logging_setup import LoggingSetup
+from src.invoice_matching import PDFScanner, parse_mt940_file, do_bookkeeping
+from src.invoice_matching.core.models import MatchingSummary
+from src.utils.logging_setup import LoggingSetup
 
 
 class MatchingController:

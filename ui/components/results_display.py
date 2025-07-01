@@ -8,10 +8,7 @@ from pathlib import Path
 from typing import List, Optional
 
 # Import for type hints
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
-from invoice_matching.core.models import MatchingSummary
+from src.invoice_matching.core.models import MatchingSummary
 
 
 class ResultsDisplay:

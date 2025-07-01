@@ -10,16 +10,11 @@ Clean, modular architecture with separated concerns:
 
 import tkinter as tk
 from tkinter import ttk, messagebox
-import sys
-import os
 
-# Add src to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-from utils.logging_setup import LoggingSetup
-from components.file_selector import FileSelector
-from components.results_display import ResultsDisplay
-from controllers.matching_controller import MatchingController
+from src.utils.logging_setup import LoggingSetup
+from .components.file_selector import FileSelector
+from .components.results_display import ResultsDisplay
+from .controllers.matching_controller import MatchingController
 
 
 class InvoiceMatcherApp:
