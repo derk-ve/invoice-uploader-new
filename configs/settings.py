@@ -39,8 +39,6 @@ TIMING_CONFIG = {
     'transaction_filtering': {
         'enabled': True,                    # Enable transaction filtering
         'royal_canin_keywords': ['ROYAL CANIN', 'ROYALCANIN', 'ROYAL CANIN NEDERLAND B.'],
-        'sip_pattern': r'SIP\d{7,9}',      # Pattern for SIP invoice numbers
-        'require_both': True,               # Both ROYAL CANIN and SIP required for match
         'case_sensitive': False             # Case-insensitive keyword matching
     }
 }
@@ -76,8 +74,9 @@ LOG_LEVELS = {
     'DoBookkeepingAutomation': 'INFO',
     'SnelstartAutomation': 'INFO',
     'InvoiceMatcher': 'INFO',
-    'PDFScanner': 'DEBUG',
-    'MT940Parser': 'INFO',
+    'PDFScanner': 'INFO',
+    'MT940Parser': 'DEBUG',
+    'TransactionFilter': 'DEBUG',
     'UIUtils': 'INFO',
     'WaitUtils': 'DEBUG',
     'Config': 'INFO',

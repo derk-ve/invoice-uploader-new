@@ -29,7 +29,8 @@ The codebase follows a modular architecture with clear separation of concerns:
 - **invoice_matching/core/models.py**: Data models for transactions, invoices, and matching results
 - **invoice_matching/core/mt940_parser.py**: MT940 bank statement file parser
 - **invoice_matching/core/pdf_scanner.py**: PDF invoice file scanner and metadata extractor
-- **demo.py**: Standalone demo script for testing invoice matching functionality
+- **invoice_matching/core/transaction_filter.py**: Transaction filtering system for Royal Canin-specific transactions
+- **demo_matcher.py**: Standalone demo script for testing invoice matching functionality
 
 ### Shared Utility Modules
 - **src/utils/**: Common utilities shared across both automation and matching components:
@@ -39,7 +40,7 @@ The codebase follows a modular architecture with clear separation of concerns:
   - `logging_setup.py`: Configurable logging system with per-class log levels
 
 ### Configuration
-- **configs/settings.py**: All application settings, timing configurations, UI element identifiers, and invoice matching parameters
+- **configs/settings.py**: All application settings, timing configurations, UI element identifiers, invoice matching parameters, and transaction filtering settings (including Royal Canin keyword filtering)
 
 ## Key Dependencies and Environment
 
@@ -67,7 +68,7 @@ uv sync
 python main.py
 
 # Run standalone invoice matching demo (command line)
-python demo.py
+python demo_matcher.py
 
 # Run invoice matching with graphical user interface
 python demo_app.py
@@ -101,7 +102,7 @@ python demo_app.py
 - **Manual Testing**: The automation includes comprehensive logging for troubleshooting issues
 
 #### Invoice Matching Testing
-- **Command Line**: Use `python demo.py` to test invoice matching functionality
+- **Command Line**: Use `python demo_matcher.py` to test invoice matching functionality
 - **Graphical Interface**: Use `python demo_app.py` for interactive testing with UI feedback
 - **Test Data**: Place MT940 files (*.STA, *.MT940) in `data/transactions/` and PDF invoices in `data/invoices/`
 
@@ -110,7 +111,7 @@ python demo_app.py
 ```
 invoice-uploader-new/
 ├── main.py                             # Entry point - orchestrates SnelStart automation workflow
-├── demo.py                             # Standalone invoice matching demo script
+├── demo_matcher.py                     # Standalone invoice matching demo script
 ├── demo_app.py                         # Graphical UI launcher for invoice matching
 ├── pyproject.toml                      # Project configuration with dependencies (name: invoice-agent2)
 ├── uv.lock                             # Dependency lock file
@@ -132,7 +133,8 @@ invoice-uploader-new/
     │       ├── matcher.py              # InvoiceMatcher - core matching logic
     │       ├── models.py               # Data models (Transaction, Invoice, MatchResult)
     │       ├── mt940_parser.py         # MT940 bank statement parser
-    │       └── pdf_scanner.py          # PDF invoice scanner and metadata extractor
+    │       ├── pdf_scanner.py          # PDF invoice scanner and metadata extractor
+    │       └── transaction_filter.py   # Transaction filtering for Royal Canin transactions
     ├── snelstart_automation/           # SnelStart UI automation package
     │   ├── snelstart_auto.py           # Core automation orchestrator class
     │   └── automations/                # Automation modules with class-based design
@@ -177,10 +179,11 @@ invoice-uploader-new/
 #### Invoice Matching Engine
 - **MT940 Parser**: Complete parsing of MT940 bank statement files with transaction extraction
 - **PDF Scanner**: Invoice metadata extraction from PDF filenames with flexible number detection (duplicate detection fixed)
+- **Transaction Filter**: Royal Canin-specific transaction filtering system with configurable keywords
 - **Core Matching Logic**: Intelligent matching of transactions to invoices based on invoice numbers in descriptions
 - **Data Models**: Comprehensive data structures for transactions, invoices, and matching results
 - **Reporting System**: Detailed matching statistics, confidence scoring, and summary reporting
-- **Demo Applications**: Both command-line (`demo.py`) and graphical (`demo_app.py`) interfaces for testing functionality
+- **Demo Applications**: Both command-line (`demo_matcher.py`) and graphical (`demo_app.py`) interfaces for testing functionality
 
 #### Graphical User Interface
 - **Modular Architecture**: Clean separation of UI components, business logic, and data handling
@@ -241,6 +244,7 @@ invoice-uploader-new/
 #### Invoice Matching System
 - **InvoiceMatcher**: Core matching algorithm with confidence scoring and detailed reporting
 - **MT940Parser**: Bank statement parsing with comprehensive transaction extraction
+- **TransactionFilter**: Royal Canin-specific filtering with configurable keywords and case sensitivity options
 - **PDFScanner**: Invoice metadata extraction from PDF files with flexible number detection and duplicate prevention
 - **Data Models**: Complete type-safe data structures for all entities
 
