@@ -182,29 +182,39 @@ class InvoiceMatcherApp:
             self.results_text.insert(tk.END, f"\n📊 Total transactions loaded: {len(transactions)}\n\n")
             self.root.update()
             
-            # Step 2: Scan invoices
+            # Step 2: Scan invoices (using same approach as demo.py)
             self.results_text.insert(tk.END, "📁 Scanning PDF invoices...\n")
             self.root.update()
             
-            all_invoices = []
-            for pdf_file in self.pdf_files:
-                try:
-                    # Create a temporary directory for each file and scan it
-                    temp_dir = str(Path(pdf_file).parent)
-                    scanner = PDFScanner(temp_dir)
-                    file_invoices = scanner.scan()
+            try:
+                # Find common directory of selected files (like demo.py approach)
+                if len(self.pdf_files) == 1:
+                    common_dir = str(Path(self.pdf_files[0]).parent)
+                else:
+                    common_dir = os.path.commonpath([str(Path(f).parent) for f in self.pdf_files])
+                
+                # Scan the directory once (same as demo.py)
+                scanner = PDFScanner(common_dir)
+                all_invoices_in_dir = scanner.scan()
+                
+                # Filter to only include selected files (compare filenames, not full paths)
+                selected_filenames = [Path(f).name for f in self.pdf_files]
+                all_invoices = [inv for inv in all_invoices_in_dir if Path(inv.file_path).name in selected_filenames]
+                
+                # Show results for each selected file
+                for pdf_file in self.pdf_files:
+                    filename = Path(pdf_file).name
+                    matching_invoices = [inv for inv in all_invoices if Path(inv.file_path).name == filename]
                     
-                    # Filter to only include the current file
-                    file_invoices = [inv for inv in file_invoices if inv.file_path == pdf_file]
-                    all_invoices.extend(file_invoices)
-                    
-                    if file_invoices:
-                        self.results_text.insert(tk.END, f"   ✅ {Path(pdf_file).name}: {file_invoices[0].invoice_number}\n")
+                    if matching_invoices:
+                        self.results_text.insert(tk.END, f"   ✅ {filename}: {matching_invoices[0].invoice_number}\n")
                     else:
-                        self.results_text.insert(tk.END, f"   ⚠️ {Path(pdf_file).name}: Could not extract invoice number\n")
-                except Exception as e:
-                    self.results_text.insert(tk.END, f"   ❌ {Path(pdf_file).name}: Error - {e}\n")
-                self.root.update()
+                        self.results_text.insert(tk.END, f"   ⚠️ {filename}: Could not extract invoice number\n")
+                    self.root.update()
+                    
+            except Exception as e:
+                self.results_text.insert(tk.END, f"   ❌ Error scanning invoices: {e}\n")
+                all_invoices = []
             
             if not all_invoices:
                 self.results_text.insert(tk.END, "\n❌ No invoices found. Check your PDF files.\n")

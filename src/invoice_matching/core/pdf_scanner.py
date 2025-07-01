@@ -59,9 +59,12 @@ class PDFScanner:
         
         invoices = []
         
-        # Find all PDF files in directory
+        # Find all PDF files in directory (avoid duplicates on case-insensitive filesystems)
         pdf_files = list(self.scan_directory.glob("*.pdf"))
         pdf_files.extend(list(self.scan_directory.glob("*.PDF")))  # Case insensitive
+        
+        # Remove duplicates that can occur on case-insensitive filesystems
+        pdf_files = list(set(pdf_files))
         
         self.logger.info(f"Found {len(pdf_files)} PDF files to process")
         
