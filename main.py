@@ -37,7 +37,7 @@ def main():
         wait_for_step_ready("login completion", timeout=3)
         print('\n')
 
-        if not open_administratie(snelstart):
+        if not open_bookkeeping(snelstart):
             return
         wait_for_step_ready("administration opening", timeout=2)
         print('\n')
@@ -71,9 +71,9 @@ def perform_login(snelstart: SnelstartAutomation):
     return False
 
 
-def open_administratie(snelstart: SnelstartAutomation):
+def open_bookkeeping(snelstart: SnelstartAutomation):
     logger.info("Opening Administratie window...")
-    if snelstart.open_administratie():
+    if snelstart.open_bookkeeping():
         logger.info("Administratie window opened")
         return True
     logger.error("Failed to open Administratie window")

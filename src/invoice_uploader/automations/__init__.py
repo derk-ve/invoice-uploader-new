@@ -11,7 +11,7 @@ from .read_invoices import InvoiceReaderAutomation
 # Import backwards compatibility functions
 from .launch_snelstart import get_snelstart_path, start_snelstart_application, get_main_window
 from .login import get_login_dialog, perform_login, login_to_snelstart
-from .administration import get_administratie_window
+from .administration import get_administratie_window, navigate_to_boekhouden
 from .read_invoices import click_afschriften_inlezen
 
 __all__ = [
@@ -28,5 +28,6 @@ __all__ = [
     'perform_login',
     'login_to_snelstart',
     'get_administratie_window',
+    'navigate_to_boekhouden',
     'click_afschriften_inlezen'
 ]

@@ -25,7 +25,9 @@ TIMING_CONFIG = {
         'default_interval': 5        # Default interval for window polling
     },
     'administration': {
-        'workspace_ready_timeout': 30 # Time to wait for workspace to load after clicking Row 1
+        'workspace_ready_timeout': 30, # Time to wait for workspace to load after clicking Row 1
+        'boekhouden_tab_timeout': 15,  # Time to wait for BOEKHOUDEN tab to become available
+        'boekhouden_ready_timeout': 15 # Time to wait for bookkeeping interface to load
     }
 }
 
@@ -34,6 +36,7 @@ TIMING_CONFIG = {
 LOGIN_DIALOG_TEXT = "Inloggen"
 ADMIN_ROW_TEXT = "Row 1"
 INVOICE_BUTTON_TEXT = "Afschriften Inlezen"
+BOEKHOUDEN_TAB_TEXT = "BOEKHOUDEN"
 
 # Window title patterns
 MAIN_WINDOW_TITLE = "SnelStart 12"

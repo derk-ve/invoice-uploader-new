@@ -14,7 +14,9 @@ class AdministrationAutomation:
         
         # Get timing configuration from centralized config
         timing = Config.get_timing_config('administration')
-        self.WORKSPACE_READY_TIMEOUT = timing.get('workspace_ready_timeout', 3)
+        self.WORKSPACE_READY_TIMEOUT = timing.get('workspace_ready_timeout', 30)
+        self.BOEKHOUDEN_TAB_TIMEOUT = timing.get('boekhouden_tab_timeout', 10)
+        self.BOEKHOUDEN_READY_TIMEOUT = timing.get('boekhouden_ready_timeout', 15)
     
     def _click_row_one(self, window: UIAWrapper):
         """
@@ -70,7 +72,6 @@ class AdministrationAutomation:
         def check_ready():
             # Check if administration workspace has loaded by looking for workspace elements
             try:
-                time.sleep(10)
                 for control in window.descendants():
                     if (control.window_text() == "Dashboard" or 
                         control.window_text() == "Afschriften Inlezen"):
@@ -83,6 +84,7 @@ class AdministrationAutomation:
             wait_with_timeout(check_ready, timeout=timeout, interval=3, 
                             description="administration workspace ready", 
                             provide_feedback=True)
+            time.sleep(5)
             return True
         except WaitTimeoutError:
             self.logger.warning("Timeout waiting for administration workspace to be ready")
@@ -114,9 +116,115 @@ class AdministrationAutomation:
             self.logger.error(f"Failed to open administratie: {e}")
             raise RuntimeError(f"Could not open administratie window: {e}")
 
+    def _click_boekhouden_tab(self, window: UIAWrapper):
+        """
+        Pure action function: finds and clicks the 'BOEKHOUDEN' tab in the ribbon.
 
-# Backwards compatibility function for existing code
+        Args:
+            window (UIAWrapper): The main window containing the ribbon.
+
+        Returns:
+            None
+
+        Raises:
+            RuntimeError: If the BOEKHOUDEN tab could not be found or clicked.
+        """
+        try:
+            # Search for BOEKHOUDEN tab in the ribbon tabs
+            for ctrl in window.descendants():
+                try:
+                    if (ctrl.friendly_class_name() == "TabItem" and 
+                        ctrl.window_text() == self.ui_elements['boekhouden_tab_text']):
+                        ctrl.set_focus()
+                        ctrl.click_input()
+                        self.logger.info(f"Successfully clicked '{self.ui_elements['boekhouden_tab_text']}' tab")
+                        return
+                        
+                except Exception as e:
+                    self.logger.debug(f"Skipping control due to error: {e}")
+                    continue
+            
+            # If we get here, tab was not found
+            raise RuntimeError(f"Tab '{self.ui_elements['boekhouden_tab_text']}' not found in ribbon")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to click BOEKHOUDEN tab: {e}")
+            raise RuntimeError(f"Could not click BOEKHOUDEN tab: {e}")
+
+    def _wait_for_boekhouden_ready(self, window: UIAWrapper, timeout=None):
+        """
+        Pure wait function: waits for bookkeeping interface to be ready.
+
+        Args:
+            window (UIAWrapper): The main window to check.
+            timeout (int): Maximum time to wait in seconds (uses config default if None).
+
+        Returns:
+            True if bookkeeping interface is ready
+
+        Raises:
+            WaitTimeoutError: If interface not ready within timeout.
+        """
+        if timeout is None:
+            timeout = self.BOEKHOUDEN_READY_TIMEOUT
+            
+        def check_ready():
+            # Check if bookkeeping interface has loaded by looking for specific elements
+            try:
+                for control in window.descendants():
+                    # Look for bookkeeping-specific elements
+                    if (control.window_text() == "Afschriften Inlezen" or 
+                        control.window_text() == "Bankieren" or
+                        control.window_text() == "Boekhouden"):
+                        return True
+                return False
+            except:
+                return False
+        
+        try:
+            wait_with_timeout(check_ready, timeout=timeout, interval=2, 
+                            description="bookkeeping interface ready", 
+                            provide_feedback=True)
+            time.sleep(5)
+            return True
+        except WaitTimeoutError:
+            self.logger.warning("Timeout waiting for bookkeeping interface to be ready")
+            raise
+
+    def navigate_to_boekhouden(self, window: UIAWrapper):
+        """
+        Orchestration function: navigates to bookkeeping section by clicking BOEKHOUDEN tab.
+
+        Args:
+            window (UIAWrapper): The main window.
+
+        Returns:
+            None
+
+        Raises:
+            RuntimeError: If the navigation fails.
+        """
+        try:
+            # Step 1: Click BOEKHOUDEN tab (pure action)
+            self._click_boekhouden_tab(window)
+            
+            # Step 2: Wait for bookkeeping interface to load (pure wait)
+            self._wait_for_boekhouden_ready(window)
+            
+            self.logger.info("Successfully navigated to bookkeeping section")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to navigate to bookkeeping: {e}")
+            raise RuntimeError(f"Could not navigate to bookkeeping section: {e}")
+
+
+# Backwards compatibility functions for existing code
 def get_administratie_window(window: UIAWrapper):
     """Backwards compatibility function."""
     admin_automation = AdministrationAutomation()
     return admin_automation.get_administratie_window(window)
+
+def navigate_to_boekhouden(window: UIAWrapper):
+    """Backwards compatibility function for bookkeeping navigation."""
+    admin_automation = AdministrationAutomation()
+    return admin_automation.navigate_to_boekhouden(window)

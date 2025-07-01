@@ -28,7 +28,7 @@ class SnelstartAutomation:
         self.app_path = self.launch_automation.app_path
         self.app = None
         self.main_window = None
-        self.admin_window = None
+        self.bookkeeping_window = None
         
         self.logger.info(f"Snelstart automation initialized. Application path: {self.app_path}")
     
@@ -97,17 +97,20 @@ class SnelstartAutomation:
             self.logger.error(f"Login failed: {e}")
             return False
         
-    def open_administratie(self):
+    def open_bookkeeping(self):
         try:
 
             self.admin_automation.get_administratie_window(self.main_window)
-            admin_window = self.main_window  # The function doesn't return the window, it opens it
-            self.admin_window = admin_window
-            self.logger.info("Successfully opened Administratie section")
-            
-            # Generate window report for administration window
-            self.ui_utils.generate_window_report(self.admin_window, "SnelStart_Administration_Window")
+            self.admin_automation.navigate_to_boekhouden(self.main_window)
 
+            bookkeeping_window = self.main_window  # The function doesn't return the window, it opens it
+            self.bookkeeping_window = bookkeeping_window
+
+            # Generate window report for bookkeeping window
+            self.ui_utils.generate_window_report(self.admin_window, "SnelStart_Bookkeeping_Window")
+
+            self.logger.info("Successfully opened Administratie section")
+        
             return True
         
         except Exception as e:
