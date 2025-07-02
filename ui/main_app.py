@@ -69,9 +69,12 @@ class InvoiceMatcherApp:
         self.root.rowconfigure(0, weight=1)
         self.main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Configure main frame grid with better proportions
+        # Configure main frame grid - single column layout for all components
         self.main_frame.columnconfigure(0, weight=1)
-        self.main_frame.rowconfigure(3, weight=1)  # Results area expands (adjusted row)
+        self.main_frame.rowconfigure(0, weight=0)  # Header row
+        self.main_frame.rowconfigure(1, weight=0)  # File selector row  
+        self.main_frame.rowconfigure(2, weight=0)  # Control panel row
+        self.main_frame.rowconfigure(3, weight=1)  # Results area expands
         
         current_row = 0
         
@@ -99,7 +102,7 @@ class InvoiceMatcherApp:
         """
         # Header frame with professional styling
         header_frame = ttk.Frame(self.main_frame, style='Header.TFrame')
-        header_frame.grid(row=row_start, column=0, columnspan=4, 
+        header_frame.grid(row=row_start, column=0, 
                          sticky=(tk.W, tk.E), pady=(0, AppTheme.SPACING['xl']))
         header_frame.configure(padding=AppTheme.SPACING['lg'])
         
@@ -137,7 +140,7 @@ class InvoiceMatcherApp:
         """
         # Control panel frame with card styling
         control_frame = AppTheme.create_card_frame(self.main_frame)
-        control_frame.grid(row=row_start, column=0, columnspan=4, 
+        control_frame.grid(row=row_start, column=0, 
                           sticky=(tk.W, tk.E), 
                           pady=(AppTheme.SPACING['md'], AppTheme.SPACING['xl']))
         

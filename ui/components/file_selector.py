@@ -28,12 +28,13 @@ class FileSelector:
         self.on_files_changed: Optional[Callable] = None
         
         # UI elements (will be created in setup_ui)
+        self.container_frame = None
         self.mt940_label = None
         self.pdf_label = None
         
     def setup_ui(self, row_start: int = 0) -> int:
         """
-        Create the file selection UI elements with professional styling.
+        Create the file selection UI elements with professional styling using internal frames.
         
         Args:
             row_start: Starting row for grid layout
@@ -41,85 +42,93 @@ class FileSelector:
         Returns:
             Next available row number
         """
-        current_row = row_start
+        # Create a container frame for file selection
+        self.container_frame = ttk.Frame(self.parent, style='Main.TFrame')
+        self.container_frame.grid(
+            row=row_start, column=0, 
+            sticky=(tk.W, tk.E), 
+            pady=(0, AppTheme.SPACING['lg'])
+        )
         
-        # Configure grid columns for proper layout
-        self.parent.columnconfigure(0, weight=0, minsize=200)  # Label column
-        self.parent.columnconfigure(1, weight=0, minsize=150)  # Button column  
-        self.parent.columnconfigure(2, weight=1)               # Status column
+        # Configure the internal container grid (3 columns for layout)
+        self.container_frame.columnconfigure(0, weight=0, minsize=200)  # Label column
+        self.container_frame.columnconfigure(1, weight=0, minsize=150)  # Button column  
+        self.container_frame.columnconfigure(2, weight=1)               # Status column
+        
+        internal_row = 0
         
         # MT940 Files Section
         mt940_header = ttk.Label(
-            self.parent, 
+            self.container_frame, 
             text="MT940 Transaction Files:", 
             style='Heading.TLabel'
         )
         mt940_header.grid(
-            row=current_row, column=0, 
+            row=internal_row, column=0, 
             sticky=tk.W, 
             pady=(0, AppTheme.SPACING['xs']),
             padx=(0, AppTheme.SPACING['md'])
         )
         
         mt940_button = ttk.Button(
-            self.parent, 
+            self.container_frame, 
             text="Select MT940 Files", 
             command=self.select_mt940_files,
             style='Accent.TButton'
         )
         mt940_button.grid(
-            row=current_row, column=1, 
+            row=internal_row, column=1, 
             sticky=tk.W, 
             padx=(0, AppTheme.SPACING['md'])
         )
         
         self.mt940_label = ttk.Label(
-            self.parent, 
+            self.container_frame, 
             text="No files selected", 
             style='Secondary.TLabel'
         )
-        self.mt940_label.grid(row=current_row, column=2, sticky=tk.W)
+        self.mt940_label.grid(row=internal_row, column=2, sticky=tk.W)
         
-        current_row += 1
+        internal_row += 1
         
         # PDF Files Section
         pdf_header = ttk.Label(
-            self.parent, 
+            self.container_frame, 
             text="PDF Invoice Files:", 
             style='Heading.TLabel'
         )
         pdf_header.grid(
-            row=current_row, column=0, 
+            row=internal_row, column=0, 
             sticky=tk.W, 
             pady=(AppTheme.SPACING['md'], AppTheme.SPACING['xs']),
             padx=(0, AppTheme.SPACING['md'])
         )
         
         pdf_button = ttk.Button(
-            self.parent, 
+            self.container_frame, 
             text="Select PDF Files", 
             command=self.select_pdf_files,
             style='Accent.TButton'
         )
         pdf_button.grid(
-            row=current_row, column=1, 
+            row=internal_row, column=1, 
             sticky=tk.W, 
             pady=(AppTheme.SPACING['md'], 0),
             padx=(0, AppTheme.SPACING['md'])
         )
         
         self.pdf_label = ttk.Label(
-            self.parent, 
+            self.container_frame, 
             text="No files selected", 
             style='Secondary.TLabel'
         )
         self.pdf_label.grid(
-            row=current_row, column=2, 
+            row=internal_row, column=2, 
             sticky=tk.W, 
             pady=(AppTheme.SPACING['md'], 0)
         )
         
-        return current_row + 1
+        return row_start + 1
     
     def select_mt940_files(self):
         """Handle MT940 file selection."""
