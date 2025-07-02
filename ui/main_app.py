@@ -24,7 +24,7 @@ class InvoiceMatcherApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.root.title("📊 Invoice Matcher - Professional Edition")
+        self.root.title("📊 Invoice Matcher")
         self.root.geometry("1200x800")
         self.root.minsize(1000, 700)
         
