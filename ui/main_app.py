@@ -141,7 +141,7 @@ class InvoiceMatcherApp:
         # Control panel frame with card styling
         control_frame = AppTheme.create_card_frame(self.main_frame)
         control_frame.grid(row=row_start, column=0, 
-                          sticky=(tk.W, tk.E), 
+                          sticky=(tk.W), 
                           pady=(AppTheme.SPACING['md'], AppTheme.SPACING['xl']))
         
         # Button container
@@ -158,7 +158,7 @@ class InvoiceMatcherApp:
         self.match_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
         
         # Status with icon
-        status_container = ttk.Frame(button_container, style='Card.TFrame')
+        status_container = ttk.Frame(button_container, style='Main.TFrame')
         status_container.pack(side=tk.LEFT, fill=tk.X, expand=True)
         
         # # Status icon
