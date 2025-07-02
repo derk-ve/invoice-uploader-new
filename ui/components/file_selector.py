@@ -1,11 +1,13 @@
 """
-File selection component for MT940 and PDF files.
+File selection component for MT940 and PDF files with professional styling.
 """
 
 import tkinter as tk
 from tkinter import ttk, filedialog
 from pathlib import Path
 from typing import List, Callable, Optional
+
+from ..styles.theme import AppTheme
 
 
 class FileSelector:
@@ -31,7 +33,7 @@ class FileSelector:
         
     def setup_ui(self, row_start: int = 0) -> int:
         """
-        Create the file selection UI elements.
+        Create the file selection UI elements with professional styling.
         
         Args:
             row_start: Starting row for grid layout
@@ -41,27 +43,81 @@ class FileSelector:
         """
         current_row = row_start
         
+        # Configure grid columns for proper layout
+        self.parent.columnconfigure(0, weight=0, minsize=200)  # Label column
+        self.parent.columnconfigure(1, weight=0, minsize=150)  # Button column  
+        self.parent.columnconfigure(2, weight=1)               # Status column
+        
         # MT940 Files Section
-        ttk.Label(self.parent, text="MT940 Transaction Files:", 
-                 font=("Arial", 10, "bold")).grid(row=current_row, column=0, sticky=tk.W, pady=(0, 5))
+        mt940_header = ttk.Label(
+            self.parent, 
+            text="MT940 Transaction Files:", 
+            style='Heading.TLabel'
+        )
+        mt940_header.grid(
+            row=current_row, column=0, 
+            sticky=tk.W, 
+            pady=(0, AppTheme.SPACING['xs']),
+            padx=(0, AppTheme.SPACING['md'])
+        )
         
-        ttk.Button(self.parent, text="Select MT940 Files", 
-                  command=self.select_mt940_files).grid(row=current_row, column=1, sticky=tk.W, padx=(10, 0))
+        mt940_button = ttk.Button(
+            self.parent, 
+            text="Select MT940 Files", 
+            command=self.select_mt940_files,
+            style='Accent.TButton'
+        )
+        mt940_button.grid(
+            row=current_row, column=1, 
+            sticky=tk.W, 
+            padx=(0, AppTheme.SPACING['md'])
+        )
         
-        self.mt940_label = ttk.Label(self.parent, text="No files selected", foreground="gray")
-        self.mt940_label.grid(row=current_row, column=2, sticky=tk.W, padx=(10, 0))
+        self.mt940_label = ttk.Label(
+            self.parent, 
+            text="No files selected", 
+            style='Secondary.TLabel'
+        )
+        self.mt940_label.grid(row=current_row, column=2, sticky=tk.W)
         
         current_row += 1
         
         # PDF Files Section
-        ttk.Label(self.parent, text="PDF Invoice Files:", 
-                 font=("Arial", 10, "bold")).grid(row=current_row, column=0, sticky=tk.W, pady=(10, 5))
+        pdf_header = ttk.Label(
+            self.parent, 
+            text="PDF Invoice Files:", 
+            style='Heading.TLabel'
+        )
+        pdf_header.grid(
+            row=current_row, column=0, 
+            sticky=tk.W, 
+            pady=(AppTheme.SPACING['md'], AppTheme.SPACING['xs']),
+            padx=(0, AppTheme.SPACING['md'])
+        )
         
-        ttk.Button(self.parent, text="Select PDF Files", 
-                  command=self.select_pdf_files).grid(row=current_row, column=1, sticky=tk.W, padx=(10, 0))
+        pdf_button = ttk.Button(
+            self.parent, 
+            text="Select PDF Files", 
+            command=self.select_pdf_files,
+            style='Accent.TButton'
+        )
+        pdf_button.grid(
+            row=current_row, column=1, 
+            sticky=tk.W, 
+            pady=(AppTheme.SPACING['md'], 0),
+            padx=(0, AppTheme.SPACING['md'])
+        )
         
-        self.pdf_label = ttk.Label(self.parent, text="No files selected", foreground="gray")
-        self.pdf_label.grid(row=current_row, column=2, sticky=tk.W, padx=(10, 0))
+        self.pdf_label = ttk.Label(
+            self.parent, 
+            text="No files selected", 
+            style='Secondary.TLabel'
+        )
+        self.pdf_label.grid(
+            row=current_row, column=2, 
+            sticky=tk.W, 
+            pady=(AppTheme.SPACING['md'], 0)
+        )
         
         return current_row + 1
     
@@ -80,8 +136,11 @@ class FileSelector:
         if files:
             self.mt940_files = list(files)
             count = len(self.mt940_files)
-            self.mt940_label.config(text=f"{count} file{'s' if count != 1 else ''} selected", 
-                                   foreground="black")
+            self.mt940_label.config(
+                text=f"{AppTheme.get_icon('file')} {count} file{'s' if count != 1 else ''} selected"
+            )
+            # Update style to success color
+            self.mt940_label.configure(style='Success.TLabel')
             
             # Trigger callback if set
             if self.on_files_changed:
@@ -102,8 +161,11 @@ class FileSelector:
         if files:
             self.pdf_files = list(files)
             count = len(self.pdf_files)
-            self.pdf_label.config(text=f"{count} file{'s' if count != 1 else ''} selected", 
-                                 foreground="black")
+            self.pdf_label.config(
+                text=f"{AppTheme.get_icon('file')} {count} file{'s' if count != 1 else ''} selected"
+            )
+            # Update style to success color
+            self.pdf_label.configure(style='Success.TLabel')
             
             # Trigger callback if set
             if self.on_files_changed:
@@ -131,9 +193,11 @@ class FileSelector:
         self.pdf_files = []
         
         if self.mt940_label:
-            self.mt940_label.config(text="No files selected", foreground="gray")
+            self.mt940_label.config(text="No files selected")
+            self.mt940_label.configure(style='Secondary.TLabel')
         if self.pdf_label:
-            self.pdf_label.config(text="No files selected", foreground="gray")
+            self.pdf_label.config(text="No files selected")
+            self.pdf_label.configure(style='Secondary.TLabel')
     
     def set_files_changed_callback(self, callback: Callable[[str, List[str]], None]):
         """
