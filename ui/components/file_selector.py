@@ -74,7 +74,7 @@ class FileSelector:
             self.container_frame, 
             text="Select MT940 Files", 
             command=self.select_mt940_files,
-            style='Accent.TButton'
+            style='LightBlue.TButton'
         )
         mt940_button.grid(
             row=internal_row, column=1, 
@@ -108,7 +108,7 @@ class FileSelector:
             self.container_frame, 
             text="Select PDF Files", 
             command=self.select_pdf_files,
-            style='Accent.TButton'
+            style='LightBlue.TButton'
         )
         pdf_button.grid(
             row=internal_row, column=1, 

@@ -167,6 +167,24 @@ class AppTheme:
             focuscolor='none',
             font=cls.FONTS['body_bold']
         )
+        
+        # Light blue button with black text
+        style.configure(
+            'LightBlue.TButton',
+            background=cls.COLORS['info_light'],
+            foreground=cls.COLORS['text_primary'],
+            borderwidth=1,
+            focuscolor='none',
+            font=cls.FONTS['body_bold'],
+            relief='raised'
+        )
+        style.map(
+            'LightBlue.TButton',
+            background=[('active', cls.COLORS['info']),
+                       ('pressed', cls.COLORS['primary_dark'])],
+            foreground=[('active', 'white'),
+                       ('pressed', 'white')]
+        )
     
     @classmethod
     def _configure_label_styles(cls, style: ttk.Style):
@@ -283,15 +301,23 @@ class AppTheme:
         
         style.configure(
             'Professional.Treeview.Heading',
-            background=cls.COLORS['primary'],
-            foreground='white',
+            background=cls.COLORS['info_light'],
+            foreground=cls.COLORS['text_primary'],
             font=cls.FONTS['body_bold'],
-            relief='flat'
+            relief='raised',
+            borderwidth=1
+        )
+        style.map(
+            'Professional.Treeview.Heading',
+            background=[('active', cls.COLORS['primary']),
+                       ('pressed', cls.COLORS['primary_dark'])],
+            foreground=[('active', 'white'),
+                       ('pressed', 'white')]
         )
         
         style.map(
             'Professional.Treeview',
-            background=[('selected', cls.COLORS['primary_light'])],
+            background=[('selected', cls.COLORS['primary_dark'])],
             foreground=[('selected', 'white')]
         )
     

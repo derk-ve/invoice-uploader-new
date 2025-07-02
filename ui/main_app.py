@@ -138,22 +138,22 @@ class InvoiceMatcherApp:
         Returns:
             Next available row number
         """
-        # Control panel frame with card styling
-        control_frame = AppTheme.create_card_frame(self.main_frame)
+        # Control panel frame with main background styling (matching file selector)
+        control_frame = ttk.Frame(self.main_frame, style='Main.TFrame')
         control_frame.grid(row=row_start, column=0, 
-                          sticky=(tk.W), 
+                          sticky=(tk.W, tk.E), 
                           pady=(AppTheme.SPACING['md'], AppTheme.SPACING['xl']))
         
         # Button container
         button_container = ttk.Frame(control_frame, style='Main.TFrame')
         button_container.pack(fill=tk.X)
         
-        # Match button with professional styling
+        # Match button with light blue styling
         self.match_button = ttk.Button(
             button_container, 
             text=f"{AppTheme.get_icon('search')} Run Matching", 
             command=self._on_run_matching, 
-            style="Primary.TButton"
+            style="LightBlue.TButton"
         )
         self.match_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
         
