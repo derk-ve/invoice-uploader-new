@@ -145,7 +145,7 @@ class InvoiceMatcherApp:
                           pady=(AppTheme.SPACING['md'], AppTheme.SPACING['xl']))
         
         # Button container
-        button_container = ttk.Frame(control_frame, style='Card.TFrame')
+        button_container = ttk.Frame(control_frame, style='Main.TFrame')
         button_container.pack(fill=tk.X)
         
         # Match button with professional styling
@@ -161,20 +161,20 @@ class InvoiceMatcherApp:
         status_container = ttk.Frame(button_container, style='Card.TFrame')
         status_container.pack(side=tk.LEFT, fill=tk.X, expand=True)
         
-        # Status icon
-        self.status_icon = ttk.Label(
-            status_container, 
-            text=AppTheme.get_icon('checkmark'), 
-            style='Card.TLabel',
-            font=AppTheme.FONTS['heading']
-        )
-        self.status_icon.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['xs']))
+        # # Status icon
+        # self.status_icon = ttk.Label(
+        #     status_container, 
+        #     text=AppTheme.get_icon('checkmark'), 
+        #     style='Card.TLabel',
+        #     font=AppTheme.FONTS['heading']
+        # )
+        # self.status_icon.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['xs']))
         
         # Status label with professional styling
         self.status_label = ttk.Label(
             status_container, 
-            text="Ready to process", 
-            style='Success.TLabel'
+            text="Upload files before running matching", 
+            style='Body.TLabel'
         )
         self.status_label.pack(side=tk.LEFT)
         
