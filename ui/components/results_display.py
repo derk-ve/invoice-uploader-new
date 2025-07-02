@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext
 from pathlib import Path
 from typing import List, Optional
+from decimal import Decimal
 
 from ..styles.theme import AppTheme
 from .summary_cards import SummaryCards
@@ -35,6 +36,9 @@ class ResultsDisplay:
         self.matches_table: Optional[MatchesTable] = None
         self.unmatched_transactions_table: Optional[UnmatchedTransactionsTable] = None
         self.unmatched_invoices_table: Optional[UnmatchedInvoicesTable] = None
+        
+        # Current matching data
+        self.current_summary: Optional[MatchingSummary] = None
         
     def setup_ui(self, row_start: int = 0) -> int:
         """
@@ -120,6 +124,8 @@ class ResultsDisplay:
         self.notebook.add(matches_frame, text=f"{AppTheme.get_icon('match')} Matches")
         self.matches_table = MatchesTable(matches_frame)
         self.matches_table.setup_ui()
+        # Set up deletion callback
+        self.matches_table.set_matches_deleted_callback(self._on_matches_deleted)
         
         # Tab 3: Unmatched Transactions
         unmatched_trans_frame = ttk.Frame(self.notebook, style='Surface.TFrame')
@@ -274,24 +280,16 @@ class ResultsDisplay:
         Args:
             summary: Matching summary with all results
         """
+        # Store current summary for deletion handling
+        self.current_summary = summary
+        
         # Update progress log
         self.add_progress_line("✅ Matching Complete!\n")
         self.add_progress_line("📊 Check the summary cards and tabs above for detailed results.")
         self.add_progress_line("=== Matching Complete ===")
         
-        # Update summary cards
-        if self.summary_cards:
-            self.summary_cards.show_summary(summary)
-        
-        # Update data tables
-        if self.matches_table:
-            self.matches_table.show_matches(summary.matched_pairs)
-        
-        if self.unmatched_transactions_table:
-            self.unmatched_transactions_table.show_transactions(summary.unmatched_transactions)
-        
-        if self.unmatched_invoices_table:
-            self.unmatched_invoices_table.show_invoices(summary.unmatched_invoices)
+        # Update all components
+        self._refresh_all_data()
         
         # Switch to matches tab if there are any matches
         if summary.matched_pairs and self.notebook:
@@ -313,3 +311,82 @@ class ResultsDisplay:
             self.summary_cards.show_error(error_message)
         
         self.update_display()
+    
+    def _refresh_all_data(self):
+        """
+        Refresh all UI components with current summary data.
+        """
+        if not self.current_summary:
+            return
+        
+        # Update summary cards
+        if self.summary_cards:
+            self.summary_cards.show_summary(self.current_summary)
+        
+        # Update data tables
+        if self.matches_table:
+            self.matches_table.show_matches(self.current_summary.matched_pairs)
+        
+        if self.unmatched_transactions_table:
+            self.unmatched_transactions_table.show_transactions(self.current_summary.unmatched_transactions)
+        
+        if self.unmatched_invoices_table:
+            self.unmatched_invoices_table.show_invoices(self.current_summary.unmatched_invoices)
+    
+    def _on_matches_deleted(self, deleted_matches):
+        """
+        Handle deletion of matches by updating the summary and refreshing UI.
+        
+        Args:
+            deleted_matches: List of MatchResult objects that were deleted
+        """
+        if not self.current_summary or not deleted_matches:
+            return
+        
+        # Remove deleted matches from summary
+        for deleted_match in deleted_matches:
+            if deleted_match in self.current_summary.matched_pairs:
+                self.current_summary.matched_pairs.remove(deleted_match)
+                
+                # Add transaction and invoice back to unmatched lists
+                self.current_summary.unmatched_transactions.append(deleted_match.transaction)
+                self.current_summary.unmatched_invoices.append(deleted_match.invoice)
+        
+        # Recalculate summary statistics
+        self._recalculate_summary_stats()
+        
+        # Refresh all UI components
+        self._refresh_all_data()
+        
+        # Log the deletion
+        count = len(deleted_matches)
+        if count == 1:
+            self.add_progress_line(f"\n🗑️ Deleted 1 match")
+        else:
+            self.add_progress_line(f"\n🗑️ Deleted {count} matches")
+        
+        self.update_display()
+    
+    def _recalculate_summary_stats(self):
+        """
+        Recalculate summary statistics after deletions.
+        """
+        if not self.current_summary:
+            return
+        
+        # Update counts
+        self.current_summary.total_invoices = len(self.current_summary.matched_pairs) + len(self.current_summary.unmatched_invoices)
+        
+        # Recalculate match rate
+        if self.current_summary.total_transactions > 0:
+            self.current_summary.match_rate = (len(self.current_summary.matched_pairs) / self.current_summary.total_transactions) * 100
+        else:
+            self.current_summary.match_rate = 0.0
+        
+        # Recalculate total matched amount
+        if self.current_summary.matched_pairs:
+            self.current_summary.total_matched_amount = sum(
+                match.transaction.amount for match in self.current_summary.matched_pairs
+            )
+        else:
+            self.current_summary.total_matched_amount = Decimal('0')
