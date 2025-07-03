@@ -13,13 +13,9 @@ from src.utils.logging_setup import LoggingSetup
 class SnelStartConnectionState(Enum):
     """Enumeration of SnelStart connection states."""
     DISCONNECTED = "disconnected"
-    CONNECTING = "connecting"
+    CONNECTING = "connecting" 
     CONNECTED = "connected"
-    LOGGING_IN = "logging_in"
-    LOGGED_IN = "logged_in"
-    NAVIGATING = "navigating"
     READY_FOR_UPLOAD = "ready_for_upload"
-    UPLOADING = "uploading"
     ERROR = "error"
 
 
@@ -37,13 +33,12 @@ class SnelStartController:
         # Callbacks for progress updates
         self.on_connection_start: Optional[Callable[[str], None]] = None
         self.on_connection_established: Optional[Callable[[str], None]] = None
-        self.on_login_start: Optional[Callable[[str], None]] = None
-        self.on_login_completed: Optional[Callable[[str], None]] = None
-        self.on_navigation_start: Optional[Callable[[str], None]] = None
-        self.on_navigation_completed: Optional[Callable[[str], None]] = None
         self.on_upload_ready: Optional[Callable[[str], None]] = None
         self.on_state_changed: Optional[Callable[[SnelStartConnectionState, str], None]] = None
         self.on_error: Optional[Callable[[str], None]] = None
+        
+        # Polling for upload readiness
+        self.polling_active = False
         
         self.logger.debug("SnelStart controller initialized")
     
@@ -65,195 +60,122 @@ class SnelStartController:
         """
         return self.connection_state == SnelStartConnectionState.READY_FOR_UPLOAD
     
-    def connect_to_snelstart(self) -> bool:
+    def open_snelstart(self) -> bool:
         """
-        Start or connect to SnelStart application.
+        Open or connect to SnelStart application (user will handle login/navigation).
         
         Returns:
-            True if connection successful, False otherwise
+            True if SnelStart opened/connected successfully, False otherwise
         """
         try:
-            self._set_state(SnelStartConnectionState.CONNECTING, "Connecting to SnelStart...")
+            self._set_state(SnelStartConnectionState.CONNECTING, "Opening SnelStart...")
             
             if self.on_connection_start:
-                self.on_connection_start("Starting SnelStart application...")
+                self.on_connection_start("Opening SnelStart application...")
             
             # Initialize SnelStart automation
             self.snelstart_automation = SnelstartAutomation()
             
             # Attempt to start/connect
             if self.snelstart_automation.start():
-                self._set_state(SnelStartConnectionState.CONNECTED, "Connected to SnelStart")
+                self._set_state(SnelStartConnectionState.CONNECTED, "SnelStart opened - please log in and navigate to bookkeeping")
                 
                 if self.on_connection_established:
-                    self.on_connection_established("Successfully connected to SnelStart")
+                    self.on_connection_established("SnelStart is open. Please log in and navigate to the bookkeeping section.")
                 
-                self.logger.info("Successfully connected to SnelStart")
+                # Start polling for upload readiness
+                self.start_polling_for_upload_readiness()
+                
+                self.logger.info("Successfully opened/connected to SnelStart")
                 return True
             else:
-                self._set_state(SnelStartConnectionState.ERROR, "Failed to connect to SnelStart")
+                self._set_state(SnelStartConnectionState.ERROR, "Failed to open SnelStart")
                 if self.on_error:
                     self.on_error("Failed to start or connect to SnelStart application")
                 return False
                 
         except Exception as e:
-            error_msg = f"Error connecting to SnelStart: {e}"
+            error_msg = f"Error opening SnelStart: {e}"
             self.logger.error(error_msg)
             self._set_state(SnelStartConnectionState.ERROR, error_msg)
             if self.on_error:
                 self.on_error(error_msg)
             return False
     
-    def perform_login(self) -> bool:
-        """
-        Perform SnelStart login process.
+    def start_polling_for_upload_readiness(self):
+        """Start background polling to detect when upload button becomes available."""
+        import threading
+        import time
         
-        Returns:
-            True if login successful, False otherwise
-        """
-        try:
-            if not self._ensure_connected():
-                return False
+        if self.polling_active:
+            return  # Already polling
             
-            self._set_state(SnelStartConnectionState.LOGGING_IN, "Logging into SnelStart...")
+        self.polling_active = True
+        self.logger.info("Started polling for upload readiness")
+        
+        def poll_for_button():
+            """Background thread to poll for the upload button."""
+            while self.polling_active and self.connection_state == SnelStartConnectionState.CONNECTED:
+                try:
+                    if self._check_upload_button_available():
+                        # Found the button! Update state
+                        self._set_state(SnelStartConnectionState.READY_FOR_UPLOAD, "Ready for upload - 'Afschriften Inlezen' button found!")
+                        
+                        if self.on_upload_ready:
+                            self.on_upload_ready("Upload button detected! You can now upload matched invoices.")
+                        
+                        self.polling_active = False
+                        break
+                    
+                    # Wait before next check
+                    time.sleep(3)  # Check every 3 seconds
+                    
+                except Exception as e:
+                    self.logger.debug(f"Polling check failed (normal if user hasn't navigated yet): {e}")
+                    time.sleep(3)
             
-            if self.on_login_start:
-                self.on_login_start("Starting login process...")
-            
-            # Perform login
-            if self.snelstart_automation.login():
-                self._set_state(SnelStartConnectionState.LOGGED_IN, "Successfully logged in")
-                
-                if self.on_login_completed:
-                    self.on_login_completed("Login completed successfully")
-                
-                self.logger.info("SnelStart login completed")
-                return True
-            else:
-                self._set_state(SnelStartConnectionState.ERROR, "Login failed")
-                if self.on_error:
-                    self.on_error("SnelStart login failed")
-                return False
-                
-        except Exception as e:
-            error_msg = f"Error during login: {e}"
-            self.logger.error(error_msg)
-            self._set_state(SnelStartConnectionState.ERROR, error_msg)
-            if self.on_error:
-                self.on_error(error_msg)
-            return False
+            self.logger.debug("Polling stopped")
+        
+        # Start background thread
+        polling_thread = threading.Thread(target=poll_for_button, daemon=True)
+        polling_thread.start()
     
-    def navigate_to_bookkeeping(self) -> bool:
-        """
-        Navigate to SnelStart bookkeeping section.
-        
-        Returns:
-            True if navigation successful, False otherwise
-        """
-        try:
-            if not self._ensure_logged_in():
-                return False
-            
-            self._set_state(SnelStartConnectionState.NAVIGATING, "Navigating to bookkeeping...")
-            
-            if self.on_navigation_start:
-                self.on_navigation_start("Opening administration and bookkeeping...")
-            
-            # Navigate to bookkeeping
-            if self.snelstart_automation.open_bookkeeping():
-                self._set_state(SnelStartConnectionState.READY_FOR_UPLOAD, "Ready for file upload")
-                
-                if self.on_navigation_completed:
-                    self.on_navigation_completed("Navigation completed - bookkeeping section opened")
-                
-                self.logger.info("Successfully navigated to bookkeeping section")
-                return True
-            else:
-                self._set_state(SnelStartConnectionState.ERROR, "Navigation failed")
-                if self.on_error:
-                    self.on_error("Failed to navigate to bookkeeping section")
-                return False
-                
-        except Exception as e:
-            error_msg = f"Error during navigation: {e}"
-            self.logger.error(error_msg)
-            self._set_state(SnelStartConnectionState.ERROR, error_msg)
-            if self.on_error:
-                self.on_error(error_msg)
-            return False
+    def stop_polling(self):
+        """Stop the background polling."""
+        self.polling_active = False
     
-    def prepare_for_upload(self) -> bool:
+    def _check_upload_button_available(self) -> bool:
         """
-        Prepare SnelStart for file upload by clicking 'Afschriften Inlezen'.
+        Check if the 'Afschriften Inlezen' button is available.
         
         Returns:
-            True if preparation successful, False otherwise
+            True if button is found and clickable, False otherwise
         """
         try:
-            if not self._ensure_ready_for_upload():
+            if not self.snelstart_automation or not self.snelstart_automation.main_window:
                 return False
             
-            self._set_state(SnelStartConnectionState.UPLOADING, "Preparing for file upload...")
+            # Use the existing button detection logic from do_bookkeeping.py
+            from src.snelstart_automation.automations.do_bookkeeping import DoBookkeepingAutomation
+            bookkeeping_automation = DoBookkeepingAutomation()
             
-            if self.on_upload_ready:
-                self.on_upload_ready("Clicking 'Afschriften Inlezen' to prepare upload...")
+            # Try to find the button (without clicking)
+            def find_invoice_button(parent):
+                for ctrl in parent.descendants():
+                    try:
+                        if (ctrl.friendly_class_name() == "Button" and 
+                            ctrl.window_text() == bookkeeping_automation.ui_elements['invoice_button_text']):
+                            return ctrl
+                    except:
+                        continue
+                return None
             
-            # Click the upload button (this will be extended later for actual file handling)
-            if self.snelstart_automation.load_in_afschriften():
-                if self.on_upload_ready:
-                    self.on_upload_ready("SnelStart is ready to accept file uploads")
-                
-                self.logger.info("SnelStart prepared for file upload")
-                return True
-            else:
-                self._set_state(SnelStartConnectionState.ERROR, "Failed to prepare upload")
-                if self.on_error:
-                    self.on_error("Failed to prepare SnelStart for file upload")
-                return False
-                
-        except Exception as e:
-            error_msg = f"Error preparing upload: {e}"
-            self.logger.error(error_msg)
-            self._set_state(SnelStartConnectionState.ERROR, error_msg)
-            if self.on_error:
-                self.on_error(error_msg)
-            return False
-    
-    def run_complete_workflow(self) -> bool:
-        """
-        Run the complete SnelStart workflow: connect → login → navigate → prepare.
-        
-        Returns:
-            True if entire workflow successful, False otherwise
-        """
-        try:
-            self.logger.info("Starting complete SnelStart workflow")
-            
-            # Step 1: Connect
-            if not self.connect_to_snelstart():
-                return False
-            
-            # Step 2: Login
-            if not self.perform_login():
-                return False
-            
-            # Step 3: Navigate
-            if not self.navigate_to_bookkeeping():
-                return False
-            
-            # Step 4: Prepare for upload
-            if not self.prepare_for_upload():
-                return False
-            
-            self.logger.info("Complete SnelStart workflow completed successfully")
-            return True
+            # Check if button exists
+            button = find_invoice_button(self.snelstart_automation.main_window)
+            return button is not None
             
         except Exception as e:
-            error_msg = f"Error in complete workflow: {e}"
-            self.logger.error(error_msg)
-            self._set_state(SnelStartConnectionState.ERROR, error_msg)
-            if self.on_error:
-                self.on_error(error_msg)
+            self.logger.debug(f"Button check failed: {e}")
             return False
     
     def disconnect(self) -> bool:
@@ -264,6 +186,10 @@ class SnelStartController:
             True if disconnection successful, False otherwise
         """
         try:
+            # Stop polling
+            self.stop_polling()
+            
+            # Close SnelStart automation
             if self.snelstart_automation:
                 self.snelstart_automation.close()
                 self.snelstart_automation = None
@@ -293,39 +219,6 @@ class SnelStartController:
         if self.on_state_changed:
             self.on_state_changed(state, message)
     
-    def _ensure_connected(self) -> bool:
-        """Ensure SnelStart is connected."""
-        if self.connection_state == SnelStartConnectionState.DISCONNECTED:
-            if self.on_error:
-                self.on_error("Not connected to SnelStart. Please connect first.")
-            return False
-        if not self.snelstart_automation:
-            if self.on_error:
-                self.on_error("SnelStart automation not initialized.")
-            return False
-        return True
-    
-    def _ensure_logged_in(self) -> bool:
-        """Ensure SnelStart is logged in."""
-        if not self._ensure_connected():
-            return False
-        if self.connection_state not in [SnelStartConnectionState.LOGGED_IN, 
-                                       SnelStartConnectionState.NAVIGATING,
-                                       SnelStartConnectionState.READY_FOR_UPLOAD]:
-            if self.on_error:
-                self.on_error("Not logged in to SnelStart. Please login first.")
-            return False
-        return True
-    
-    def _ensure_ready_for_upload(self) -> bool:
-        """Ensure SnelStart is ready for upload."""
-        if not self._ensure_logged_in():
-            return False
-        if self.connection_state != SnelStartConnectionState.READY_FOR_UPLOAD:
-            if self.on_error:
-                self.on_error("SnelStart not ready for upload. Please navigate to bookkeeping first.")
-            return False
-        return True
     
     # Callback setters
     def set_connection_start_callback(self, callback: Callable[[str], None]):
@@ -335,22 +228,6 @@ class SnelStartController:
     def set_connection_established_callback(self, callback: Callable[[str], None]):
         """Set callback for connection established notifications."""
         self.on_connection_established = callback
-    
-    def set_login_start_callback(self, callback: Callable[[str], None]):
-        """Set callback for login start notifications."""
-        self.on_login_start = callback
-    
-    def set_login_completed_callback(self, callback: Callable[[str], None]):
-        """Set callback for login completed notifications."""
-        self.on_login_completed = callback
-    
-    def set_navigation_start_callback(self, callback: Callable[[str], None]):
-        """Set callback for navigation start notifications."""
-        self.on_navigation_start = callback
-    
-    def set_navigation_completed_callback(self, callback: Callable[[str], None]):
-        """Set callback for navigation completed notifications."""
-        self.on_navigation_completed = callback
     
     def set_upload_ready_callback(self, callback: Callable[[str], None]):
         """Set callback for upload ready notifications."""
