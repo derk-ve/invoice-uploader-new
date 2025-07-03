@@ -155,23 +155,12 @@ class SnelStartController:
             if not self.snelstart_automation or not self.snelstart_automation.main_window:
                 return False
             
-            # Use the existing button detection logic from do_bookkeeping.py
+            # Use the refactored button detection logic from DoBookkeepingAutomation
             from src.snelstart_automation.automations.do_bookkeeping import DoBookkeepingAutomation
             bookkeeping_automation = DoBookkeepingAutomation()
             
-            # Try to find the button (without clicking)
-            def find_invoice_button(parent):
-                for ctrl in parent.descendants():
-                    try:
-                        if (ctrl.friendly_class_name() == "Button" and 
-                            ctrl.window_text() == bookkeeping_automation.ui_elements['invoice_button_text']):
-                            return ctrl
-                    except:
-                        continue
-                return None
-            
-            # Check if button exists
-            button = find_invoice_button(self.snelstart_automation.main_window)
+            # Use the dedicated find_invoice_button method
+            button = bookkeeping_automation.find_invoice_button(self.snelstart_automation.main_window)
             return button is not None
             
         except Exception as e:

@@ -134,7 +134,7 @@ class SnelstartAutomation:
                 return False
             
             # Click on the "Afschriften Inlezen" button
-            self.bookkeeping_automation.start_bookkeeping_process(self.bookkeeping_window)
+            self.bookkeeping_automation.click_invoice_button(self.bookkeeping_window)
             
             # Generate window report after clicking afschriften button
             time.sleep(1)  # Brief wait for any new dialogs to appear

@@ -6,6 +6,7 @@ from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
 from .launch_snelstart import LaunchAutomation
 from ...utils.wait_utils import wait_with_timeout, WaitTimeoutError
+from ...utils.ui_utils import UIUtils
 
 load_dotenv()
 
@@ -18,6 +19,7 @@ class LoginAutomation:
         self.username, self.password = Config.get_credentials()
         self.ui_elements = Config.get_ui_elements()
         self.launch_automation = LaunchAutomation()
+        self.ui_utils = UIUtils()
         
         # Get timing configuration from centralized config
         timing = Config.get_timing_config('login')
@@ -38,14 +40,20 @@ class LoginAutomation:
     def get_login_dialog(self, window: UIAWrapper):
         """Search for and return the login dialog inside the main window (single attempt)."""
         self.logger.debug("Searching for login dialog inside main window...")
-        for child in window.descendants():
-            try:
-                if child.friendly_class_name() == "Dialog" and self.ui_elements['login_dialog_text'] in child.window_text():
-                    self.logger.debug(f"Found login dialog: '{child.window_text()}'")
-                    return child
-            except Exception as e:
-                self.logger.debug(f"Skipping element due to error: {e}")
-        raise RuntimeError("Login dialog not found inside main window")
+        
+        # Use the unified utility function with text_contains=True
+        dialog = self.ui_utils.get_descendant_by_criteria(
+            window,
+            class_name="Dialog",
+            text=self.ui_elements['login_dialog_text'],
+            text_contains=True
+        )
+        
+        if dialog:
+            self.logger.debug(f"Found login dialog: '{dialog.window_text()}'")
+            return dialog
+        else:
+            raise RuntimeError("Login dialog not found inside main window")
     
     def _wait_for_login_dialog(self, window: UIAWrapper):
         """

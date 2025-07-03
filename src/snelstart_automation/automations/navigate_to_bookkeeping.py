@@ -3,6 +3,7 @@ from pywinauto.controls.uiawrapper import UIAWrapper
 from ...utils.logging_setup import LoggingSetup
 from ...utils.config import Config
 from ...utils.wait_utils import wait_with_timeout, WaitTimeoutError
+from ...utils.ui_utils import UIUtils
 
 class NavigateToBookkeepingAutomation:
     """Handles navigation to SnelStart bookkeeping interface."""
@@ -11,6 +12,7 @@ class NavigateToBookkeepingAutomation:
         """Initialize the navigate to bookkeeping automation."""
         self.logger = LoggingSetup.get_logger(self.__class__.__name__)
         self.ui_elements = Config.get_ui_elements()
+        self.ui_utils = UIUtils()
         
         # Get timing configuration from centralized config
         timing = Config.get_timing_config('administration')
@@ -32,22 +34,21 @@ class NavigateToBookkeepingAutomation:
             RuntimeError: If the row could not be found or clicked.
         """
         try:
-            # Direct search through descendants
-            for ctrl in window.descendants():
-                try:
-                    if (ctrl.friendly_class_name() == "Custom" and 
-                        ctrl.window_text() == self.ui_elements['admin_row_text']):
-                        ctrl.set_focus()
-                        ctrl.double_click_input()
-                        self.logger.info(f"Successfully double-clicked '{self.ui_elements['admin_row_text']}'")
-                        return
-                        
-                except Exception as e:
-                    self.logger.debug(f"Skipping control due to error: {e}")
-                    continue
+            # Use the unified utility function
+            row_control = self.ui_utils.get_descendant_by_criteria(
+                window,
+                class_name="Custom",
+                text=self.ui_elements['admin_row_text']
+            )
             
-            # If we get here, row was not found
-            raise RuntimeError(f"Row '{self.ui_elements['admin_row_text']}' not found in administratie view")
+            if row_control:
+                row_control.set_focus()
+                row_control.double_click_input()
+                self.logger.info(f"Successfully double-clicked '{self.ui_elements['admin_row_text']}'")
+                return
+            else:
+                # If we get here, row was not found
+                raise RuntimeError(f"Row '{self.ui_elements['admin_row_text']}' not found in administratie view")
             
         except Exception as e:
             self.logger.error(f"Failed to click row: {e}")
@@ -130,22 +131,21 @@ class NavigateToBookkeepingAutomation:
             RuntimeError: If the BOEKHOUDEN tab could not be found or clicked.
         """
         try:
-            # Search for BOEKHOUDEN tab in the ribbon tabs
-            for ctrl in window.descendants():
-                try:
-                    if (ctrl.friendly_class_name() == "TabItem" and 
-                        ctrl.window_text() == self.ui_elements['boekhouden_tab_text']):
-                        ctrl.set_focus()
-                        ctrl.click_input()
-                        self.logger.info(f"Successfully clicked '{self.ui_elements['boekhouden_tab_text']}' tab")
-                        return
-                        
-                except Exception as e:
-                    self.logger.debug(f"Skipping control due to error: {e}")
-                    continue
+            # Use the unified utility function
+            tab_control = self.ui_utils.get_descendant_by_criteria(
+                window,
+                class_name="TabItem",
+                text=self.ui_elements['boekhouden_tab_text']
+            )
             
-            # If we get here, tab was not found
-            raise RuntimeError(f"Tab '{self.ui_elements['boekhouden_tab_text']}' not found in ribbon")
+            if tab_control:
+                tab_control.set_focus()
+                tab_control.click_input()
+                self.logger.info(f"Successfully clicked '{self.ui_elements['boekhouden_tab_text']}' tab")
+                return
+            else:
+                # If we get here, tab was not found
+                raise RuntimeError(f"Tab '{self.ui_elements['boekhouden_tab_text']}' not found in ribbon")
             
         except Exception as e:
             self.logger.error(f"Failed to click BOEKHOUDEN tab: {e}")

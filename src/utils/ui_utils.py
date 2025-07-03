@@ -28,9 +28,9 @@ class UIUtils:
         except Exception as e:
             self.logger.error(f"Error printing control tree: {e}")
 
-    def find_control_by_text(self, control: UIAWrapper, text: str, case_sensitive: bool = False):
+    def get_control_by_text(self, control: UIAWrapper, text: str, case_sensitive: bool = False):
         """
-        Find a control by its text.
+        Get a control by its text.
         
         Args:
             control: The parent control to search in
@@ -59,9 +59,9 @@ class UIUtils:
         
         return None
 
-    def find_control_by_class(self, control: UIAWrapper, class_name: str):
+    def get_control_by_class(self, control: UIAWrapper, class_name: str):
         """
-        Find a control by its class name.
+        Get a control by its class name.
         
         Args:
             control: The parent control to search in
@@ -81,6 +81,98 @@ class UIUtils:
             self.logger.error(f"Error finding control by class: {e}")
         
         return None
+
+    def get_descendant_by_criteria(self, parent: UIAWrapper, class_name: str = None, 
+                                   text: str = None, text_contains: bool = False):
+        """
+        Get a descendant element matching specified criteria.
+        
+        This is a unified utility function that replaces the scattered
+        'for ctrl in parent.descendants()' patterns throughout the codebase.
+        
+        Args:
+            parent: Parent control to search in
+            class_name: friendly_class_name to match (optional)
+            text: window_text to match (optional) 
+            text_contains: If True, check if text is contained in window_text; 
+                          if False, require exact match (default: False)
+            
+        Returns:
+            UIAWrapper: First matching control or None if not found
+            
+        Examples:
+            # Get button with specific text
+            button = ui_utils.get_descendant_by_criteria(window, "Button", "Afschriften Inlezen")
+            
+            # Get dialog containing text
+            dialog = ui_utils.get_descendant_by_criteria(window, "Dialog", "Inloggen", text_contains=True)
+            
+            # Get any element of specific class
+            custom = ui_utils.get_descendant_by_criteria(window, class_name="Custom")
+            
+            # Get element by text only
+            element = ui_utils.get_descendant_by_criteria(window, text="Row 1")
+        """
+        try:
+            if not parent:
+                self.logger.debug("Parent control is None")
+                return None
+                
+            for ctrl in parent.descendants():
+                try:
+                    # Check class name match if specified
+                    if class_name and ctrl.friendly_class_name() != class_name:
+                        continue
+                    
+                    # Check text match if specified
+                    if text is not None:
+                        ctrl_text = ctrl.window_text()
+                        if text_contains:
+                            if text not in ctrl_text:
+                                continue
+                        else:
+                            if ctrl_text != text:
+                                continue
+                    
+                    # If we get here, all criteria match
+                    self.logger.debug(f"Found matching element: class='{ctrl.friendly_class_name()}', text='{ctrl.window_text()}'")
+                    return ctrl
+                    
+                except Exception as e:
+                    # Skip problematic controls (common in UI automation)
+                    self.logger.debug(f"Skipping control due to error: {e}")
+                    continue
+                    
+        except Exception as e:
+            self.logger.error(f"Error searching for descendant: {e}")
+        
+        self.logger.debug(f"No descendant found matching criteria: class_name='{class_name}', text='{text}', text_contains={text_contains}")
+        return None
+
+    def safe_click(self, element, element_name: str = "element"):
+        """
+        Safely click an element after ensuring it's clickable.
+        
+        Args:
+            element: The element to click
+            element_name: Description for error messages
+            
+        Raises:
+            Exception: If element not clickable or click fails
+        """
+        try:
+            
+            if not (element.exists() and element.is_visible() and element.is_enabled()):
+                self.logger.error(f"Element not clickable: {element_name}")
+            
+            element.set_focus()
+            element.click_input()
+            self.logger.debug(f"Successfully clicked {element_name}")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to click {element_name}: {e}")
+            raise
 
     def generate_window_report(self, control: UIAWrapper, window_name: str = None, reports_dir: str = "reports"):
         """
@@ -188,10 +280,10 @@ def print_control_tree(control: UIAWrapper, level: int = 0):
     return ui_utils.print_control_tree(control, level)
 
 def find_control_by_text(control: UIAWrapper, text: str, case_sensitive: bool = False):
-    return ui_utils.find_control_by_text(control, text, case_sensitive)
+    return ui_utils.get_control_by_text(control, text, case_sensitive)
 
 def find_control_by_class(control: UIAWrapper, class_name: str):
-    return ui_utils.find_control_by_class(control, class_name)
+    return ui_utils.get_control_by_class(control, class_name)
 
 def generate_window_report(control: UIAWrapper, window_name: str = None, reports_dir: str = "reports"):
     return ui_utils.generate_window_report(control, window_name, reports_dir)
