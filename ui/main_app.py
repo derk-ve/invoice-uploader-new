@@ -159,7 +159,7 @@ class InvoiceMatcherApp:
             style="LightBlue.TButton"
         )
         self.match_button.grid(
-            row=0, column=1, 
+            row=0, column=0, 
             sticky=tk.W, 
             pady=(0, AppTheme.SPACING['sm']),
             padx=(0, AppTheme.SPACING['md'])
@@ -168,7 +168,7 @@ class InvoiceMatcherApp:
         # Status container spans both button rows in column 1
         status_container = ttk.Frame(control_frame, style='Main.TFrame')
         status_container.grid(
-            row=0, column=2, rowspan=2, 
+            row=0, column=1, 
             sticky=(tk.W, tk.E, tk.N), 
             padx=(AppTheme.SPACING['md'], 0)
         )
@@ -189,7 +189,7 @@ class InvoiceMatcherApp:
             style="LightBlue.TButton"
         )
         self.snelstart_button.grid(
-            row=1, column=1, 
+            row=1, column=0, 
             sticky=tk.W, 
             pady=(0, AppTheme.SPACING['md']),
             padx=(0, AppTheme.SPACING['md'])
