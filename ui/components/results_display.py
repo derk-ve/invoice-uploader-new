@@ -64,21 +64,11 @@ class ResultsDisplay:
         
         # Configure grid weights for responsive layout
         self.main_frame.columnconfigure(0, weight=1)
-        self.main_frame.rowconfigure(2, weight=1)  # Notebook area expands
+        self.main_frame.rowconfigure(1, weight=1)  # Notebook area expands (now at row 1)
         
         container_row = 0
         
-        # Results section title
-        title_label = ttk.Label(
-            self.main_frame, 
-            text="📊 Results", 
-            style='Title.TLabel'
-        )
-        title_label.grid(row=container_row, column=0, sticky=(tk.W, tk.N), 
-                        pady=(0, AppTheme.SPACING['lg']))
-        container_row += 1
-        
-        # Summary cards section
+        # Summary cards section - now starts at row 0
         self.summary_cards = SummaryCards(self.main_frame)
         container_row = self.summary_cards.setup_ui(container_row)
         

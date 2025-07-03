@@ -122,7 +122,7 @@ class InvoiceMatcherApp:
         # Version/subtitle
         subtitle_label = ttk.Label(
             header_frame,
-            text="Professional Edition - Advanced Invoice Processing",
+            text="Royal Canin Invoice Processing",
             font=AppTheme.FONTS['body'],
             foreground='white',
             background=AppTheme.COLORS['primary']
@@ -151,6 +151,15 @@ class InvoiceMatcherApp:
         button_container = ttk.Frame(control_frame, style='Main.TFrame')
         button_container.pack(fill=tk.X)
         
+        # SnelStart button with light blue styling - moved above Run Matching
+        self.snelstart_button = ttk.Button(
+            button_container, 
+            text=f"🏢 Connect SnelStart", 
+            command=self._on_connect_snelstart, 
+            style="LightBlue.TButton"
+        )
+        self.snelstart_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
+        
         # Match button with light blue styling
         self.match_button = ttk.Button(
             button_container, 
@@ -159,15 +168,6 @@ class InvoiceMatcherApp:
             style="LightBlue.TButton"
         )
         self.match_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
-        
-        # SnelStart button with light blue styling
-        self.snelstart_button = ttk.Button(
-            button_container, 
-            text=f"🏢 Open SnelStart", 
-            command=self._on_connect_snelstart, 
-            style="LightBlue.TButton"
-        )
-        self.snelstart_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
         
         # Status with icon
         status_container = ttk.Frame(button_container, style='Main.TFrame')
@@ -419,9 +419,9 @@ class InvoiceMatcherApp:
         state = self.snelstart_controller.get_connection_state()
         
         if state == SnelStartConnectionState.DISCONNECTED:
-            self.snelstart_button.config(text="🏢 Open SnelStart")
+            self.snelstart_button.config(text="🏢 Connect SnelStart")
         elif state == SnelStartConnectionState.CONNECTING:
-            self.snelstart_button.config(text="🏢 Opening...")
+            self.snelstart_button.config(text="🏢 Connecting...")
         elif state == SnelStartConnectionState.CONNECTED:
             self.snelstart_button.config(text="🏢 Waiting for Navigation")
         elif state == SnelStartConnectionState.READY_FOR_UPLOAD:

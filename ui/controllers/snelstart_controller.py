@@ -128,11 +128,11 @@ class SnelStartController:
                         break
                     
                     # Wait before next check
-                    time.sleep(3)  # Check every 3 seconds
+                    time.sleep(5)  # Check every 3 seconds
                     
                 except Exception as e:
                     self.logger.debug(f"Polling check failed (normal if user hasn't navigated yet): {e}")
-                    time.sleep(3)
+                    time.sleep(5)
             
             self.logger.debug("Polling stopped")
         
