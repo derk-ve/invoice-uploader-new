@@ -2,4 +2,11 @@
 Controllers for Invoice Matcher Application.
 """
 
-# Controller exports will be added as we create them
+from .matching_controller import MatchingController
+from .snelstart_controller import SnelStartController, SnelStartConnectionState
+
+__all__ = [
+    'MatchingController',
+    'SnelStartController',
+    'SnelStartConnectionState'
+]

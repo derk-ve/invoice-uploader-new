@@ -40,6 +40,11 @@ class ResultsDisplay:
         # Current matching data
         self.current_summary: Optional[MatchingSummary] = None
         
+        # Upload control components
+        self.upload_frame: Optional[ttk.Frame] = None
+        self.upload_button: Optional[ttk.Button] = None
+        self.upload_status_label: Optional[ttk.Label] = None
+        
     def setup_ui(self, row_start: int = 0) -> int:
         """
         Create the enhanced results display UI elements.
@@ -122,10 +127,21 @@ class ResultsDisplay:
         # Tab 2: Matches
         matches_frame = ttk.Frame(self.notebook, style='Surface.TFrame')
         self.notebook.add(matches_frame, text=f"{AppTheme.get_icon('match')} Matches")
+        
+        # Configure matches frame grid
+        matches_frame.columnconfigure(0, weight=1)
+        matches_frame.rowconfigure(0, weight=1)  # Table area expands
+        matches_frame.rowconfigure(1, weight=0)  # Upload control area fixed
+        
+        # Matches table (takes most space)
         self.matches_table = MatchesTable(matches_frame)
-        self.matches_table.setup_ui()
+        table_row = self.matches_table.setup_ui()
+        
         # Set up deletion callback
         self.matches_table.set_matches_deleted_callback(self._on_matches_deleted)
+        
+        # Upload control area
+        self._setup_upload_controls(matches_frame, table_row)
         
         # Tab 3: Unmatched Transactions
         unmatched_trans_frame = ttk.Frame(self.notebook, style='Surface.TFrame')
@@ -390,3 +406,97 @@ class ResultsDisplay:
             )
         else:
             self.current_summary.total_matched_amount = Decimal('0')
+    
+    def _setup_upload_controls(self, parent_frame: ttk.Frame, row_start: int):
+        """
+        Setup upload control area in the matches tab.
+        
+        Args:
+            parent_frame: Parent frame to attach controls to
+            row_start: Starting row for grid layout
+        """
+        # Upload control frame
+        self.upload_frame = ttk.Frame(parent_frame, style='Card.TFrame')
+        self.upload_frame.grid(row=row_start, column=0, 
+                              sticky=(tk.W, tk.E), 
+                              padx=AppTheme.SPACING['md'], 
+                              pady=AppTheme.SPACING['md'])
+        
+        # Configure grid
+        self.upload_frame.columnconfigure(1, weight=1)
+        
+        # Upload section title
+        title_label = ttk.Label(
+            self.upload_frame, 
+            text="📤 SnelStart Upload", 
+            style='Heading.TLabel'
+        )
+        title_label.grid(row=0, column=0, columnspan=3, 
+                        sticky=(tk.W, tk.N), pady=(0, AppTheme.SPACING['sm']))
+        
+        # Upload button
+        self.upload_button = ttk.Button(
+            self.upload_frame, 
+            text="📤 Prepare Upload to SnelStart", 
+            style="LightBlue.TButton",
+            state="disabled"  # Initially disabled
+        )
+        self.upload_button.grid(row=1, column=0, 
+                               padx=(0, AppTheme.SPACING['md']), 
+                               pady=AppTheme.SPACING['sm'])
+        
+        # Upload status label
+        self.upload_status_label = ttk.Label(
+            self.upload_frame, 
+            text="Connect to SnelStart first to enable upload", 
+            style='Body.TLabel'
+        )
+        self.upload_status_label.grid(row=1, column=1, 
+                                     sticky=(tk.W, tk.E), 
+                                     padx=AppTheme.SPACING['sm'],
+                                     pady=AppTheme.SPACING['sm'])
+        
+        # Info label
+        info_label = ttk.Label(
+            self.upload_frame,
+            text="ℹ️ Upload will send matched invoice PDFs to SnelStart for processing",
+            style='Small.TLabel',
+            foreground=AppTheme.COLORS['text_secondary']
+        )
+        info_label.grid(row=2, column=0, columnspan=3, 
+                       sticky=(tk.W, tk.E), 
+                       pady=(AppTheme.SPACING['xs'], 0))
+    
+    def update_upload_status(self, snelstart_ready: bool, status_message: str):
+        """
+        Update upload button and status based on SnelStart connection state.
+        
+        Args:
+            snelstart_ready: True if SnelStart is ready for upload
+            status_message: Status message to display
+        """
+        if self.upload_button and self.upload_status_label:
+            if snelstart_ready:
+                self.upload_button.config(state="normal")
+                self.upload_button.config(text="📤 Upload to SnelStart")
+                self.upload_status_label.config(
+                    text=status_message,
+                    foreground=AppTheme.COLORS['success']
+                )
+            else:
+                self.upload_button.config(state="disabled")
+                self.upload_button.config(text="📤 Prepare Upload to SnelStart")
+                self.upload_status_label.config(
+                    text=status_message,
+                    foreground=AppTheme.COLORS['text_secondary']
+                )
+    
+    def set_upload_callback(self, callback):
+        """
+        Set callback for upload button clicks.
+        
+        Args:
+            callback: Function to call when upload button is clicked
+        """
+        if self.upload_button:
+            self.upload_button.config(command=callback)

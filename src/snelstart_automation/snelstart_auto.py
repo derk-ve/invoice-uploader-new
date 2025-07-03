@@ -129,16 +129,16 @@ class SnelstartAutomation:
             True if successful, False otherwise
         """
         try:
-            if not self.admin_window:
-                self.logger.error("No admin window available for loading afschriften")
+            if not self.bookkeeping_window:
+                self.logger.error("No bookkeeping window available for loading afschriften")
                 return False
             
             # Click on the "Afschriften Inlezen" button
-            self.bookkeeping_automation.start_bookkeeping_process(self.admin_window)
+            self.bookkeeping_automation.start_bookkeeping_process(self.bookkeeping_window)
             
             # Generate window report after clicking afschriften button
             time.sleep(1)  # Brief wait for any new dialogs to appear
-            self.ui_utils.generate_window_report(self.admin_window, "SnelStart_After_Afschriften_Click")
+            self.ui_utils.generate_window_report(self.bookkeeping_window, "SnelStart_After_Afschriften_Click")
             
             self.logger.info("Successfully loaded afschriften")
             return True

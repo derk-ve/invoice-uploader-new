@@ -15,6 +15,7 @@ from src.utils.logging_setup import LoggingSetup
 from .components.file_selector import FileSelector
 from .components.results_display import ResultsDisplay
 from .controllers.matching_controller import MatchingController
+from .controllers.snelstart_controller import SnelStartController, SnelStartConnectionState
 from .styles.theme import AppTheme
 
 
@@ -56,9 +57,11 @@ class InvoiceMatcherApp:
         self.file_selector = FileSelector(self.main_frame)
         self.results_display = ResultsDisplay(self.main_frame)
         self.matching_controller = MatchingController()
+        self.snelstart_controller = SnelStartController()
         
         # UI state
         self.match_button = None
+        self.snelstart_button = None
         self.status_label = None
         self.status_icon = None
     
@@ -157,6 +160,15 @@ class InvoiceMatcherApp:
         )
         self.match_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
         
+        # SnelStart button with light blue styling
+        self.snelstart_button = ttk.Button(
+            button_container, 
+            text=f"🏢 Connect SnelStart", 
+            command=self._on_connect_snelstart, 
+            style="LightBlue.TButton"
+        )
+        self.snelstart_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
+        
         # Status with icon
         status_container = ttk.Frame(button_container, style='Main.TFrame')
         status_container.pack(side=tk.LEFT, fill=tk.X, expand=True)
@@ -219,6 +231,17 @@ class InvoiceMatcherApp:
         self.matching_controller.set_invoice_scanned_callback(self._on_invoice_scanned)
         self.matching_controller.set_summary_ready_callback(self._on_summary_ready)
         self.matching_controller.set_error_callback(self._on_error)
+        
+        # SnelStart controller callbacks
+        self.snelstart_controller.set_connection_start_callback(self._on_snelstart_step)
+        self.snelstart_controller.set_connection_established_callback(self._on_snelstart_step)
+        self.snelstart_controller.set_login_start_callback(self._on_snelstart_step)
+        self.snelstart_controller.set_login_completed_callback(self._on_snelstart_step)
+        self.snelstart_controller.set_navigation_start_callback(self._on_snelstart_step)
+        self.snelstart_controller.set_navigation_completed_callback(self._on_snelstart_step)
+        self.snelstart_controller.set_upload_ready_callback(self._on_snelstart_step)
+        self.snelstart_controller.set_state_changed_callback(self._on_snelstart_state_changed)
+        self.snelstart_controller.set_error_callback(self._on_snelstart_error)
     
     def _on_files_changed(self, file_type: str, files: list):
         """
@@ -335,6 +358,84 @@ class InvoiceMatcherApp:
         """Handle error notifications."""
         self.results_display.show_error(error_message)
         self._set_status("Error occurred", "error", "error")
+    
+    # SnelStart controller callback handlers
+    def _on_connect_snelstart(self):
+        """Handle SnelStart connect button click."""
+        # Update UI state
+        self._set_snelstart_processing_state(True)
+        
+        # Show start of SnelStart workflow in results
+        self.results_display.show_step("🏢 Starting SnelStart connection workflow...")
+        
+        try:
+            # Run complete workflow (connect → login → navigate → prepare)
+            success = self.snelstart_controller.run_complete_workflow()
+            
+            if success:
+                self._update_snelstart_button_state()
+                self._set_status("SnelStart ready for upload", "success", "checkmark")
+            else:
+                self._set_status("SnelStart connection failed", "error", "error")
+                
+        except Exception as e:
+            self.logger.error(f"Unexpected error during SnelStart connection: {e}")
+            self.results_display.show_error(f"SnelStart error: {e}")
+            self._set_status("SnelStart error occurred", "error", "error")
+        
+        finally:
+            # Restore UI state
+            self._set_snelstart_processing_state(False)
+    
+    def _on_snelstart_step(self, message: str):
+        """Handle SnelStart step notifications."""
+        self.results_display.show_step(f"🏢 {message}")
+    
+    def _on_snelstart_state_changed(self, state: SnelStartConnectionState, message: str):
+        """Handle SnelStart state change notifications."""
+        self.logger.info(f"SnelStart state: {state.value} - {message}")
+        self._update_snelstart_button_state()
+        
+        # Update results display upload status
+        is_ready = state == SnelStartConnectionState.READY_FOR_UPLOAD
+        self.results_display.update_upload_status(is_ready, message)
+    
+    def _on_snelstart_error(self, error_message: str):
+        """Handle SnelStart error notifications."""
+        self.results_display.show_error(f"SnelStart: {error_message}")
+        self._set_status("SnelStart error", "error", "error")
+    
+    def _set_snelstart_processing_state(self, processing: bool):
+        """
+        Update SnelStart UI state for processing.
+        
+        Args:
+            processing: True if processing, False if idle
+        """
+        if processing:
+            self.snelstart_button.config(state="disabled")
+            self._set_status("Connecting to SnelStart...", "warning", "search")
+        else:
+            self.snelstart_button.config(state="normal")
+    
+    def _update_snelstart_button_state(self):
+        """Update SnelStart button text and state based on connection status."""
+        state = self.snelstart_controller.get_connection_state()
+        
+        if state == SnelStartConnectionState.DISCONNECTED:
+            self.snelstart_button.config(text="🏢 Connect SnelStart")
+        elif state == SnelStartConnectionState.CONNECTING:
+            self.snelstart_button.config(text="🏢 Connecting...")
+        elif state == SnelStartConnectionState.CONNECTED:
+            self.snelstart_button.config(text="🏢 Connected")
+        elif state == SnelStartConnectionState.LOGGED_IN:
+            self.snelstart_button.config(text="🏢 Logged In")
+        elif state == SnelStartConnectionState.READY_FOR_UPLOAD:
+            self.snelstart_button.config(text="🏢 Ready for Upload")
+        elif state == SnelStartConnectionState.ERROR:
+            self.snelstart_button.config(text="🏢 Connection Error")
+        else:
+            self.snelstart_button.config(text=f"🏢 {state.value.title()}")
 
 
 def main():
