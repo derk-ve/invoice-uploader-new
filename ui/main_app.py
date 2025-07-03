@@ -147,31 +147,45 @@ class InvoiceMatcherApp:
                           sticky=(tk.W, tk.E), 
                           pady=(AppTheme.SPACING['md'], AppTheme.SPACING['xl']))
         
-        # Button container
-        button_container = ttk.Frame(control_frame, style='Main.TFrame')
-        button_container.pack(fill=tk.X)
+        # Configure control frame grid for vertical button layout (like file selector)
+        control_frame.columnconfigure(0, weight=0, minsize=150)  # Button column
+        control_frame.columnconfigure(1, weight=1)               # Status column
         
-        # SnelStart button with light blue styling - moved above Run Matching
-        self.snelstart_button = ttk.Button(
-            button_container, 
-            text=f"🏢 Connect SnelStart", 
-            command=self._on_connect_snelstart, 
-            style="LightBlue.TButton"
-        )
-        self.snelstart_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
-        
-        # Match button with light blue styling
+        # Row 0: Run Matching button (top button)
         self.match_button = ttk.Button(
-            button_container, 
+            control_frame, 
             text=f"{AppTheme.get_icon('search')} Run Matching", 
             command=self._on_run_matching, 
             style="LightBlue.TButton"
         )
-        self.match_button.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['md']))
+        self.match_button.grid(
+            row=0, column=0, 
+            sticky=tk.W, 
+            pady=(0, AppTheme.SPACING['sm']),
+            padx=(0, AppTheme.SPACING['md'])
+        )
         
-        # Status with icon
-        status_container = ttk.Frame(button_container, style='Main.TFrame')
-        status_container.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        # Row 1: Connect SnelStart button (bottom button)
+        self.snelstart_button = ttk.Button(
+            control_frame, 
+            text=f"🏢 Connect SnelStart", 
+            command=self._on_connect_snelstart, 
+            style="LightBlue.TButton"
+        )
+        self.snelstart_button.grid(
+            row=1, column=0, 
+            sticky=tk.W, 
+            pady=(0, AppTheme.SPACING['md']),
+            padx=(0, AppTheme.SPACING['md'])
+        )
+        
+        # Status container spans both button rows in column 1
+        status_container = ttk.Frame(control_frame, style='Main.TFrame')
+        status_container.grid(
+            row=0, column=1, rowspan=2, 
+            sticky=(tk.W, tk.E, tk.N), 
+            padx=(AppTheme.SPACING['md'], 0)
+        )
         
         # # Status icon
         # self.status_icon = ttk.Label(

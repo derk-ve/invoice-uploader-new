@@ -103,14 +103,13 @@ class ResultsDisplay:
         
         self.progress_text = scrolledtext.ScrolledText(
             progress_frame, 
-            wrap=tk.WORD, 
-            width=80, 
-            height=15,
+            wrap=tk.WORD,
             font=AppTheme.FONTS['body'],
             bg=AppTheme.COLORS['surface'],
             fg=AppTheme.COLORS['text_primary']
         )
-        self.progress_text.pack(fill=tk.BOTH, expand=True, 
+        self.progress_text.grid(row=0, column=0, 
+                               sticky=(tk.W, tk.E, tk.N, tk.S),
                                padx=AppTheme.SPACING['md'], 
                                pady=AppTheme.SPACING['md'])
         
