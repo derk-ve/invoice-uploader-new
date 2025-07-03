@@ -159,11 +159,27 @@ class InvoiceMatcherApp:
             style="LightBlue.TButton"
         )
         self.match_button.grid(
-            row=0, column=0, 
+            row=0, column=1, 
             sticky=tk.W, 
             pady=(0, AppTheme.SPACING['sm']),
             padx=(0, AppTheme.SPACING['md'])
         )
+
+        # Status container spans both button rows in column 1
+        status_container = ttk.Frame(control_frame, style='Main.TFrame')
+        status_container.grid(
+            row=0, column=2, rowspan=2, 
+            sticky=(tk.W, tk.E, tk.N), 
+            padx=(AppTheme.SPACING['md'], 0)
+        )
+
+        # Status label with professional styling
+        self.status_label = ttk.Label(
+            status_container, 
+            text="Upload files before running matching", 
+            style='Secondary.TLabel'
+        )
+        self.status_label.pack(side=tk.LEFT)
         
         # Row 1: Connect SnelStart button (bottom button)
         self.snelstart_button = ttk.Button(
@@ -173,36 +189,12 @@ class InvoiceMatcherApp:
             style="LightBlue.TButton"
         )
         self.snelstart_button.grid(
-            row=1, column=0, 
+            row=1, column=1, 
             sticky=tk.W, 
             pady=(0, AppTheme.SPACING['md']),
             padx=(0, AppTheme.SPACING['md'])
         )
         
-        # Status container spans both button rows in column 1
-        status_container = ttk.Frame(control_frame, style='Main.TFrame')
-        status_container.grid(
-            row=0, column=1, rowspan=2, 
-            sticky=(tk.W, tk.E, tk.N), 
-            padx=(AppTheme.SPACING['md'], 0)
-        )
-        
-        # # Status icon
-        # self.status_icon = ttk.Label(
-        #     status_container, 
-        #     text=AppTheme.get_icon('checkmark'), 
-        #     style='Card.TLabel',
-        #     font=AppTheme.FONTS['heading']
-        # )
-        # self.status_icon.pack(side=tk.LEFT, padx=(0, AppTheme.SPACING['xs']))
-        
-        # Status label with professional styling
-        self.status_label = ttk.Label(
-            status_container, 
-            text="Upload files before running matching", 
-            style='Body.TLabel'
-        )
-        self.status_label.pack(side=tk.LEFT)
         
         return row_start + 1
     
