@@ -81,6 +81,7 @@ LOG_LEVELS = {
     'WaitUtils': 'DEBUG',
     'Config': 'INFO',
     'LoggingSetup': 'INFO',
+    'SnelStartController': 'DEBUG',
 
     # Module-level loggers (for files using __name__)
     '__main__': 'INFO',  # main.py

@@ -136,6 +136,7 @@ class SnelStartController:
             """Background thread to monitor connection health."""
             while self.health_monitoring_active and self.connection_state == SnelStartConnectionState.CONNECTED:
                 try:
+                    self.logger.debug("Checking health...")
                     if not self._check_connection_health():
                         # Connection lost! Update state
                         self._set_state(SnelStartConnectionState.ERROR, "Connection to SnelStart lost")
