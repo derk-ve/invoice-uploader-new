@@ -4,6 +4,7 @@ Enhanced results display component with tabbed interface and professional stylin
 
 import tkinter as tk
 from tkinter import ttk, scrolledtext, filedialog, messagebox
+import os
 from pathlib import Path
 from typing import List, Optional, Callable
 from decimal import Decimal
@@ -510,42 +511,45 @@ class ResultsDisplay:
             self.upload_button.config(command=callback)
     
     def _on_download_click(self):
-        """Handle download button click."""
+        """Handle download button click with automatic download to default location."""
         try:
-            print("DEBUG: Download button clicked")  # Debug logging
-            
             if not self.current_summary or not self.current_summary.matched_pairs:
                 messagebox.showwarning("No Matches", "No matched pairs available for download.")
                 return
             
-            print(f"DEBUG: Found {len(self.current_summary.matched_pairs)} matched pairs")  # Debug logging
+            # Use Downloads folder as the only download location
+            try:
+                # Get user's Downloads folder
+                downloads_dir = Path.home() / "Downloads"
+                if not downloads_dir.exists():
+                    raise FileNotFoundError("Downloads folder not found on this system")
+                
+                # Create SnelStartPackages subdirectory
+                download_dir = downloads_dir / "SnelStartPackages"
+                download_dir.mkdir(parents=True, exist_ok=True)
+                download_path = str(download_dir)
+                
+            except PermissionError:
+                self.show_error("Could not access Downloads folder. Please check folder permissions and try again.")
+                return
+            except FileNotFoundError:
+                self.show_error("Downloads folder not found. Please ensure your Downloads folder exists.")
+                return
+            except Exception as e:
+                self.show_error(f"Could not create download folder: {e}")
+                return
             
-            # Ask user to select download directory FIRST (this will block, but that's expected)
-            print("DEBUG: Opening directory selection dialog...")  # Debug logging
-            download_dir = filedialog.askdirectory(
-                title="Select Download Location",
-                mustexist=True
-            )
-            
-            if not download_dir:
-                print("DEBUG: User cancelled directory selection")  # Debug logging
-                return  # User cancelled - no loading state was shown, so nothing to reset
-            
-            print(f"DEBUG: Directory selected: {download_dir}")  # Debug logging
-            
-            # NOW show progress and start processing (only after directory is selected)
+            # Show progress and download location
             self.add_progress_line(f"\n💾 Preparing download package...")
-            self.add_progress_line(f"📂 Download location: {download_dir}")
+            self.add_progress_line(f"📂 Download location: {download_path}")
             
             # Call the download callback to start async processing
             if self.on_download_request:
-                print("DEBUG: Calling download callback...")  # Debug logging
-                self.on_download_request(download_dir)
+                self.on_download_request(download_path)
             else:
-                print("DEBUG: No download callback set!")  # Debug logging
+                self.show_error("Download functionality not available.")
                 
         except Exception as e:
-            print(f"DEBUG: Exception in download click: {e}")  # Debug logging
             self.show_error(f"Download error: {e}")
     
     def set_download_callback(self, callback: Callable[[str], None]):
@@ -570,14 +574,24 @@ class ResultsDisplay:
     
     def show_download_success(self, package_path: str, pdf_count: int):
         """
-        Show download success message.
+        Show download success message with option to open folder.
         
         Args:
             package_path: Path to the created package
             pdf_count: Number of PDF files in the package
         """
         self.add_progress_line(f"\n✅ Download package created successfully!")
-        self.add_progress_line(f"📂 Location: {package_path}")
+        self.add_progress_line(f"📂 Saved to: {package_path}")
         self.add_progress_line(f"📄 Contents: 1 MT940 file + {pdf_count} PDF files")
         self.add_progress_line(f"🚀 Ready for manual upload to SnelStart!")
+        
+        # Add button to open folder (if possible)
+        try:
+            if os.name == 'nt':  # Windows
+                self.add_progress_line(f"💡 Tip: Run 'explorer \"{package_path}\"' to open folder")
+            elif os.name == 'posix':  # macOS/Linux
+                self.add_progress_line(f"💡 Tip: You can find your files in the folder shown above")
+        except:
+            pass
+            
         self.update_display()
