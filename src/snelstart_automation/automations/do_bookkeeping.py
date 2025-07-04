@@ -71,4 +71,5 @@ class DoBookkeepingAutomation:
         except Exception as e:
             self.logger.error(f"Failed to click '{self.ui_elements['invoice_button_text']}': {e}")
             raise RuntimeError(f"Could not interact with '{self.ui_elements['invoice_button_text']}': {e}")
+    
 

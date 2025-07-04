@@ -10,6 +10,7 @@ Clean, modular architecture with separated concerns:
 
 import tkinter as tk
 from tkinter import ttk, messagebox
+from pathlib import Path
 
 from src.utils.logging_setup import LoggingSetup
 from .components.file_selector import FileSelector
@@ -453,6 +454,8 @@ class InvoiceMatcherApp:
             self._safe_ui_update(lambda: self._set_status("Download error", "error", "error"))
             self._set_download_processing_state(False)
     
+    
+    
     # SnelStart controller callback handlers
     def _on_connect_snelstart(self):
         """Handle SnelStart open button click."""
@@ -489,10 +492,6 @@ class InvoiceMatcherApp:
         """Handle SnelStart state change notifications."""
         self.logger.info(f"SnelStart state: {state.value} - {message}")
         self._update_snelstart_button_state()
-        
-        # Update results display upload status
-        is_ready = state == SnelStartConnectionState.READY_FOR_UPLOAD
-        self.results_display.update_upload_status(is_ready, message)
     
     def _on_snelstart_error(self, error_message: str):
         """Handle SnelStart error notifications."""

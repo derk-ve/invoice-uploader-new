@@ -41,13 +41,14 @@ class ResultsDisplay:
         # Current matching data
         self.current_summary: Optional[MatchingSummary] = None
         
-        # Upload control components
-        self.upload_frame: Optional[ttk.Frame] = None
-        self.upload_button: Optional[ttk.Button] = None
-        self.upload_status_label: Optional[ttk.Label] = None
+        # Package tracking for upload functionality
+        self.last_download_package_path: Optional[str] = None
+        self.last_package_pdf_count: int = 0
+        
+        # Download control components
         self.download_button: Optional[ttk.Button] = None
         
-        # Download callback
+        # Callbacks
         self.on_download_request: Optional[Callable[[str], None]] = None
         
     def setup_ui(self, row_start: int = 0) -> int:
@@ -125,7 +126,7 @@ class ResultsDisplay:
         # Configure matches frame grid
         matches_frame.columnconfigure(0, weight=1)
         matches_frame.rowconfigure(0, weight=1)  # Table area expands
-        matches_frame.rowconfigure(1, weight=0)  # Upload control area fixed
+        matches_frame.rowconfigure(1, weight=0)  # Download control area fixed
         
         # Matches table (takes most space)
         self.matches_table = MatchesTable(matches_frame)
@@ -134,8 +135,8 @@ class ResultsDisplay:
         # Set up deletion callback
         self.matches_table.set_matches_deleted_callback(self._on_matches_deleted)
         
-        # Upload control area
-        self._setup_upload_controls(matches_frame, table_row)
+        # Download control area
+        self._setup_download_controls(matches_frame, table_row)
         
         # Tab 3: Unmatched Transactions
         unmatched_trans_frame = ttk.Frame(self.notebook, style='Surface.TFrame')
@@ -153,10 +154,13 @@ class ResultsDisplay:
         """Display initial welcome message."""
         self.clear_progress()
         self.add_progress_text("Welcome to Invoice Matcher! 🎉\n\n")
-        self.add_progress_text("👆 Follow these steps:\n")
+        self.add_progress_text("🔄 New Hybrid Workflow:\n")
         self.add_progress_text("1. Select your MT940 transaction files\n")
         self.add_progress_text("2. Select your PDF invoice files\n")
-        self.add_progress_text("3. Click 'Run Matching' to process\n\n")
+        self.add_progress_text("3. Click 'Run Matching' to process\n")
+        self.add_progress_text("4. Download the package when matching is complete\n")
+        self.add_progress_text("5. Manually navigate to SnelStart and select files\n")
+        self.add_progress_text("6. Automation takes over after file selection!\n\n")
         self.add_progress_text("📊 Results will appear in the tabs above...\n")
         
         # Show empty state in summary cards
@@ -404,111 +408,56 @@ class ResultsDisplay:
         else:
             self.current_summary.total_matched_amount = Decimal('0')
     
-    def _setup_upload_controls(self, parent_frame: ttk.Frame, row_start: int):
+    def _setup_download_controls(self, parent_frame: ttk.Frame, row_start: int):
         """
-        Setup upload control area in the matches tab.
+        Setup download control area in the matches tab.
         
         Args:
             parent_frame: Parent frame to attach controls to
             row_start: Starting row for grid layout
         """
-        # Upload control frame
-        self.upload_frame = ttk.Frame(parent_frame, style='Card.TFrame')
-        self.upload_frame.grid(row=row_start, column=0, 
-                              sticky=(tk.W, tk.E), 
-                              padx=AppTheme.SPACING['md'], 
-                              pady=AppTheme.SPACING['md'])
+        # Download control frame
+        download_frame = ttk.Frame(parent_frame, style='Card.TFrame')
+        download_frame.grid(row=row_start, column=0, 
+                           sticky=(tk.W, tk.E), 
+                           padx=AppTheme.SPACING['md'], 
+                           pady=AppTheme.SPACING['md'])
         
         # Configure grid
-        self.upload_frame.columnconfigure(1, weight=1)
+        download_frame.columnconfigure(1, weight=1)
         
-        # Upload section title
+        # Download section title
         title_label = ttk.Label(
-            self.upload_frame, 
-            text="📤 SnelStart Upload", 
+            download_frame, 
+            text="💾 Download Package", 
             style='Heading.TLabel'
         )
-        title_label.grid(row=0, column=0, columnspan=3, 
+        title_label.grid(row=0, column=0, columnspan=2, 
                         sticky=(tk.W, tk.N), pady=(0, AppTheme.SPACING['sm']))
-        
-        # Upload button
-        self.upload_button = ttk.Button(
-            self.upload_frame, 
-            text="📤 Prepare Upload to SnelStart", 
-            style="LightBlue.TButton",
-            state="disabled"  # Initially disabled
-        )
-        self.upload_button.grid(row=1, column=0, 
-                               padx=(0, AppTheme.SPACING['md']), 
-                               pady=AppTheme.SPACING['sm'])
         
         # Download button
         self.download_button = ttk.Button(
-            self.upload_frame, 
+            download_frame, 
             text="💾 Download Package", 
             command=self._on_download_click,
             style="LightBlue.TButton",
             state="disabled"  # Initially disabled
         )
-        self.download_button.grid(row=2, column=0, 
+        self.download_button.grid(row=1, column=0, 
                                  padx=(0, AppTheme.SPACING['md']), 
-                                 pady=(0, AppTheme.SPACING['sm']))
+                                 pady=AppTheme.SPACING['sm'])
         
-        # Upload status label
-        self.upload_status_label = ttk.Label(
-            self.upload_frame, 
-            text="Connect to SnelStart first to enable upload", 
-            style='Body.TLabel'
-        )
-        self.upload_status_label.grid(row=1, column=1, 
-                                     sticky=(tk.W, tk.E), 
-                                     padx=AppTheme.SPACING['sm'],
-                                     pady=AppTheme.SPACING['sm'])
-        
-        # Info label
+        # Info label with updated workflow instructions
         info_label = ttk.Label(
-            self.upload_frame,
-            text="ℹ️ Upload sends files to SnelStart • Download creates a package for manual upload",
+            download_frame,
+            text="🔄 Workflow: Download → Open SnelStart → Navigate to Bookkeeping → Select Files → Automation Takes Over",
             style='Small.TLabel',
             foreground=AppTheme.COLORS['text_secondary']
         )
-        info_label.grid(row=3, column=0, columnspan=3, 
+        info_label.grid(row=2, column=0, columnspan=2, 
                        sticky=(tk.W, tk.E), 
                        pady=(AppTheme.SPACING['xs'], 0))
     
-    def update_upload_status(self, snelstart_ready: bool, status_message: str):
-        """
-        Update upload button and status based on SnelStart connection state.
-        
-        Args:
-            snelstart_ready: True if SnelStart is ready for upload
-            status_message: Status message to display
-        """
-        if self.upload_button and self.upload_status_label:
-            if snelstart_ready:
-                self.upload_button.config(state="normal")
-                self.upload_button.config(text="📤 Upload to SnelStart")
-                self.upload_status_label.config(
-                    text=status_message,
-                    foreground=AppTheme.COLORS['success']
-                )
-            else:
-                self.upload_button.config(state="disabled")
-                self.upload_button.config(text="📤 Prepare Upload to SnelStart")
-                self.upload_status_label.config(
-                    text=status_message,
-                    foreground=AppTheme.COLORS['text_secondary']
-                )
-    
-    def set_upload_callback(self, callback):
-        """
-        Set callback for upload button clicks.
-        
-        Args:
-            callback: Function to call when upload button is clicked
-        """
-        if self.upload_button:
-            self.upload_button.config(command=callback)
     
     def _on_download_click(self):
         """Handle download button click with automatic download to default location."""
@@ -552,6 +501,7 @@ class ResultsDisplay:
         except Exception as e:
             self.show_error(f"Download error: {e}")
     
+    
     def set_download_callback(self, callback: Callable[[str], None]):
         """
         Set callback for download requests.
@@ -572,6 +522,7 @@ class ResultsDisplay:
             state = "normal" if enabled else "disabled"
             self.download_button.config(state=state)
     
+    
     def show_download_success(self, package_path: str, pdf_count: int):
         """
         Show download success message with popup dialog and progress log.
@@ -584,7 +535,12 @@ class ResultsDisplay:
         self.add_progress_line(f"\n✅ Download package created successfully!")
         self.add_progress_line(f"📂 Saved to: {package_path}")
         self.add_progress_line(f"📄 Contents: 1 MT940 file + {pdf_count} PDF files")
-        self.add_progress_line(f"🚀 Ready for manual upload to SnelStart!")
+        self.add_progress_line(f"")
+        self.add_progress_line(f"🔄 Next steps:")
+        self.add_progress_line(f"   1. Open SnelStart and log in")
+        self.add_progress_line(f"   2. Navigate to bookkeeping section")
+        self.add_progress_line(f"   3. Click 'Afschriften Inlezen' and select the downloaded MT940 file")
+        self.add_progress_line(f"   4. Automation will take over from there!")
         
         # Add button to open folder (if possible)
         try:
@@ -597,6 +553,10 @@ class ResultsDisplay:
             
         self.update_display()
         
+        # Store package info for potential upload
+        self.last_download_package_path = package_path
+        self.last_package_pdf_count = pdf_count
+        
         # Show success popup dialog for clear visual feedback
         try:
             # Create message with file info
@@ -604,7 +564,8 @@ class ResultsDisplay:
                 f"Download completed successfully!\n\n"
                 f"📂 Location: {package_path}\n"
                 f"📄 Files: 1 MT940 file + {pdf_count} PDF files\n\n"
-                f"Your files are ready for upload to SnelStart."
+                f"Next: Open SnelStart, navigate to bookkeeping, and select the MT940 file.\n"
+                f"Automation will take over from there!"
             )
             
             # Show success dialog
