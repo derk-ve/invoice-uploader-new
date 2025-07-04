@@ -421,12 +421,22 @@ class InvoiceMatcherApp:
     def _on_download_request(self, download_path: str):
         """Handle download package request using asynchronous processing."""
         try:
+            self.logger.info(f"Download request received for path: {download_path}")
+            
             # Get current matching summary from results display
             current_summary = self.results_display.current_summary
             
             if not current_summary:
+                self.logger.warning("No current summary available for download")
                 self.results_display.show_error("No matching results available for download.")
                 return
+            
+            if not current_summary.matched_pairs:
+                self.logger.warning("No matched pairs available for download")
+                self.results_display.show_error("No matched pairs available for download.")
+                return
+            
+            self.logger.info(f"Starting download preparation for {len(current_summary.matched_pairs)} matched pairs")
             
             # Show progress in Progress tab
             self.results_display.show_step("💾 Starting download preparation...")

@@ -512,28 +512,40 @@ class ResultsDisplay:
     def _on_download_click(self):
         """Handle download button click."""
         try:
+            print("DEBUG: Download button clicked")  # Debug logging
+            
             if not self.current_summary or not self.current_summary.matched_pairs:
                 messagebox.showwarning("No Matches", "No matched pairs available for download.")
                 return
             
-            # Ask user to select download directory
+            print(f"DEBUG: Found {len(self.current_summary.matched_pairs)} matched pairs")  # Debug logging
+            
+            # Ask user to select download directory FIRST (this will block, but that's expected)
+            print("DEBUG: Opening directory selection dialog...")  # Debug logging
             download_dir = filedialog.askdirectory(
                 title="Select Download Location",
                 mustexist=True
             )
             
             if not download_dir:
-                return  # User cancelled
+                print("DEBUG: User cancelled directory selection")  # Debug logging
+                return  # User cancelled - no loading state was shown, so nothing to reset
             
-            # Show progress message
+            print(f"DEBUG: Directory selected: {download_dir}")  # Debug logging
+            
+            # NOW show progress and start processing (only after directory is selected)
             self.add_progress_line(f"\n💾 Preparing download package...")
             self.add_progress_line(f"📂 Download location: {download_dir}")
             
-            # Call the download callback if set
+            # Call the download callback to start async processing
             if self.on_download_request:
+                print("DEBUG: Calling download callback...")  # Debug logging
                 self.on_download_request(download_dir)
+            else:
+                print("DEBUG: No download callback set!")  # Debug logging
                 
         except Exception as e:
+            print(f"DEBUG: Exception in download click: {e}")  # Debug logging
             self.show_error(f"Download error: {e}")
     
     def set_download_callback(self, callback: Callable[[str], None]):
