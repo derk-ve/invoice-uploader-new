@@ -226,7 +226,7 @@ class MatchesTable(DataTable):
             ('counterparty', 'Counterparty', 150),
             ('invoice_num', 'Invoice #', 120),
             ('pdf_file', 'PDF File', 200),
-            ('confidence', 'Match %', 80)
+            # ('confidence', 'Match %', 80)
         ]
         super().__init__(parent, "🎯 Matched Pairs", columns, enable_selection=True)
         
@@ -315,8 +315,14 @@ class MatchesTable(DataTable):
             pdf_file = Path(match.invoice.file_path).name
             confidence = f"{match.confidence_score:.0%}"
             
-            values = [date_str, amount_str, reference, counterparty, 
-                     invoice_num, pdf_file, confidence]
+            values = [date_str,
+                     amount_str,
+                     reference,
+                     counterparty, 
+                     invoice_num,
+                     pdf_file,
+                     # confidence
+                    ]
             
             # Add color coding based on confidence
             tags = []
