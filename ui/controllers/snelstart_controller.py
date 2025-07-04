@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Optional, Callable, List
 from pathlib import Path
 
-from src.snelstart_automation.automations.launch_snelstart import LaunchAutomation
+from src.snelstart_automation.automations.launch_snelstart import get_main_window
 from src.snelstart_automation.snelstart_auto import SnelstartAutomation
 from src.utils.logging_setup import LoggingSetup
 
@@ -178,8 +178,8 @@ class SnelStartController:
             
             # Check if the main window still exists and is accessible
             # This is a lightweight check to see if SnelStart is still running
-            window = LaunchAutomation.get_main_window()
-            
+            window = get_main_window()
+
             if window is not None:
                 self.logger.debug("Health check: Snelstart window found")
                 return True
