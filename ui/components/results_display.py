@@ -574,12 +574,13 @@ class ResultsDisplay:
     
     def show_download_success(self, package_path: str, pdf_count: int):
         """
-        Show download success message with option to open folder.
+        Show download success message with popup dialog and progress log.
         
         Args:
             package_path: Path to the created package
             pdf_count: Number of PDF files in the package
         """
+        # Add to progress log
         self.add_progress_line(f"\n✅ Download package created successfully!")
         self.add_progress_line(f"📂 Saved to: {package_path}")
         self.add_progress_line(f"📄 Contents: 1 MT940 file + {pdf_count} PDF files")
@@ -595,3 +596,24 @@ class ResultsDisplay:
             pass
             
         self.update_display()
+        
+        # Show success popup dialog for clear visual feedback
+        try:
+            # Create message with file info
+            message = (
+                f"Download completed successfully!\n\n"
+                f"📂 Location: {package_path}\n"
+                f"📄 Files: 1 MT940 file + {pdf_count} PDF files\n\n"
+                f"Your files are ready for upload to SnelStart."
+            )
+            
+            # Show success dialog
+            messagebox.showinfo(
+                title="Download Complete ✅",
+                message=message
+            )
+            
+        except Exception as e:
+            # If popup fails, at least log it
+            self.add_progress_line(f"Note: Success popup failed to display: {e}")
+            self.update_display()
