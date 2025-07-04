@@ -237,6 +237,10 @@ class InvoiceMatcherApp:
         self.matching_controller.set_invoice_scanned_callback(self._on_invoice_scanned)
         self.matching_controller.set_summary_ready_callback(self._on_summary_ready)
         self.matching_controller.set_error_callback(self._on_error)
+        self.matching_controller.set_download_progress_callback(self._on_download_progress)
+        
+        # Results display callbacks
+        self.results_display.set_download_callback(self._on_download_request)
         
         # SnelStart controller callbacks
         self.snelstart_controller.set_connection_start_callback(self._on_snelstart_step)
@@ -360,6 +364,38 @@ class InvoiceMatcherApp:
         """Handle error notifications."""
         self.results_display.show_error(error_message)
         self._set_status("Error occurred", "error", "error")
+    
+    def _on_download_progress(self, progress_message: str):
+        """Handle download progress notifications."""
+        self.results_display.show_step(progress_message)
+    
+    def _on_download_request(self, download_path: str):
+        """Handle download package request."""
+        try:
+            # Get current matching summary from results display
+            current_summary = self.results_display.current_summary
+            
+            if not current_summary:
+                self.results_display.show_error("No matching results available for download.")
+                return
+            
+            # Show progress in Progress tab
+            self.results_display.show_step("💾 Starting download preparation...")
+            
+            # Prepare download package using controller
+            package = self.matching_controller.prepare_download_package(current_summary, download_path)
+            
+            if package:
+                # Show success message
+                self.results_display.show_download_success(package.temp_directory, len(package.pdf_files))
+                self._set_status("Download completed successfully", "success", "checkmark")
+            else:
+                self._set_status("Download failed", "error", "error")
+                
+        except Exception as e:
+            self.logger.error(f"Download request error: {e}")
+            self.results_display.show_error(f"Download failed: {e}")
+            self._set_status("Download error", "error", "error")
     
     # SnelStart controller callback handlers
     def _on_connect_snelstart(self):

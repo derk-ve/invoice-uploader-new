@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import List, Optional, Callable
 
-from src.invoice_matching import PDFScanner, parse_mt940_file, do_bookkeeping
+from src.invoice_matching import PDFScanner, parse_mt940_file, do_bookkeeping, UploadDataGenerator, UploadDataPackage
 from src.invoice_matching.core.models import MatchingSummary
 from src.utils.logging_setup import LoggingSetup
 
@@ -24,6 +24,7 @@ class MatchingController:
         self.on_invoice_scanned: Optional[Callable[[str, Optional[str]], None]] = None
         self.on_summary_ready: Optional[Callable[[int, int], None]] = None
         self.on_error: Optional[Callable[[str], None]] = None
+        self.on_download_progress: Optional[Callable[[str], None]] = None
     
     def validate_files(self, mt940_files: List[str], pdf_files: List[str]) -> Optional[str]:
         """
@@ -189,6 +190,57 @@ class MatchingController:
                 self.on_error(f"Error scanning invoices: {e}")
             return []
     
+    def prepare_download_package(self, summary: MatchingSummary, download_path: str) -> Optional[UploadDataPackage]:
+        """
+        Prepare upload package for download to specified location.
+        
+        Args:
+            summary: Matching summary with matched pairs
+            download_path: Directory path where to create the package
+            
+        Returns:
+            UploadDataPackage if successful, None if error occurred
+        """
+        try:
+            if not summary.matched_pairs:
+                if self.on_error:
+                    self.on_error("No matched pairs available for download.")
+                return None
+            
+            self.logger.info(f"Preparing download package with {len(summary.matched_pairs)} matched pairs")
+            
+            # Update progress
+            if self.on_download_progress:
+                self.on_download_progress("📦 Preparing upload package...")
+            
+            # Initialize upload data generator
+            generator = UploadDataGenerator()
+            
+            # Progress update
+            if self.on_download_progress:
+                self.on_download_progress("📄 Generating filtered MT940 file...")
+            
+            # Create package in the specified download path
+            package = generator.prepare_upload_data(summary, temp_base_dir=download_path)
+            
+            # Progress update
+            if self.on_download_progress:
+                self.on_download_progress("📁 Copying matched PDF files...")
+            
+            self.logger.info(f"Package created successfully at: {package.temp_directory}")
+            
+            # Final progress update
+            if self.on_download_progress:
+                self.on_download_progress(f"✅ Package ready: {len(package.pdf_files)} PDFs + 1 MT940 file")
+            
+            return package
+            
+        except Exception as e:
+            self.logger.error(f"Error preparing download package: {e}")
+            if self.on_error:
+                self.on_error(f"Error preparing download package: {e}")
+            return None
+    
     # Callback setters
     def set_step_start_callback(self, callback: Callable[[str], None]):
         """Set callback for step start notifications."""
@@ -209,3 +261,7 @@ class MatchingController:
     def set_error_callback(self, callback: Callable[[str], None]):
         """Set callback for error notifications."""
         self.on_error = callback
+    
+    def set_download_progress_callback(self, callback: Callable[[str], None]):
+        """Set callback for download progress notifications."""
+        self.on_download_progress = callback

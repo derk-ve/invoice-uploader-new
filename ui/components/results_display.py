@@ -3,9 +3,9 @@ Enhanced results display component with tabbed interface and professional stylin
 """
 
 import tkinter as tk
-from tkinter import ttk, scrolledtext
+from tkinter import ttk, scrolledtext, filedialog, messagebox
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Callable
 from decimal import Decimal
 
 from ..styles.theme import AppTheme
@@ -44,6 +44,10 @@ class ResultsDisplay:
         self.upload_frame: Optional[ttk.Frame] = None
         self.upload_button: Optional[ttk.Button] = None
         self.upload_status_label: Optional[ttk.Label] = None
+        self.download_button: Optional[ttk.Button] = None
+        
+        # Download callback
+        self.on_download_request: Optional[Callable[[str], None]] = None
         
     def setup_ui(self, row_start: int = 0) -> int:
         """
@@ -296,6 +300,9 @@ class ResultsDisplay:
         # Update all components
         self._refresh_all_data()
         
+        # Enable download button if there are matches
+        self.enable_download(bool(summary.matched_pairs))
+        
         # Switch to matches tab if there are any matches
         if summary.matched_pairs and self.notebook:
             self.notebook.select(1)  # Select matches tab
@@ -434,6 +441,18 @@ class ResultsDisplay:
                                padx=(0, AppTheme.SPACING['md']), 
                                pady=AppTheme.SPACING['sm'])
         
+        # Download button
+        self.download_button = ttk.Button(
+            self.upload_frame, 
+            text="💾 Download Package", 
+            command=self._on_download_click,
+            style="LightBlue.TButton",
+            state="disabled"  # Initially disabled
+        )
+        self.download_button.grid(row=2, column=0, 
+                                 padx=(0, AppTheme.SPACING['md']), 
+                                 pady=(0, AppTheme.SPACING['sm']))
+        
         # Upload status label
         self.upload_status_label = ttk.Label(
             self.upload_frame, 
@@ -448,11 +467,11 @@ class ResultsDisplay:
         # Info label
         info_label = ttk.Label(
             self.upload_frame,
-            text="ℹ️ Upload will send matched invoice PDFs to SnelStart for processing",
+            text="ℹ️ Upload sends files to SnelStart • Download creates a package for manual upload",
             style='Small.TLabel',
             foreground=AppTheme.COLORS['text_secondary']
         )
-        info_label.grid(row=2, column=0, columnspan=3, 
+        info_label.grid(row=3, column=0, columnspan=3, 
                        sticky=(tk.W, tk.E), 
                        pady=(AppTheme.SPACING['xs'], 0))
     
@@ -489,3 +508,64 @@ class ResultsDisplay:
         """
         if self.upload_button:
             self.upload_button.config(command=callback)
+    
+    def _on_download_click(self):
+        """Handle download button click."""
+        try:
+            if not self.current_summary or not self.current_summary.matched_pairs:
+                messagebox.showwarning("No Matches", "No matched pairs available for download.")
+                return
+            
+            # Ask user to select download directory
+            download_dir = filedialog.askdirectory(
+                title="Select Download Location",
+                mustexist=True
+            )
+            
+            if not download_dir:
+                return  # User cancelled
+            
+            # Show progress message
+            self.add_progress_line(f"\n💾 Preparing download package...")
+            self.add_progress_line(f"📂 Download location: {download_dir}")
+            
+            # Call the download callback if set
+            if self.on_download_request:
+                self.on_download_request(download_dir)
+                
+        except Exception as e:
+            self.show_error(f"Download error: {e}")
+    
+    def set_download_callback(self, callback: Callable[[str], None]):
+        """
+        Set callback for download requests.
+        
+        Args:
+            callback: Function to call when download is requested with download directory
+        """
+        self.on_download_request = callback
+    
+    def enable_download(self, enabled: bool = True):
+        """
+        Enable or disable the download button.
+        
+        Args:
+            enabled: True to enable, False to disable
+        """
+        if self.download_button:
+            state = "normal" if enabled else "disabled"
+            self.download_button.config(state=state)
+    
+    def show_download_success(self, package_path: str, pdf_count: int):
+        """
+        Show download success message.
+        
+        Args:
+            package_path: Path to the created package
+            pdf_count: Number of PDF files in the package
+        """
+        self.add_progress_line(f"\n✅ Download package created successfully!")
+        self.add_progress_line(f"📂 Location: {package_path}")
+        self.add_progress_line(f"📄 Contents: 1 MT940 file + {pdf_count} PDF files")
+        self.add_progress_line(f"🚀 Ready for manual upload to SnelStart!")
+        self.update_display()
