@@ -93,28 +93,34 @@ class SummaryCards:
         # Card data configuration
         cards_data = [
             {
-                'title': 'Matched Pairs',
+                'title': 'Matched RC Pairs',
                 'value': str(len(summary.matched_pairs)),
                 'icon': AppTheme.get_icon('match'),
                 'color': 'success' if len(summary.matched_pairs) > 0 else 'text_secondary'
             },
+            # {
+            #     'title': 'Success Rate',
+            #     'value': f"{success_rate:.1f}%",
+            #     'icon': AppTheme.get_icon('stats'),
+            #     'color': 'success' if success_rate >= 50 else 'warning' if success_rate >= 25 else 'error'
+            # },
+            # {
+            #     'title': 'Total Amount',
+            #     'value': f"€{summary.total_matched_amount:,.2f}",
+            #     'icon': AppTheme.get_icon('money'),
+            #     'color': 'primary'
+            # },
             {
-                'title': 'Success Rate',
-                'value': f"{success_rate:.1f}%",
-                'icon': AppTheme.get_icon('stats'),
-                'color': 'success' if success_rate >= 50 else 'warning' if success_rate >= 25 else 'error'
-            },
-            {
-                'title': 'Total Amount',
-                'value': f"€{summary.total_matched_amount:,.2f}",
-                'icon': AppTheme.get_icon('money'),
-                'color': 'primary'
-            },
-            {
-                'title': 'Unmatched Items',
-                'value': str(len(summary.unmatched_transactions) + len(summary.unmatched_invoices)),
+                'title': 'Unmatched RC Transactions',
+                'value': str(len(summary.unmatched_transactions)),
                 'icon': AppTheme.get_icon('warning'),
-                'color': 'warning' if (len(summary.unmatched_transactions) + len(summary.unmatched_invoices)) > 0 else 'success'
+                'color': 'warning' if len(summary.unmatched_transactions) > 0 else 'success'
+            },
+            {
+                'title': 'Unmatched RC Invoices',
+                'value': str(len(summary.unmatched_invoices)),
+                'icon': AppTheme.get_icon('warning'),
+                'color': 'warning' if len(summary.unmatched_invoices) > 0 else 'success'
             }
         ]
         
