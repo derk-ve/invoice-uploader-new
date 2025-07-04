@@ -259,6 +259,8 @@ class InvoiceMatcherApp:
         self.matching_controller.set_summary_ready_callback(self._on_summary_ready)
         self.matching_controller.set_error_callback(self._on_error)
         self.matching_controller.set_download_progress_callback(self._on_download_progress)
+        self.matching_controller.set_download_success_callback(self._on_download_success)
+        self.matching_controller.set_download_error_callback(self._on_download_error)
         
         # Results display callbacks
         self.results_display.set_download_callback(self._on_download_request)
@@ -395,10 +397,29 @@ class InvoiceMatcherApp:
     
     def _on_download_progress(self, progress_message: str):
         """Handle download progress notifications."""
-        self.results_display.show_step(progress_message)
+        self._safe_ui_update(lambda: self.results_display.show_step(progress_message))
+    
+    def _on_download_success(self, package):
+        """Handle successful download completion."""
+        def update_ui():
+            # Show success message
+            self.results_display.show_download_success(package.temp_directory, len(package.pdf_files))
+            self._set_status("Download completed successfully", "success", "checkmark")
+            self._set_download_processing_state(False)
+        
+        self._safe_ui_update(update_ui)
+    
+    def _on_download_error(self, error_message: str):
+        """Handle download error from background thread."""
+        def update_ui():
+            self.results_display.show_error(f"Download failed: {error_message}")
+            self._set_status("Download failed", "error", "error")
+            self._set_download_processing_state(False)
+        
+        self._safe_ui_update(update_ui)
     
     def _on_download_request(self, download_path: str):
-        """Handle download package request."""
+        """Handle download package request using asynchronous processing."""
         try:
             # Get current matching summary from results display
             current_summary = self.results_display.current_summary
@@ -410,20 +431,17 @@ class InvoiceMatcherApp:
             # Show progress in Progress tab
             self.results_display.show_step("💾 Starting download preparation...")
             
-            # Prepare download package using controller
-            package = self.matching_controller.prepare_download_package(current_summary, download_path)
+            # Update UI to show processing state
+            self._set_download_processing_state(True)
             
-            if package:
-                # Show success message
-                self.results_display.show_download_success(package.temp_directory, len(package.pdf_files))
-                self._set_status("Download completed successfully", "success", "checkmark")
-            else:
-                self._set_status("Download failed", "error", "error")
+            # Start asynchronous download package preparation
+            self.matching_controller.prepare_download_package_async(current_summary, download_path)
                 
         except Exception as e:
             self.logger.error(f"Download request error: {e}")
-            self.results_display.show_error(f"Download failed: {e}")
-            self._set_status("Download error", "error", "error")
+            self._safe_ui_update(lambda: self.results_display.show_error(f"Download failed: {e}"))
+            self._safe_ui_update(lambda: self._set_status("Download error", "error", "error"))
+            self._set_download_processing_state(False)
     
     # SnelStart controller callback handlers
     def _on_connect_snelstart(self):
@@ -500,6 +518,29 @@ class InvoiceMatcherApp:
             self.snelstart_button.config(text="🏢 Connection Error")
         else:
             self.snelstart_button.config(text=f"🏢 {state.value.title()}")
+    
+    def _safe_ui_update(self, update_func):
+        """
+        Safely update UI from background thread using root.after().
+        
+        Args:
+            update_func: Function to execute on the UI thread
+        """
+        self.root.after(0, update_func)
+    
+    def _set_download_processing_state(self, processing: bool):
+        """
+        Update download button state during processing.
+        
+        Args:
+            processing: True if download is in progress, False if idle
+        """
+        if hasattr(self.results_display, 'download_button') and self.results_display.download_button:
+            if processing:
+                self.results_display.download_button.config(state="disabled", text="💾 Downloading...")
+                self._set_status("Preparing download...", "warning", "search")
+            else:
+                self.results_display.download_button.config(state="normal", text="💾 Download Package")
     
     def _configure_scrolling(self):
         """Configure scrolling behavior and event bindings."""

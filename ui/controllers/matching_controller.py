@@ -3,6 +3,8 @@ Controller for invoice matching business logic.
 """
 
 import os
+import threading
+import time
 from pathlib import Path
 from typing import List, Optional, Callable
 
@@ -25,6 +27,10 @@ class MatchingController:
         self.on_summary_ready: Optional[Callable[[int, int], None]] = None
         self.on_error: Optional[Callable[[str], None]] = None
         self.on_download_progress: Optional[Callable[[str], None]] = None
+        
+        # Download completion callbacks
+        self.on_download_success: Optional[Callable[[UploadDataPackage], None]] = None
+        self.on_download_error: Optional[Callable[[str], None]] = None
     
     def validate_files(self, mt940_files: List[str], pdf_files: List[str]) -> Optional[str]:
         """
@@ -190,56 +196,83 @@ class MatchingController:
                 self.on_error(f"Error scanning invoices: {e}")
             return []
     
-    def prepare_download_package(self, summary: MatchingSummary, download_path: str) -> Optional[UploadDataPackage]:
+    def prepare_download_package_async(self, summary: MatchingSummary, download_path: str):
         """
-        Prepare upload package for download to specified location.
+        Prepare upload package for download to specified location asynchronously.
+        
+        This method runs in a background thread to prevent UI freezing.
+        Progress and completion are reported via callbacks.
         
         Args:
             summary: Matching summary with matched pairs
             download_path: Directory path where to create the package
-            
-        Returns:
-            UploadDataPackage if successful, None if error occurred
         """
-        try:
-            if not summary.matched_pairs:
-                if self.on_error:
-                    self.on_error("No matched pairs available for download.")
-                return None
-            
-            self.logger.info(f"Preparing download package with {len(summary.matched_pairs)} matched pairs")
-            
-            # Update progress
-            if self.on_download_progress:
-                self.on_download_progress("📦 Preparing upload package...")
-            
-            # Initialize upload data generator
-            generator = UploadDataGenerator()
-            
-            # Progress update
-            if self.on_download_progress:
-                self.on_download_progress("📄 Generating filtered MT940 file...")
-            
-            # Create package in the specified download path
-            package = generator.prepare_upload_data(summary, temp_base_dir=download_path)
-            
-            # Progress update
-            if self.on_download_progress:
-                self.on_download_progress("📁 Copying matched PDF files...")
-            
-            self.logger.info(f"Package created successfully at: {package.temp_directory}")
-            
-            # Final progress update
-            if self.on_download_progress:
-                self.on_download_progress(f"✅ Package ready: {len(package.pdf_files)} PDFs + 1 MT940 file")
-            
-            return package
-            
-        except Exception as e:
-            self.logger.error(f"Error preparing download package: {e}")
-            if self.on_error:
-                self.on_error(f"Error preparing download package: {e}")
-            return None
+        def download_worker():
+            """Worker function that runs in background thread."""
+            try:
+                if not summary.matched_pairs:
+                    error_msg = "No matched pairs available for download."
+                    self.logger.warning(error_msg)
+                    if self.on_download_error:
+                        self.on_download_error(error_msg)
+                    return
+                
+                self.logger.info(f"Starting async download package preparation with {len(summary.matched_pairs)} matched pairs")
+                
+                # Progress update - starting
+                if self.on_download_progress:
+                    self.on_download_progress("📦 Initializing download package...")
+                
+                # Initialize upload data generator with progress callback
+                generator = UploadDataGenerator(progress_callback=self.on_download_progress)
+                
+                # Small delay to allow UI update
+                time.sleep(0.1)
+                
+                # Create package in the specified download path
+                package = generator.prepare_upload_data(summary, temp_base_dir=download_path)
+                
+                # Progress update - completion
+                if self.on_download_progress:
+                    self.on_download_progress(f"✅ Package ready: {len(package.pdf_files)} PDFs + 1 MT940 file")
+                
+                self.logger.info(f"Package created successfully at: {package.temp_directory}")
+                
+                # Report success via callback
+                if self.on_download_success:
+                    self.on_download_success(package)
+                    
+            except FileNotFoundError as e:
+                error_msg = f"File not found: {e}"
+                self.logger.error(error_msg)
+                if self.on_download_error:
+                    self.on_download_error(error_msg)
+            except PermissionError as e:
+                error_msg = f"Permission denied: {e}"
+                self.logger.error(error_msg)
+                if self.on_download_error:
+                    self.on_download_error(error_msg)
+            except OSError as e:
+                error_msg = f"File system error: {e}"
+                self.logger.error(error_msg)
+                if self.on_download_error:
+                    self.on_download_error(error_msg)
+            except TimeoutError as e:
+                error_msg = f"Operation timed out: {e}"
+                self.logger.error(error_msg)
+                if self.on_download_error:
+                    self.on_download_error(error_msg)
+            except Exception as e:
+                error_msg = f"Unexpected error preparing download package: {e}"
+                self.logger.error(error_msg)
+                if self.on_download_error:
+                    self.on_download_error(error_msg)
+        
+        # Start the download in a background thread
+        download_thread = threading.Thread(target=download_worker, daemon=True)
+        download_thread.start()
+        self.logger.debug("Download package preparation started in background thread")
+    
     
     # Callback setters
     def set_step_start_callback(self, callback: Callable[[str], None]):
@@ -265,3 +298,11 @@ class MatchingController:
     def set_download_progress_callback(self, callback: Callable[[str], None]):
         """Set callback for download progress notifications."""
         self.on_download_progress = callback
+    
+    def set_download_success_callback(self, callback: Callable[[UploadDataPackage], None]):
+        """Set callback for download success notifications."""
+        self.on_download_success = callback
+    
+    def set_download_error_callback(self, callback: Callable[[str], None]):
+        """Set callback for download error notifications."""
+        self.on_download_error = callback

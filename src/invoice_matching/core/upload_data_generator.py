@@ -5,6 +5,7 @@ Upload data generator for preparing SnelStart upload packages.
 import os
 import shutil
 import tempfile
+import signal
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 from pathlib import Path
@@ -38,10 +39,16 @@ class UploadDataPackage:
 class UploadDataGenerator:
     """Generates complete upload packages for SnelStart from matching results."""
     
-    def __init__(self):
-        """Initialize the upload data generator."""
+    def __init__(self, progress_callback=None):
+        """
+        Initialize the upload data generator.
+        
+        Args:
+            progress_callback: Optional callback function for progress updates
+        """
         self.logger = LoggingSetup.get_logger(self.__class__.__name__)
         self.mt940_generator = MT940Generator()
+        self.progress_callback = progress_callback
         
     def prepare_upload_data(self, summary: MatchingSummary, temp_base_dir: Optional[str] = None) -> UploadDataPackage:
         """
@@ -74,12 +81,15 @@ class UploadDataGenerator:
         
         try:
             # 1. Generate MT940 file from matched transactions
+            self._report_progress("📄 Generating MT940 file...")
             mt940_file_path = self._generate_mt940_file(summary.matched_pairs, temp_dir)
             
             # 2. Copy matched PDF files to upload directory
+            self._report_progress(f"📁 Copying {len(summary.matched_pairs)} PDF files...")
             pdf_files = self._copy_matched_pdfs(summary.matched_pairs, temp_dir)
             
             # 3. Create transaction-to-invoice mapping
+            self._report_progress("🔗 Creating transaction mapping...")
             transaction_mapping = self._create_transaction_mapping(summary.matched_pairs)
             
             # 4. Create upload package
@@ -137,10 +147,13 @@ class UploadDataGenerator:
         
         self.logger.debug(f"Copying {len(matched_pairs)} PDF files to {pdfs_dir}")
         
-        for match in matched_pairs:
+        for i, match in enumerate(matched_pairs, 1):
             invoice = match.invoice
             invoice_number = invoice.invoice_number
             source_pdf_path = invoice.file_path
+            
+            # Report progress for each file
+            self._report_progress(f"📄 Copying {i}/{len(matched_pairs)}: {invoice_number}")
             
             if not os.path.exists(source_pdf_path):
                 self.logger.warning(f"PDF file not found: {source_pdf_path}")
@@ -151,14 +164,17 @@ class UploadDataGenerator:
             dest_pdf_path = os.path.join(pdfs_dir, pdf_filename)
             
             try:
-                # Copy PDF file
-                shutil.copy2(source_pdf_path, dest_pdf_path)
+                # Copy PDF file with error handling
+                self._safe_copy_file(source_pdf_path, dest_pdf_path)
                 pdf_files[invoice_number] = dest_pdf_path
                 
                 self.logger.debug(f"Copied PDF: {invoice_number} -> {dest_pdf_path}")
                 
-            except IOError as e:
+            except (IOError, OSError, PermissionError) as e:
                 self.logger.error(f"Failed to copy PDF {source_pdf_path}: {e}")
+                # Continue with other files
+            except Exception as e:
+                self.logger.error(f"Unexpected error copying PDF {source_pdf_path}: {e}")
                 # Continue with other files
                 
         self.logger.info(f"Successfully copied {len(pdf_files)} PDF files")
@@ -228,3 +244,49 @@ class UploadDataGenerator:
         ]
         
         return "\n".join(summary_lines)
+    
+    def _report_progress(self, message: str):
+        """
+        Report progress if callback is available.
+        
+        Args:
+            message: Progress message to report
+        """
+        if self.progress_callback:
+            self.progress_callback(message)
+    
+    def _safe_copy_file(self, source_path: str, dest_path: str, timeout: int = 30):
+        """
+        Safely copy a file with timeout and error handling.
+        
+        Args:
+            source_path: Source file path
+            dest_path: Destination file path
+            timeout: Timeout in seconds for copy operation
+            
+        Raises:
+            IOError: If copy operation fails
+            TimeoutError: If copy operation takes too long
+        """
+        def timeout_handler(signum, frame):
+            raise TimeoutError(f"File copy operation timed out after {timeout} seconds")
+        
+        # Set up timeout (Unix/Linux only - graceful fallback for Windows)
+        old_handler = None
+        try:
+            if hasattr(signal, 'SIGALRM'):
+                old_handler = signal.signal(signal.SIGALRM, timeout_handler)
+                signal.alarm(timeout)
+            
+            # Perform the copy operation
+            shutil.copy2(source_path, dest_path)
+            
+        except Exception as e:
+            # Re-raise with more context
+            raise IOError(f"Failed to copy {Path(source_path).name}: {e}")
+        
+        finally:
+            # Clean up timeout handler
+            if hasattr(signal, 'SIGALRM') and old_handler is not None:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
