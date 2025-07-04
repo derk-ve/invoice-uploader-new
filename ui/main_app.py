@@ -458,7 +458,19 @@ class InvoiceMatcherApp:
     
     # SnelStart controller callback handlers
     def _on_connect_snelstart(self):
-        """Handle SnelStart open button click."""
+        """Handle SnelStart connect/reconnect button click."""
+        # Check if this is a reconnect attempt
+        current_state = self.snelstart_controller.get_connection_state()
+        
+        if current_state == SnelStartConnectionState.ERROR:
+            # This is a reconnection attempt
+            self._handle_reconnect()
+        else:
+            # This is a new connection attempt
+            self._handle_new_connection()
+    
+    def _handle_new_connection(self):
+        """Handle new SnelStart connection."""
         # Update UI state
         self._set_snelstart_processing_state(True)
         
@@ -471,7 +483,7 @@ class InvoiceMatcherApp:
             
             if success:
                 self._update_snelstart_button_state()
-                self._set_status("SnelStart opened - waiting for navigation", "info", "info")
+                self._set_status("Successfully connected to SnelStart", "success", "checkmark")
             else:
                 self._set_status("Failed to open SnelStart", "error", "error")
                 
@@ -479,6 +491,35 @@ class InvoiceMatcherApp:
             self.logger.error(f"Unexpected error opening SnelStart: {e}")
             self.results_display.show_error(f"SnelStart error: {e}")
             self._set_status("SnelStart error occurred", "error", "error")
+        
+        finally:
+            # Restore UI state
+            self._set_snelstart_processing_state(False)
+    
+    def _handle_reconnect(self):
+        """Handle SnelStart reconnection attempt."""
+        # Update UI state
+        self._set_snelstart_processing_state(True)
+        
+        # Show reconnection in results
+        self.results_display.show_step("🏢 Attempting to reconnect to SnelStart...")
+        
+        try:
+            # Attempt reconnection
+            success = self.snelstart_controller.reconnect()
+            
+            if success:
+                self._update_snelstart_button_state()
+                self._set_status("Reconnected to SnelStart successfully", "success", "checkmark")
+                self.results_display.show_step("✅ SnelStart reconnection successful!")
+            else:
+                self._set_status("Reconnection failed", "error", "error")
+                self.results_display.show_error("Failed to reconnect to SnelStart")
+                
+        except Exception as e:
+            self.logger.error(f"Unexpected error reconnecting to SnelStart: {e}")
+            self.results_display.show_error(f"Reconnection error: {e}")
+            self._set_status("Reconnection error occurred", "error", "error")
         
         finally:
             # Restore UI state
@@ -520,11 +561,9 @@ class InvoiceMatcherApp:
         elif state == SnelStartConnectionState.CONNECTING:
             self.snelstart_button.config(text="🏢 Connecting...")
         elif state == SnelStartConnectionState.CONNECTED:
-            self.snelstart_button.config(text="🏢 Waiting for Navigation")
-        elif state == SnelStartConnectionState.READY_FOR_UPLOAD:
-            self.snelstart_button.config(text="🏢 Ready for Upload")
+            self.snelstart_button.config(text="🏢 Connected")
         elif state == SnelStartConnectionState.ERROR:
-            self.snelstart_button.config(text="🏢 Connection Error")
+            self.snelstart_button.config(text="🏢 Reconnect")
         else:
             self.snelstart_button.config(text=f"🏢 {state.value.title()}")
     

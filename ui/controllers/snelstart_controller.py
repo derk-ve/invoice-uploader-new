@@ -15,7 +15,6 @@ class SnelStartConnectionState(Enum):
     DISCONNECTED = "disconnected"
     CONNECTING = "connecting" 
     CONNECTED = "connected"
-    READY_FOR_UPLOAD = "ready_for_upload"
     ERROR = "error"
 
 
@@ -37,8 +36,8 @@ class SnelStartController:
         self.on_state_changed: Optional[Callable[[SnelStartConnectionState, str], None]] = None
         self.on_error: Optional[Callable[[str], None]] = None
         
-        # Polling for upload readiness
-        self.polling_active = False
+        # Health monitoring
+        self.health_monitoring_active = False
         
         self.logger.debug("SnelStart controller initialized")
     
@@ -51,14 +50,14 @@ class SnelStartController:
         """
         return self.connection_state
     
-    def is_ready_for_upload(self) -> bool:
+    def is_connected(self) -> bool:
         """
-        Check if SnelStart is ready to accept file uploads.
+        Check if SnelStart is connected and available.
         
         Returns:
-            True if ready for upload, False otherwise
+            True if connected, False otherwise
         """
-        return self.connection_state == SnelStartConnectionState.READY_FOR_UPLOAD
+        return self.connection_state == SnelStartConnectionState.CONNECTED
     
     def open_snelstart(self) -> bool:
         """
@@ -73,18 +72,22 @@ class SnelStartController:
             if self.on_connection_start:
                 self.on_connection_start("Opening SnelStart application...")
             
+            # Clean up any existing connection first
+            if self.snelstart_automation:
+                self.disconnect()
+            
             # Initialize SnelStart automation
             self.snelstart_automation = SnelstartAutomation()
             
             # Attempt to start/connect
             if self.snelstart_automation.start():
-                self._set_state(SnelStartConnectionState.CONNECTED, "SnelStart opened - please log in and navigate to bookkeeping")
+                self._set_state(SnelStartConnectionState.CONNECTED, "Successfully connected to SnelStart")
                 
                 if self.on_connection_established:
-                    self.on_connection_established("SnelStart is open. Please log in and navigate to the bookkeeping section.")
+                    self.on_connection_established("SnelStart connection established successfully!")
                 
-                # Start polling for upload readiness
-                self.start_polling_for_upload_readiness()
+                # Start health monitoring instead of upload polling
+                self.start_health_monitoring()
                 
                 self.logger.info("Successfully opened/connected to SnelStart")
                 return True
@@ -102,69 +105,87 @@ class SnelStartController:
                 self.on_error(error_msg)
             return False
     
-    def start_polling_for_upload_readiness(self):
-        """Start background polling to detect when upload button becomes available."""
+    def reconnect(self) -> bool:
+        """
+        Attempt to reconnect to SnelStart.
+        
+        Returns:
+            True if reconnection successful, False otherwise
+        """
+        self.logger.info("Attempting to reconnect to SnelStart")
+        
+        # Reset state and try to connect again
+        if self.connection_state == SnelStartConnectionState.ERROR:
+            return self.open_snelstart()
+        else:
+            self.logger.warning("Reconnect called but not in error state")
+            return False
+    
+    def start_health_monitoring(self):
+        """Start background health monitoring to detect connection loss."""
         import threading
         import time
         
-        if self.polling_active:
-            return  # Already polling
+        if self.health_monitoring_active:
+            return  # Already monitoring
             
-        self.polling_active = True
-        self.logger.info("Started polling for upload readiness")
+        self.health_monitoring_active = True
+        self.logger.info("Started connection health monitoring")
         
-        def poll_for_button():
-            """Background thread to poll for the upload button."""
-            while self.polling_active and self.connection_state == SnelStartConnectionState.CONNECTED:
+        def monitor_connection():
+            """Background thread to monitor connection health."""
+            while self.health_monitoring_active and self.connection_state == SnelStartConnectionState.CONNECTED:
                 try:
-                    if self._check_upload_button_available():
-                        # Found the button! Update state
-                        self._set_state(SnelStartConnectionState.READY_FOR_UPLOAD, "Ready for upload - 'Afschriften Inlezen' button found!")
+                    if not self._check_connection_health():
+                        # Connection lost! Update state
+                        self._set_state(SnelStartConnectionState.ERROR, "Connection to SnelStart lost")
                         
-                        if self.on_upload_ready:
-                            self.on_upload_ready("Upload button detected! You can now upload matched invoices.")
+                        if self.on_error:
+                            self.on_error("SnelStart connection lost. Please reconnect.")
                         
-                        self.polling_active = False
+                        self.health_monitoring_active = False
                         break
                     
-                    # Wait before next check
-                    time.sleep(5)  # Check every 3 seconds
+                    # Wait before next check (every 15 seconds)
+                    time.sleep(15)
                     
                 except Exception as e:
-                    self.logger.debug(f"Polling check failed (normal if user hasn't navigated yet): {e}")
-                    time.sleep(5)
+                    self.logger.debug(f"Health check failed: {e}")
+                    time.sleep(15)
             
-            self.logger.debug("Polling stopped")
+            self.logger.debug("Health monitoring stopped")
         
         # Start background thread
-        polling_thread = threading.Thread(target=poll_for_button, daemon=True)
-        polling_thread.start()
+        health_thread = threading.Thread(target=monitor_connection, daemon=True)
+        health_thread.start()
     
-    def stop_polling(self):
-        """Stop the background polling."""
-        self.polling_active = False
+    def stop_health_monitoring(self):
+        """Stop the health monitoring."""
+        self.health_monitoring_active = False
     
-    def _check_upload_button_available(self) -> bool:
+    def _check_connection_health(self) -> bool:
         """
-        Check if the 'Afschriften Inlezen' button is available.
+        Check if the SnelStart connection is still healthy.
         
         Returns:
-            True if button is found and clickable, False otherwise
+            True if connection is healthy, False if connection lost
         """
         try:
             if not self.snelstart_automation or not self.snelstart_automation.main_window:
                 return False
             
-            # Use the refactored button detection logic from DoBookkeepingAutomation
-            from src.snelstart_automation.automations.do_bookkeeping import DoBookkeepingAutomation
-            bookkeeping_automation = DoBookkeepingAutomation()
-            
-            # Use the dedicated find_invoice_button method
-            button = bookkeeping_automation.find_invoice_button(self.snelstart_automation.main_window)
-            return button is not None
+            # Check if the main window still exists and is accessible
+            # This is a lightweight check to see if SnelStart is still running
+            try:
+                # Try to access a basic property to verify window is alive
+                window_title = self.snelstart_automation.main_window.window_text()
+                return True  # If we can read the title, connection is healthy
+            except:
+                # Window is no longer accessible
+                return False
             
         except Exception as e:
-            self.logger.debug(f"Button check failed: {e}")
+            self.logger.debug(f"Health check failed: {e}")
             return False
     
     def disconnect(self) -> bool:
@@ -175,8 +196,8 @@ class SnelStartController:
             True if disconnection successful, False otherwise
         """
         try:
-            # Stop polling
-            self.stop_polling()
+            # Stop health monitoring
+            self.stop_health_monitoring()
             
             # Close SnelStart automation
             if self.snelstart_automation:
