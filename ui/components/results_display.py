@@ -328,6 +328,16 @@ class ResultsDisplay:
             self.summary_cards.show_error(error_message)
         
         self.update_display()
+
+    def clear_error(self):
+        """
+        Clear error message from the summary cards area.
+        """
+        if self.summary_cards:
+            if self.current_summary:
+                self.summary_cards.show_summary(self.current_summary)
+            else:
+                self.summary_cards._show_empty_state()
     
     def _refresh_all_data(self):
         """

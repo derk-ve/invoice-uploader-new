@@ -511,6 +511,7 @@ class InvoiceMatcherApp:
             if success:
                 self._update_snelstart_button_state()
                 self._set_status("Reconnected to SnelStart successfully", "success", "checkmark")
+                self.results_display.clear_error()
                 self.results_display.show_step("✅ SnelStart reconnection successful!")
             else:
                 self._set_status("Reconnection failed", "error", "error")
