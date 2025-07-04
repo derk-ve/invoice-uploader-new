@@ -50,8 +50,17 @@ class InvoiceMatcherApp:
     
     def _setup_components(self):
         """Initialize all components and controllers."""
-        # Main frame for components with professional styling
-        self.main_frame = ttk.Frame(self.root, style='Main.TFrame', padding=AppTheme.SPACING['lg'])
+        # Create scrollable canvas setup
+        self.canvas = tk.Canvas(self.root, bg=AppTheme.COLORS['background'])
+        self.scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        
+        # Create the scrollable frame inside the canvas
+        self.scrollable_frame = ttk.Frame(self.canvas, style='Main.TFrame')
+        self.canvas_window = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        
+        # Main frame for components with professional styling (now inside scrollable frame)
+        self.main_frame = ttk.Frame(self.scrollable_frame, style='Main.TFrame', padding=AppTheme.SPACING['lg'])
         
         # Initialize components
         self.file_selector = FileSelector(self.main_frame)
@@ -66,10 +75,19 @@ class InvoiceMatcherApp:
         self.status_icon = None
     
     def _setup_ui(self):
-        """Create the enhanced main UI layout."""
-        # Configure main window grid for responsive design
+        """Create the enhanced main UI layout with scrollable canvas."""
+        # Configure main window grid for scrollable design
         self.root.columnconfigure(0, weight=1)
+        self.root.columnconfigure(1, weight=0)  # Scrollbar column
         self.root.rowconfigure(0, weight=1)
+        
+        # Place canvas and scrollbar
+        self.canvas.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        self.scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        
+        # Configure scrollable frame
+        self.scrollable_frame.columnconfigure(0, weight=1)
+        self.scrollable_frame.rowconfigure(0, weight=1)
         self.main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         # Configure main frame grid - single column layout for all components
@@ -92,6 +110,9 @@ class InvoiceMatcherApp:
         
         # Results display component
         self.results_display.setup_ui(current_row)
+        
+        # Configure scroll region and bindings
+        self._configure_scrolling()
     
     def _setup_header(self, row_start: int) -> int:
         """
@@ -262,6 +283,9 @@ class InvoiceMatcherApp:
         self.results_display.show_file_selection(display_type, files)
         
         self.logger.info(f"Selected {len(files)} {display_type} files")
+        
+        # Update scroll region after content changes
+        self.root.after(50, self._update_scroll_region)
     
     def _on_run_matching(self):
         """Handle run matching button click."""
@@ -289,6 +313,8 @@ class InvoiceMatcherApp:
                 # Show results
                 self.results_display.show_matching_results(summary)
                 self._set_status("Matching completed successfully", "success", "checkmark")
+                # Update scroll region after results are displayed
+                self.root.after(200, self._update_scroll_region)
             else:
                 self._set_status("Processing failed", "error", "error")
                 
@@ -347,6 +373,8 @@ class InvoiceMatcherApp:
     def _on_step_start(self, step_name: str):
         """Handle step start notification."""
         self.results_display.show_step(step_name)
+        # Update scroll region after content changes
+        self.root.after(50, self._update_scroll_region)
     
     def _on_transaction_loaded(self, file_path: str, count: int, success: bool):
         """Handle transaction loading progress."""
@@ -472,6 +500,54 @@ class InvoiceMatcherApp:
             self.snelstart_button.config(text="🏢 Connection Error")
         else:
             self.snelstart_button.config(text=f"🏢 {state.value.title()}")
+    
+    def _configure_scrolling(self):
+        """Configure scrolling behavior and event bindings."""
+        # Update scroll region when content changes
+        self.scrollable_frame.bind('<Configure>', self._on_frame_configure)
+        self.canvas.bind('<Configure>', self._on_canvas_configure)
+        
+        # Bind mouse wheel scrolling
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+        self.canvas.bind_all("<Button-4>", self._on_mousewheel)
+        self.canvas.bind_all("<Button-5>", self._on_mousewheel)
+        
+        # Update scroll region initially
+        self.root.after(100, self._update_scroll_region)
+    
+    def _on_frame_configure(self, event):
+        """Update scroll region when frame size changes."""
+        self._update_scroll_region()
+    
+    def _on_canvas_configure(self, event):
+        """Update canvas window width when canvas is resized."""
+        canvas_width = event.width
+        self.canvas.itemconfig(self.canvas_window, width=canvas_width)
+    
+    def _on_mousewheel(self, event):
+        """Handle mouse wheel scrolling."""
+        # Check if scrolling is needed
+        if self.canvas.cget("scrollregion"):
+            # Different systems handle mouse wheel differently
+            if event.num == 4 or event.delta > 0:
+                self.canvas.yview_scroll(-1, "units")
+            elif event.num == 5 or event.delta < 0:
+                self.canvas.yview_scroll(1, "units")
+    
+    def _update_scroll_region(self):
+        """Update the scroll region to encompass all content."""
+        # Update the canvas scroll region
+        self.canvas.update_idletasks()
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        
+        # Hide scrollbar if content fits in window
+        canvas_height = self.canvas.winfo_height()
+        content_height = self.scrollable_frame.winfo_reqheight()
+        
+        if content_height <= canvas_height:
+            self.scrollbar.grid_remove()
+        else:
+            self.scrollbar.grid()
 
 
 def main():
